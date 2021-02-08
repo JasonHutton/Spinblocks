@@ -19,6 +19,68 @@ struct displayData_t
 	//char[] title{ "Spinblocks" };
 } displayData;
 
+struct position {
+	float x;
+	float y;
+};
+
+struct velocity {
+	float dx;
+	float dy;
+};
+
+struct rgba_t {
+	float r;
+	float g;
+	float b;
+	float a;
+	bool enabled;
+};
+
+void update(entt::registry& registry) {
+	// Views get created when queried. It exposes internal data structures of the registry to itself.
+	// Views are cheap to make/destroy.
+	// Views are meant to be temporary; don't store them after
+
+	//auto view = registry.view<const position, velocity, rgba_t>();
+	auto view = registry.view<rgba_t>();
+
+	/*
+	// use a callback
+	view.each([](const auto& pos, auto& vel, auto& rgba) { 
+	// ...
+	});
+
+	// use an extended callback
+	view.each([](const auto entity, const auto& pos, auto& vel, auto& rgba) { 
+	// ...
+	});
+
+	// use a range-for
+	for (auto [entity, pos, vel, rgba] : view.each()) {
+		// ...
+	}
+
+	// use forward iterators and get only the components of interest
+	for (auto entity : view)
+	{
+		auto& vel = view.get<velocity>(entity);
+		int q = 0;
+		q++;
+
+		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+		// ...
+	}
+	*/
+	
+	for (auto entity : view)
+	{
+		auto& rgba = view.get<rgba_t>(entity);
+		if(rgba.enabled)
+			glClearColor(rgba.r, rgba.g, rgba.b, rgba.a);
+	}
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -50,6 +112,21 @@ int main()
 		return -1;
 	}
 
+	// One time initialization things. Generally before we start to render anything.
+	
+	// Begin ECS
+	entt::registry registry;
+
+	/* Make 3 entities, each with an rgba_t component. One component is set to be enabled, the others are disabled.
+	This causes only one to have any effect, but it triggers in the ECS logic as expected. */
+	const auto entity = registry.create();
+	registry.emplace<rgba_t>(entity, 1.0f, 0.0f, 0.0f, 1.0f, false);
+	const auto entity2 = registry.create();
+	registry.emplace<rgba_t>(entity2, 0.0f, 1.0f, 0.0f, 1.0f, true);
+	const auto entity3 = registry.create();
+	registry.emplace<rgba_t>(entity3, 0.0f, 0.0f, 1.0f, 1.0f, false);
+	// End ECS
+
 	glfwSwapInterval(1);
 	glEnable(GL_DEPTH_TEST);
 
@@ -57,10 +134,14 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		// Black if glClearColor() is never called.
+		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Red
+		//glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // Blue
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		// Keep running. Generally do stuff.
+		// Keep running. Generally do stuff
+		update(registry);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!
