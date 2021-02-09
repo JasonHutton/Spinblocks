@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="dll">
+      <UniqueIdentifier>{25f15894-0928-473e-8ee2-1bb44bd249ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -23,7 +26,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lib\x64\assimp-vc142-mt.dll" />
-    <None Include="lib\x64\zlib.dll" />
+    <None Include="dll\assimp-vc142-mt.dll">
+      <Filter>dll</Filter>
+    </None>
+    <None Include="dll\zlib.dll">
+      <Filter>dll</Filter>
+    </None>
   </ItemGroup>
 </Project>
