@@ -22,4 +22,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\x64\assimp-vc142-mt.dll" />
+    <None Include="lib\x64\zlib.dll" />
+  </ItemGroup>
 </Project>

@@ -158,6 +158,10 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\x64\assimp-vc142-mt.dll" />
+    <None Include="lib\x64\zlib.dll" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

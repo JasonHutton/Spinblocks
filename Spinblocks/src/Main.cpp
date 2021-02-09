@@ -3,6 +3,11 @@
 #include <GLFW/glfw3.h>
 #include <entt/entity/registry.hpp>
 
+// Include GLM core features
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+
 #include <string>
 #include <iostream>
 
@@ -20,20 +25,15 @@ struct displayData_t
 } displayData;
 
 struct position {
-	float x;
-	float y;
+	glm::vec2 xy;
 };
 
 struct velocity {
-	float dx;
-	float dy;
+	glm::vec2 xy;
 };
 
 struct rgba_t {
-	float r;
-	float g;
-	float b;
-	float a;
+	glm::vec4 rgba;
 	bool enabled;
 };
 
@@ -77,7 +77,7 @@ void update(entt::registry& registry) {
 	{
 		auto& rgba = view.get<rgba_t>(entity);
 		if(rgba.enabled)
-			glClearColor(rgba.r, rgba.g, rgba.b, rgba.a);
+			glClearColor(rgba.rgba.r, rgba.rgba.g, rgba.rgba.b, rgba.rgba.a);
 	}
 }
 
@@ -120,11 +120,11 @@ int main()
 	/* Make 3 entities, each with an rgba_t component. One component is set to be enabled, the others are disabled.
 	This causes only one to have any effect, but it triggers in the ECS logic as expected. */
 	const auto entity = registry.create();
-	registry.emplace<rgba_t>(entity, 1.0f, 0.0f, 0.0f, 1.0f, false);
+	registry.emplace<rgba_t>(entity, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
 	const auto entity2 = registry.create();
-	registry.emplace<rgba_t>(entity2, 0.0f, 1.0f, 0.0f, 1.0f, true);
+	registry.emplace<rgba_t>(entity2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), true);
 	const auto entity3 = registry.create();
-	registry.emplace<rgba_t>(entity3, 0.0f, 0.0f, 1.0f, 1.0f, false);
+	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);
 	// End ECS
 
 	glfwSwapInterval(1);
