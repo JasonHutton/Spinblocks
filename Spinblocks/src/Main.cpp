@@ -1,5 +1,8 @@
 #include "glad/glad.h"
 #define GLFW_INCLUDE_NONE // Just disables the default OpenGL environment explicitly. GLAD should be detected anyway.
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <entt/entity/registry.hpp>
 
@@ -12,11 +15,20 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <learnopengl/shader.h>
+#include <learnopengl/mesh.h>
+#include <learnopengl/model.h>
+#include <learnopengl/camera.h>
+
 #include <string>
 #include <iostream>
+#include <vector>
 
+using std::string;
 using std::cout;
 using std::endl;
+using std::vector;
 
 void glfwErrorCallback(int error, const char* description);
 
@@ -40,6 +52,8 @@ struct rgba_t {
 	glm::vec4 rgba;
 	bool enabled;
 };
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 void update(entt::registry& registry) {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
@@ -116,6 +130,16 @@ int main()
 		return -1;
 	}
 
+	// Doing more GL setup stuff. Comment out some stuff from tutorial to do later.
+	// glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	// glfwSetCursorPosCallback(window, mouse_callback);
+	// glfwSetScrollCallback(window, scroll_callback);
+	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+	stbi_set_flip_vertically_on_load(true);
+
+
 	// One time initialization things. Generally before we start to render anything.
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
@@ -134,6 +158,8 @@ int main()
 		//DoTheErrorLogging(importer.GetErrorString());
 		return -1;
 	}
+
+	//scene->
 	
 	// Begin ECS
 	entt::registry registry;
@@ -143,7 +169,7 @@ int main()
 	const auto entity = registry.create();
 	registry.emplace<rgba_t>(entity, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
 	const auto entity2 = registry.create();
-	registry.emplace<rgba_t>(entity2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), true);
+	registry.emplace<rgba_t>(entity2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	const auto entity3 = registry.create();
 	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);
 	// End ECS
@@ -152,10 +178,13 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Do one-time OpenGL things here.
+	Shader ourShader("./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs"); // Look at these, doubt these exist yet
+	Model ourModel("./data/box/cube.obj");
 
 	while (!glfwWindowShouldClose(window))
 	{
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		// Black if glClearColor() is never called.
 		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Red
 		//glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // Blue
@@ -163,6 +192,26 @@ int main()
 		
 		// Keep running. Generally do stuff
 		update(registry);
+
+
+
+		// don't forget to enable shader before setting uniforms
+		ourShader.use();
+
+		// view/projection transformations
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		ourShader.setMat4("projection", projection);
+		ourShader.setMat4("view", view);
+
+		// render the loaded model
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		ourShader.setMat4("model", model);
+		ourModel.Draw(ourShader);
+
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!

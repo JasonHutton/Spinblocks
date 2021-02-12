@@ -178,6 +178,12 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <None Include="dll\assimp-vc142-mt.dll" />
     <None Include="dll\zlib.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\learnopengl\mesh.h" />
+    <ClInclude Include="include\learnopengl\model.h" />
+    <ClInclude Include="include\learnopengl\shader.h" />
+    <ClInclude Include="include\stb_image.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
