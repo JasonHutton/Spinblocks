@@ -179,6 +179,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <None Include="dll\zlib.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\learnopengl\camera.h" />
     <ClInclude Include="include\learnopengl\mesh.h" />
     <ClInclude Include="include\learnopengl\model.h" />
     <ClInclude Include="include\learnopengl\shader.h" />

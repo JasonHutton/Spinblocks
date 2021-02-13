@@ -53,7 +53,22 @@ struct rgba_t {
 	bool enabled;
 };
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+struct renderModel_t
+{
+	//std::string model;
+	Model model;
+	Shader shader;
+};
+
+struct camera_t
+{
+	glm::vec4 clearColor; // Color to clear the view to.
+	Camera camera; // Camera
+	bool enabled; // Is this component enabled? 
+	bool setClearColor; // Should the clear color be set this frame?
+};
+
+//Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 void update(entt::registry& registry) {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
@@ -61,7 +76,26 @@ void update(entt::registry& registry) {
 	// Views are meant to be temporary; don't store them after
 
 	//auto view = registry.view<const position, velocity, rgba_t>();
-	auto view = registry.view<rgba_t>();
+	auto view = registry.view<camera_t>();
+	for (auto entity : view)
+	{
+		auto& camera = view.get<camera_t>(entity);
+		if (camera.enabled)
+		{
+			if (camera.setClearColor)
+			{
+				glClearColor(camera.clearColor.r, camera.clearColor.g, camera.clearColor.b, camera.clearColor.a);
+				camera.setClearColor = false;
+			}
+		}
+
+	}
+	/*view.each([](const auto& camera_t)
+	{
+		auto& camera = view.get<camera_t>(entity);
+		if(camera.enabled)
+			glClearColor(camera.clearColor.r, camera.clearColor.g, camera.clearColor.b, camera.clearColor.a);
+	});*/
 
 	/*
 	// use a callback
@@ -91,12 +125,13 @@ void update(entt::registry& registry) {
 	}
 	*/
 	
+	/*
 	for (auto entity : view)
 	{
 		auto& rgba = view.get<rgba_t>(entity);
 		if(rgba.enabled)
 			glClearColor(rgba.rgba.r, rgba.rgba.g, rgba.rgba.b, rgba.rgba.a);
-	}
+	}*/
 }
 
 int main()
@@ -142,12 +177,12 @@ int main()
 
 	// One time initialization things. Generally before we start to render anything.
 	// Create an instance of the Importer class
-	Assimp::Importer importer;
+	//Assimp::Importer importer;
 
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll
 	// probably to request more postprocessing than we do in this example.
-	const aiScene* scene = importer.ReadFile("./data/box/cube.obj",
+	/*const aiScene* scene = importer.ReadFile("./data/box/cube.obj",
 		aiProcess_CalcTangentSpace |
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
@@ -157,7 +192,7 @@ int main()
 	if (!scene) {
 		//DoTheErrorLogging(importer.GetErrorString());
 		return -1;
-	}
+	}*/
 
 	//scene->
 	
@@ -166,12 +201,16 @@ int main()
 
 	/* Make 3 entities, each with an rgba_t component. One component is set to be enabled, the others are disabled.
 	This causes only one to have any effect, but it triggers in the ECS logic as expected. */
-	const auto entity = registry.create();
+	/*const auto entity = registry.create();
 	registry.emplace<rgba_t>(entity, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
 	const auto entity2 = registry.create();
 	registry.emplace<rgba_t>(entity2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	const auto entity3 = registry.create();
-	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);
+	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);*/
+	const auto camera = registry.create();
+	registry.emplace<camera_t>(camera, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f), true, true);
+	//const auto entity4 = registry.create();
+	//registry.emplace<renderModel_t>(entity4);
 	// End ECS
 
 	glfwSwapInterval(1);
@@ -184,7 +223,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		// Black if glClearColor() is never called.
 		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Red
 		//glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // Blue
@@ -194,7 +233,7 @@ int main()
 		update(registry);
 
 
-
+		/*
 		// don't forget to enable shader before setting uniforms
 		ourShader.use();
 
@@ -209,7 +248,7 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);
+		ourModel.Draw(ourShader);*/
 
 
 
