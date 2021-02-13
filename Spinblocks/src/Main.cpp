@@ -30,7 +30,28 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+template<class T>
+T* Coalesce(T* value, T* defaultValue)
+{
+	return value != NULL ? value : defaultValue;
+}
+
 void glfwErrorCallback(int error, const char* description);
+auto shaders = std::unordered_map<std::string, Shader*>();
+
+Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
+{
+	if (shaders.count(key) > 0)
+	{
+		return shaders[key];
+	}
+	else
+	{
+		return (shaders[key] = new Shader(vs, fs));
+	}
+}
+
+
 
 struct displayData_t
 {
@@ -60,12 +81,71 @@ struct renderModel_t
 	Shader shader;
 };
 
-struct camera_t
+/*struct camera_t
 {
 	glm::vec4 clearColor; // Color to clear the view to.
 	Camera camera; // Camera
 	bool enabled; // Is this component enabled? 
 	bool setClearColor; // Should the clear color be set this frame?
+};*/
+
+class Component
+{
+public:
+	void Enable(bool enable = true);
+	const bool& IsEnabled() const;
+};
+
+class CameraComponent : Component
+{
+private:
+	bool m_enabled; // Is the component enabled to systems?
+	glm::vec4 m_clearColor; // Color to clear the view to.
+	bool m_updateClearColor; // Should the clear color be updated this frame?
+
+public:
+	Camera m_camera; // Camera
+
+	CameraComponent(const glm::vec4& clearColor, const glm::vec3& cameraPosition, const bool& updateImmediately = false) : m_camera(cameraPosition)
+	{
+		Enable(true);
+		SetClearColor(clearColor, updateImmediately);
+	}
+
+	void SetClearColor(const glm::vec4& clearColor, const bool& updateImmediately = false)
+	{
+		m_clearColor = clearColor;
+		m_updateClearColor = true;
+
+		if (updateImmediately)
+			UpdateClearColor();
+	}
+
+	const glm::vec4& ClearColor() const
+	{
+		return m_clearColor;
+	}
+
+	const bool& ShouldUpdateClearColor() const
+	{
+		return m_updateClearColor;
+	}
+
+	void UpdateClearColor()
+	{
+		glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+		m_updateClearColor = false;
+	}
+
+	void Enable(bool enable = true)
+	{
+		m_enabled = enable;
+	}
+
+	const bool& IsEnabled() const
+	{
+		return m_enabled;
+	}
 };
 
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -76,8 +156,9 @@ void update(entt::registry& registry) {
 	// Views are meant to be temporary; don't store them after
 
 	//auto view = registry.view<const position, velocity, rgba_t>();
-	auto view = registry.view<camera_t>();
-	for (auto entity : view)
+	//auto view = registry.view<camera_t>();
+	/*
+	* for (auto entity : view)
 	{
 		auto& camera = view.get<camera_t>(entity);
 		if (camera.enabled)
@@ -88,7 +169,19 @@ void update(entt::registry& registry) {
 				camera.setClearColor = false;
 			}
 		}
-
+	}
+	*/
+	auto view = registry.view<CameraComponent>();
+	for (auto entity : view)
+	{
+		auto& camera = view.get<CameraComponent>(entity);
+		if (camera.IsEnabled())
+		{
+			if (camera.ShouldUpdateClearColor())
+			{
+				camera.UpdateClearColor();
+			}
+		}
 	}
 	/*view.each([](const auto& camera_t)
 	{
@@ -133,6 +226,8 @@ void update(entt::registry& registry) {
 			glClearColor(rgba.rgba.r, rgba.rgba.g, rgba.rgba.b, rgba.rgba.a);
 	}*/
 }
+
+
 
 int main()
 {
@@ -208,7 +303,8 @@ int main()
 	const auto entity3 = registry.create();
 	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);*/
 	const auto camera = registry.create();
-	registry.emplace<camera_t>(camera, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f), true, true);
+	registry.emplace<CameraComponent>(camera, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+	//registry.emplace<camera_t>(camera, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f), true, true);
 	//const auto entity4 = registry.create();
 	//registry.emplace<renderModel_t>(entity4);
 	// End ECS
@@ -217,8 +313,10 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// Do one-time OpenGL things here.
-	Shader ourShader("./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs"); // Look at these, doubt these exist yet
+	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
 	Model ourModel("./data/box/cube.obj");
+
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
