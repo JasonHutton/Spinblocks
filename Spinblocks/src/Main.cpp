@@ -298,8 +298,13 @@ int main()
 	const auto model = registry.create();
 	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
 	registry.emplace<RenderComponent>(model, Model("./data/box/cube.obj"));
-	registry.emplace<PositionComponent>(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	registry.emplace<PositionComponent>(model, glm::vec3(1.0f, 0.0f, 0.0f));
 	registry.emplace<ScaleComponent>(model, glm::vec3(1.0f, 1.0f, 1.0f));
+
+	const auto model2 = registry.create();
+	registry.emplace<RenderComponent>(model2, Model("./data/box/cube.obj"));
+	registry.emplace<PositionComponent>(model2, glm::vec3(-1.0f, 0.0f, 0.0f));
+	registry.emplace<ScaleComponent>(model2, glm::vec3(1.0f, 1.0f, 1.0f));
 	// End ECS
 
 	glfwSwapInterval(1);
