@@ -39,6 +39,7 @@ T* Coalesce(T* value, T* defaultValue)
 }
 
 void glfwErrorCallback(int error, const char* description);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 auto shaders = std::unordered_map<std::string, Shader*>();
 
 Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
@@ -161,7 +162,7 @@ int main()
 	}
 
 	// Doing more GL setup stuff. Comment out some stuff from tutorial to do later.
-	// glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	// glfwSetCursorPosCallback(window, mouse_callback);
 	// glfwSetScrollCallback(window, scroll_callback);
 	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -217,4 +218,11 @@ int main()
 void glfwErrorCallback(int error, const char* description)
 {
 	std::cout << "Error " << error << ": " << description << endl;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
 }
