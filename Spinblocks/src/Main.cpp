@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 
+#include "Components/Includes.h"
 
 using std::string;
 using std::cout;
@@ -59,128 +60,6 @@ struct displayData_t
 	std::string title{ "Spinblocks" };
 } displayData;
 
-class Component
-{
-public:
-	void Enable(bool enable = true);
-	const bool& IsEnabled() const;
-};
-
-class PositionComponent : public Component
-{
-private:
-	bool m_enabled; // Is the component enabled to systems?
-	glm::vec3 m_position;
-public:
-	PositionComponent(const glm::vec3& position)
-	{
-		m_position = position;
-	}
-	const glm::vec3& GetPosition() const
-	{
-		return m_position;
-	}
-	void SetPosition(const glm::vec3& position)
-	{
-		m_position = position;
-	}
-public:
-	void Enable(bool enable = true)
-	{
-		m_enabled = enable;
-	}
-
-	const bool& IsEnabled() const
-	{
-		return m_enabled;
-	}
-};
-
-class ScaleComponent : public Component
-{
-private:
-	bool m_enabled; // Is the component enabled to systems?
-	glm::vec3 m_scale;
-public:
-	ScaleComponent(const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f))
-	{
-		m_scale = scale;
-	}
-	const glm::vec3& GetScale() const
-	{
-		return m_scale;
-	}
-	void SetScale(const glm::vec3& scale)
-	{
-		m_scale = scale;
-	}
-public:
-	void Enable(bool enable = true)
-	{
-		m_enabled = enable;
-	}
-
-	const bool& IsEnabled() const
-	{
-		return m_enabled;
-	}
-};
-
-class RenderComponent : public Component
-{
-private:
-	bool m_enabled; // Is the component enabled to systems?
-
-public:
-	Model m_model;
-public:
-	RenderComponent(Model model) : m_model(model)
-	{
-	}
-
-	const Model& GetModel() const
-	{
-		return m_model;
-	}
-	void Draw(Shader& shader)
-	{
-		m_model.Draw(shader);
-	}
-public:
-	void Enable(bool enable = true)
-	{
-		m_enabled = enable;
-	}
-
-	const bool& IsEnabled() const
-	{
-		return m_enabled;
-	}
-};
-
-class CameraComponent : public Component
-{
-private:
-	bool m_enabled; // Is the component enabled to systems?
-
-public:
-	Camera m_camera; // Camera
-
-	CameraComponent(const glm::vec3& cameraPosition) : m_camera(cameraPosition)
-	{
-
-	}
-
-	void Enable(bool enable = true)
-	{
-		m_enabled = enable;
-	}
-
-	const bool& IsEnabled() const
-	{
-		return m_enabled;
-	}
-};
 
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -213,10 +92,10 @@ void render(entt::registry& registry)
 	glm::mat4 viewMatrix = glm::mat4(1.0f); // Identity Matrix
 
 	// We're assuming we just have one here, and that it's always enabled, even though we're checking for it.
-	auto cameraView = registry.view<CameraComponent>();
+	auto cameraView = registry.view<Components::Camera>();
 	for (auto entity : cameraView)
 	{
-		auto& camera = cameraView.get<CameraComponent>(entity);
+		auto& camera = cameraView.get<Components::Camera>(entity);
 		if (camera.IsEnabled())
 		{
 			projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
@@ -229,19 +108,19 @@ void render(entt::registry& registry)
 	}
 
 
-	auto renderView = registry.view<RenderComponent, PositionComponent, ScaleComponent>();
+	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Scale>();
 	for (auto entity : renderView)
 	{
-		auto& render = renderView.get<RenderComponent>(entity);
-		auto& position = renderView.get<PositionComponent>(entity);
-		auto& scale = renderView.get<ScaleComponent>(entity);
+		auto& render = renderView.get<Components::Renderable>(entity);
+		auto& position = renderView.get<Components::Position>(entity);
+		auto& scale = renderView.get<Components::Scale>(entity);
 			
 		if (render.IsEnabled() && position.IsEnabled())
 		{
 			
 			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-			modelMatrix = glm::translate(modelMatrix, position.GetPosition());
-			modelMatrix = glm::scale(modelMatrix, scale.GetScale());
+			modelMatrix = glm::translate(modelMatrix, position.Get());
+			modelMatrix = glm::scale(modelMatrix, scale.Get());
 
 			shader->setMat4("model", modelMatrix);
 			render.Draw(*shader);
@@ -294,17 +173,17 @@ int main()
 	entt::registry registry;
 
 	const auto camera = registry.create();
-	registry.emplace<CameraComponent>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+	registry.emplace<Components::Camera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 	const auto model = registry.create();
 	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
-	registry.emplace<RenderComponent>(model, Model("./data/box/cube.obj"));
-	registry.emplace<PositionComponent>(model, glm::vec3(1.0f, 0.0f, 0.0f));
-	registry.emplace<ScaleComponent>(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));
+	registry.emplace<Components::Position>(model, glm::vec3(1.0f, 0.0f, 0.0f));
+	registry.emplace<Components::Scale>(model, glm::vec3(1.0f, 1.0f, 1.0f));
 
 	const auto model2 = registry.create();
-	registry.emplace<RenderComponent>(model2, Model("./data/box/cube.obj"));
-	registry.emplace<PositionComponent>(model2, glm::vec3(-1.0f, 0.0f, 0.0f));
-	registry.emplace<ScaleComponent>(model2, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
+	registry.emplace<Components::Position>(model2, glm::vec3(-1.0f, 0.0f, 0.0f));
+	registry.emplace<Components::Scale>(model2, glm::vec3(1.0f, 1.0f, 1.0f));
 	// End ECS
 
 	glfwSwapInterval(1);
