@@ -52,43 +52,12 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 	}
 }
 
-
-
 struct displayData_t
 {
 	int x{ 640 };
 	int y{ 480 };
 	std::string title{ "Spinblocks" };
-	//char[] title{ "Spinblocks" };
 } displayData;
-
-struct position {
-	glm::vec2 xy;
-};
-
-struct velocity {
-	glm::vec2 xy;
-};
-
-struct rgba_t {
-	glm::vec4 rgba;
-	bool enabled;
-};
-
-struct renderModel_t
-{
-	//std::string model;
-	Model model;
-	Shader shader;
-};
-
-/*struct camera_t
-{
-	glm::vec4 clearColor; // Color to clear the view to.
-	Camera camera; // Camera
-	bool enabled; // Is this component enabled? 
-	bool setClearColor; // Should the clear color be set this frame?
-};*/
 
 class Component
 {
@@ -97,11 +66,24 @@ public:
 	const bool& IsEnabled() const;
 };
 
-class RenderComponent : public Component
+class PositionComponent : public Component
 {
 private:
 	bool m_enabled; // Is the component enabled to systems?
-
+	glm::vec3 m_position;
+public:
+	PositionComponent(const glm::vec3& position)
+	{
+		m_position = position;
+	}
+	const glm::vec3& GetPosition() const
+	{
+		return m_position;
+	}
+	void SetPosition(const glm::vec3& position)
+	{
+		m_position = position;
+	}
 public:
 	void Enable(bool enable = true)
 	{
@@ -114,27 +96,48 @@ public:
 	}
 };
 
-class ModelComponent : public RenderComponent
+class ScaleComponent : public Component
 {
 private:
-	glm::vec3 m_position;
+	bool m_enabled; // Is the component enabled to systems?
 	glm::vec3 m_scale;
 public:
-	Model m_model;
-public:
-	ModelComponent(Model model, glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)) : m_model(model)
+	ScaleComponent(const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f))
 	{
-		m_position = position;
 		m_scale = scale;
-	}
-	const glm::vec3& GetPosition() const
-	{
-		return m_position;
 	}
 	const glm::vec3& GetScale() const
 	{
 		return m_scale;
 	}
+	void SetScale(const glm::vec3& scale)
+	{
+		m_scale = scale;
+	}
+public:
+	void Enable(bool enable = true)
+	{
+		m_enabled = enable;
+	}
+
+	const bool& IsEnabled() const
+	{
+		return m_enabled;
+	}
+};
+
+class RenderComponent : public Component
+{
+private:
+	bool m_enabled; // Is the component enabled to systems?
+
+public:
+	Model m_model;
+public:
+	RenderComponent(Model model) : m_model(model)
+	{
+	}
+
 	const Model& GetModel() const
 	{
 		return m_model;
@@ -143,48 +146,29 @@ public:
 	{
 		m_model.Draw(shader);
 	}
+public:
+	void Enable(bool enable = true)
+	{
+		m_enabled = enable;
+	}
 
+	const bool& IsEnabled() const
+	{
+		return m_enabled;
+	}
 };
 
 class CameraComponent : public Component
 {
 private:
 	bool m_enabled; // Is the component enabled to systems?
-	glm::vec4 m_clearColor; // Color to clear the view to.
-	bool m_updateClearColor; // Should the clear color be updated this frame?
 
 public:
 	Camera m_camera; // Camera
 
-	CameraComponent(const glm::vec4& clearColor, const glm::vec3& cameraPosition, const bool& updateImmediately = false) : m_camera(cameraPosition)
+	CameraComponent(const glm::vec3& cameraPosition) : m_camera(cameraPosition)
 	{
-		Enable(true);
-		SetClearColor(clearColor, updateImmediately);
-	}
 
-	void SetClearColor(const glm::vec4& clearColor, const bool& updateImmediately = false)
-	{
-		m_clearColor = clearColor;
-		m_updateClearColor = true;
-
-		if (updateImmediately)
-			UpdateClearColor();
-	}
-
-	const glm::vec4& ClearColor() const
-	{
-		return m_clearColor;
-	}
-
-	const bool& ShouldUpdateClearColor() const
-	{
-		return m_updateClearColor;
-	}
-
-	void UpdateClearColor()
-	{
-		glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
-		m_updateClearColor = false;
 	}
 
 	void Enable(bool enable = true)
@@ -205,56 +189,72 @@ void update(entt::registry& registry) {
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
 
+	/*auto gameObjectView = registry.view<GameObjectComponent>();
+	for (auto entity : gameObjectView)
+	{
+		auto& gameObject = gameObjectView.get<GameObjectComponent>(entity);
+		if (gameObject.IsEnabled())
+		{
+			
+		}
+	}*/
+}
+
+void render(entt::registry& registry)
+{
+	// Views get created when queried. It exposes internal data structures of the registry to itself.
+	// Views are cheap to make/destroy.
+	// Views are meant to be temporary; don't store them after
+
+
 	Shader* shader = shaders["model"]; // Need to look at this a bit closer.
 
 	glm::mat4 projectionMatrix = glm::mat4(1.0f); // Identity Matrix
 	glm::mat4 viewMatrix = glm::mat4(1.0f); // Identity Matrix
 
-	// We're assuming we just have one here.
+	// We're assuming we just have one here, and that it's always enabled, even though we're checking for it.
 	auto cameraView = registry.view<CameraComponent>();
 	for (auto entity : cameraView)
 	{
 		auto& camera = cameraView.get<CameraComponent>(entity);
 		if (camera.IsEnabled())
 		{
-			if (camera.ShouldUpdateClearColor())
-			{
-				camera.UpdateClearColor();
-			}
-
-			// view/projection transformations
 			projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
 			viewMatrix = camera.m_camera.GetViewMatrix();
-			
+
 			shader->use();
 			shader->setMat4("projection", projectionMatrix);
 			shader->setMat4("view", viewMatrix);
 		}
 	}
 
-	auto modelView = registry.view<ModelComponent>();
-	for (auto entity : modelView)
+
+	auto renderView = registry.view<RenderComponent, PositionComponent, ScaleComponent>();
+	for (auto entity : renderView)
 	{
-		auto& model = modelView.get<ModelComponent>(entity);
-		if (model.IsEnabled())
+		auto& render = renderView.get<RenderComponent>(entity);
+		auto& position = renderView.get<PositionComponent>(entity);
+		auto& scale = renderView.get<ScaleComponent>(entity);
+			
+		if (render.IsEnabled() && position.IsEnabled())
 		{
+			
 			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-			modelMatrix = glm::translate(modelMatrix, model.GetPosition());
-			modelMatrix = glm::scale(modelMatrix, model.GetScale());
+			modelMatrix = glm::translate(modelMatrix, position.GetPosition());
+			modelMatrix = glm::scale(modelMatrix, scale.GetScale());
 
 			shader->setMat4("model", modelMatrix);
-			model.Draw(*shader);
+			render.Draw(*shader);
 		}
 	}
 }
-
-
 
 int main()
 {
 	if (!glfwInit())
 	{
 		// Initialization failed.
+		return -1;
 	}
 
 	glfwSetErrorCallback(glfwErrorCallback);
@@ -294,9 +294,12 @@ int main()
 	entt::registry registry;
 
 	const auto camera = registry.create();
-	registry.emplace<CameraComponent>(camera, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+	registry.emplace<CameraComponent>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 	const auto model = registry.create();
-	registry.emplace<ModelComponent>(model, Model("./data/box/cube.obj"), glm::vec3(0.0f, 0.0f, 0.0f));
+	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
+	registry.emplace<RenderComponent>(model, Model("./data/box/cube.obj"));
+	registry.emplace<PositionComponent>(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	registry.emplace<ScaleComponent>(model, glm::vec3(1.0f, 1.0f, 1.0f));
 	// End ECS
 
 	glfwSwapInterval(1);
@@ -306,14 +309,16 @@ int main()
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
 	//Model ourModel("./data/box/cube.obj");
 	
-
-	
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
+		// Update game logic for ECS
 		update(registry);
+		// Update render objects.
+		render(registry);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!
