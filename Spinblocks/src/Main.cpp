@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -96,7 +97,56 @@ public:
 	const bool& IsEnabled() const;
 };
 
-class CameraComponent : Component
+class RenderComponent : public Component
+{
+private:
+	bool m_enabled; // Is the component enabled to systems?
+
+public:
+	void Enable(bool enable = true)
+	{
+		m_enabled = enable;
+	}
+
+	const bool& IsEnabled() const
+	{
+		return m_enabled;
+	}
+};
+
+class ModelComponent : public RenderComponent
+{
+private:
+	glm::vec3 m_position;
+	glm::vec3 m_scale;
+public:
+	Model m_model;
+public:
+	ModelComponent(Model model, glm::vec3 position, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)) : m_model(model)
+	{
+		m_position = position;
+		m_scale = scale;
+	}
+	const glm::vec3& GetPosition() const
+	{
+		return m_position;
+	}
+	const glm::vec3& GetScale() const
+	{
+		return m_scale;
+	}
+	const Model& GetModel() const
+	{
+		return m_model;
+	}
+	void Draw(Shader& shader)
+	{
+		m_model.Draw(shader);
+	}
+
+};
+
+class CameraComponent : public Component
 {
 private:
 	bool m_enabled; // Is the component enabled to systems?
@@ -155,76 +205,47 @@ void update(entt::registry& registry) {
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
 
-	//auto view = registry.view<const position, velocity, rgba_t>();
-	//auto view = registry.view<camera_t>();
-	/*
-	* for (auto entity : view)
+	Shader* shader = shaders["model"]; // Need to look at this a bit closer.
+
+	glm::mat4 projectionMatrix = glm::mat4(1.0f); // Identity Matrix
+	glm::mat4 viewMatrix = glm::mat4(1.0f); // Identity Matrix
+
+	// We're assuming we just have one here.
+	auto cameraView = registry.view<CameraComponent>();
+	for (auto entity : cameraView)
 	{
-		auto& camera = view.get<camera_t>(entity);
-		if (camera.enabled)
-		{
-			if (camera.setClearColor)
-			{
-				glClearColor(camera.clearColor.r, camera.clearColor.g, camera.clearColor.b, camera.clearColor.a);
-				camera.setClearColor = false;
-			}
-		}
-	}
-	*/
-	auto view = registry.view<CameraComponent>();
-	for (auto entity : view)
-	{
-		auto& camera = view.get<CameraComponent>(entity);
+		auto& camera = cameraView.get<CameraComponent>(entity);
 		if (camera.IsEnabled())
 		{
 			if (camera.ShouldUpdateClearColor())
 			{
 				camera.UpdateClearColor();
 			}
+
+			// view/projection transformations
+			projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
+			viewMatrix = camera.m_camera.GetViewMatrix();
+			
+			shader->use();
+			shader->setMat4("projection", projectionMatrix);
+			shader->setMat4("view", viewMatrix);
 		}
 	}
-	/*view.each([](const auto& camera_t)
+
+	auto modelView = registry.view<ModelComponent>();
+	for (auto entity : modelView)
 	{
-		auto& camera = view.get<camera_t>(entity);
-		if(camera.enabled)
-			glClearColor(camera.clearColor.r, camera.clearColor.g, camera.clearColor.b, camera.clearColor.a);
-	});*/
+		auto& model = modelView.get<ModelComponent>(entity);
+		if (model.IsEnabled())
+		{
+			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+			modelMatrix = glm::translate(modelMatrix, model.GetPosition());
+			modelMatrix = glm::scale(modelMatrix, model.GetScale());
 
-	/*
-	// use a callback
-	view.each([](const auto& pos, auto& vel, auto& rgba) { 
-	// ...
-	});
-
-	// use an extended callback
-	view.each([](const auto entity, const auto& pos, auto& vel, auto& rgba) { 
-	// ...
-	});
-
-	// use a range-for
-	for (auto [entity, pos, vel, rgba] : view.each()) {
-		// ...
+			shader->setMat4("model", modelMatrix);
+			model.Draw(*shader);
+		}
 	}
-
-	// use forward iterators and get only the components of interest
-	for (auto entity : view)
-	{
-		auto& vel = view.get<velocity>(entity);
-		int q = 0;
-		q++;
-
-		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-		// ...
-	}
-	*/
-	
-	/*
-	for (auto entity : view)
-	{
-		auto& rgba = view.get<rgba_t>(entity);
-		if(rgba.enabled)
-			glClearColor(rgba.rgba.r, rgba.rgba.g, rgba.rgba.b, rgba.rgba.a);
-	}*/
 }
 
 
@@ -269,44 +290,13 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	stbi_set_flip_vertically_on_load(true);
 
-
-	// One time initialization things. Generally before we start to render anything.
-	// Create an instance of the Importer class
-	//Assimp::Importer importer;
-
-	// And have it read the given file with some example postprocessing
-	// Usually - if speed is not the most important aspect for you - you'll
-	// probably to request more postprocessing than we do in this example.
-	/*const aiScene* scene = importer.ReadFile("./data/box/cube.obj",
-		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType);
-
-	// If the import failed, report it
-	if (!scene) {
-		//DoTheErrorLogging(importer.GetErrorString());
-		return -1;
-	}*/
-
-	//scene->
-	
 	// Begin ECS
 	entt::registry registry;
 
-	/* Make 3 entities, each with an rgba_t component. One component is set to be enabled, the others are disabled.
-	This causes only one to have any effect, but it triggers in the ECS logic as expected. */
-	/*const auto entity = registry.create();
-	registry.emplace<rgba_t>(entity, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), false);
-	const auto entity2 = registry.create();
-	registry.emplace<rgba_t>(entity2, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), false);
-	const auto entity3 = registry.create();
-	registry.emplace<rgba_t>(entity3, glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), false);*/
 	const auto camera = registry.create();
-	registry.emplace<CameraComponent>(camera, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
-	//registry.emplace<camera_t>(camera, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f), true, true);
-	//const auto entity4 = registry.create();
-	//registry.emplace<renderModel_t>(entity4);
+	registry.emplace<CameraComponent>(camera, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+	const auto model = registry.create();
+	registry.emplace<ModelComponent>(model, Model("./data/box/cube.obj"), glm::vec3(0.0f, 0.0f, 0.0f));
 	// End ECS
 
 	glfwSwapInterval(1);
@@ -314,41 +304,16 @@ int main()
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
-	Model ourModel("./data/box/cube.obj");
+	//Model ourModel("./data/box/cube.obj");
+	
 
 	
 
 	while (!glfwWindowShouldClose(window))
 	{
-		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		// Black if glClearColor() is never called.
-		//glClearColor(1.0f, 0.0f, 0.0f, 1.0f); // Red
-		//glClearColor(0.0f, 0.0f, 1.0f, 1.0f); // Blue
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		// Keep running. Generally do stuff
 		update(registry);
-
-
-		/*
-		// don't forget to enable shader before setting uniforms
-		ourShader.use();
-
-		// view/projection transformations
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		ourShader.setMat4("projection", projection);
-		ourShader.setMat4("view", view);
-
-		// render the loaded model
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-		ourShader.setMat4("model", model);
-		ourModel.Draw(ourShader);*/
-
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!
