@@ -196,12 +196,26 @@ int main()
 	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+	double startTime = glfwGetTime(); // Just what time we're taking as starting the game, in case we want to use that for anything.
+	double lastFrameTime = startTime; // Because we haven't had a frame yet, initialize last frame to start time.
+	double accumulator = 0.0;
+	double fixedDeltaTime = 0.02;
+
 	while (!glfwWindowShouldClose(window))
 	{
+		double currentFrameTime = glfwGetTime();
+		double deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+		accumulator += deltaTime;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		// Update game logic for ECS
-		update(registry);
+		while (accumulator >= fixedDeltaTime)
+		{
+			// Update game logic for ECS
+			update(registry);
+			accumulator -= fixedDeltaTime;
+		}
 		// Update render objects.
 		render(registry);
 
