@@ -4,3 +4,4 @@
 #include "Components/Position.h"
 #include "Components/Scale.h"
 #include "Components/Camera.h"
+#include "Components/GameObject.h"

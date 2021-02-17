@@ -70,15 +70,18 @@ void update(entt::registry& registry) {
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
 
-	/*auto gameObjectView = registry.view<GameObjectComponent>();
+	auto gameObjectView = registry.view<Components::GameObject, Components::Position>();
 	for (auto entity : gameObjectView)
 	{
-		auto& gameObject = gameObjectView.get<GameObjectComponent>(entity);
+		auto& gameObject = gameObjectView.get<Components::GameObject>(entity);
 		if (gameObject.IsEnabled())
 		{
-			
+			auto& position = gameObjectView.get<Components::Position>(entity);
+			glm::vec3 pos = position.Get();
+			glm::vec3 posAdj = glm::vec3(0.0, 0.01, 0.0);
+			position.Set(pos + posAdj);
 		}
-	}*/
+	}
 }
 
 void render(entt::registry& registry, double normalizedTime)
@@ -181,11 +184,13 @@ int main()
 	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));
 	registry.emplace<Components::Position>(model, glm::vec3(1.0f, 0.0f, 0.0f));
 	registry.emplace<Components::Scale>(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::GameObject>(model);
 
 	const auto model2 = registry.create();
 	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
 	registry.emplace<Components::Position>(model2, glm::vec3(-1.0f, 0.0f, 0.0f));
 	registry.emplace<Components::Scale>(model2, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::GameObject>(model2);
 	// End ECS
 
 	glfwSwapInterval(1);
