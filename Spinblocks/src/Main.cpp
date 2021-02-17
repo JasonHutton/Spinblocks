@@ -81,7 +81,7 @@ void update(entt::registry& registry) {
 	}*/
 }
 
-void render(entt::registry& registry)
+void render(entt::registry& registry, double normalizedTime)
 {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
 	// Views are cheap to make/destroy.
@@ -215,7 +215,7 @@ int main()
 			GameTime::accumulator -= GameTime::fixedDeltaTime;
 		}
 		// Update render objects.
-		render(registry);
+		render(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!
