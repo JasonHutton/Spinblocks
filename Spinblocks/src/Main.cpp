@@ -103,7 +103,9 @@ void render(entt::registry& registry, double normalizedTime)
 		auto& camera = cameraView.get<Components::Camera>(entity);
 		if (camera.IsEnabled())
 		{
-			projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
+			//projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
+			projectionMatrix = glm::ortho(0.0f, (float)displayData.x, 0.0f, (float)displayData.y, 0.1f, 100.0f); // Lower-left origin, y+ is up
+			//projectionMatrix = glm::ortho(0.0f, (float)displayData.x, (float)displayData.y, 0.0f, 0.1f, 100.0f); // Upper-left origin, y+ is down
 			viewMatrix = camera.m_camera.GetViewMatrix();
 
 			shader->use();
@@ -182,14 +184,14 @@ int main()
 	const auto model = registry.create();
 	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
 	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));
-	registry.emplace<Components::Position>(model, glm::vec3(1.0f, 0.0f, 0.0f));
-	registry.emplace<Components::Scale>(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Position>(model, glm::vec3(50.0f, 50.0f, 0.0f));
+	registry.emplace<Components::Scale>(model, glm::vec3(100.0f, 100.0f, 1.0f));
 	registry.emplace<Components::GameObject>(model);
 
 	const auto model2 = registry.create();
 	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
-	registry.emplace<Components::Position>(model2, glm::vec3(-1.0f, 0.0f, 0.0f));
-	registry.emplace<Components::Scale>(model2, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Position>(model2, glm::vec3(300.0f, 200.0f, 0.0f));
+	registry.emplace<Components::Scale>(model2, glm::vec3(50.0f, 50.0f, 1.0f));
 	registry.emplace<Components::GameObject>(model2);
 	// End ECS
 
