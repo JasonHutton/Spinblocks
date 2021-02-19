@@ -4,8 +4,23 @@ namespace Components
 {
 	class Component
 	{
+	protected:
+		bool m_enabled; // Is the component enabled to systems?
+
 	public:
-		void Enable(bool enable = true);
-		const bool& IsEnabled() const;
+		Component() : m_enabled(true)
+		{
+
+		}
+
+		void Enable(bool enable = true)
+		{
+			m_enabled = enable;
+		}
+
+		const bool& IsEnabled() const
+		{
+			return m_enabled;
+		}
 	};
 }
