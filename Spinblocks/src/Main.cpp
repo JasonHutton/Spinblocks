@@ -26,7 +26,8 @@
 #include <vector>
 
 #include "Components/Includes.h"
-#include "GameTime.h""
+#include "GameTime.h"
+#include "Globals.h"
 
 using std::string;
 using std::cout;
@@ -54,14 +55,6 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 		return (shaders[key] = new Shader(vs, fs));
 	}
 }
-
-struct displayData_t
-{
-	int x{ 640 };
-	int y{ 480 };
-	std::string title{ "Spinblocks" };
-} displayData;
-
 
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -93,26 +86,35 @@ void render(entt::registry& registry, double normalizedTime)
 
 	Shader* shader = shaders["model"]; // Need to look at this a bit closer.
 
-	glm::mat4 projectionMatrix = glm::mat4(1.0f); // Identity Matrix
-	glm::mat4 viewMatrix = glm::mat4(1.0f); // Identity Matrix
-
 	// We're assuming we just have one here, and that it's always enabled, even though we're checking for it.
-	auto cameraView = registry.view<Components::Camera>();
-	for (auto entity : cameraView)
+	// We should only have one of either an Orthographic Camera, or a Perspective Camera.
+	auto orthographicCameraView = registry.view<Components::OrthographicCamera>();
+	for (auto entity : orthographicCameraView)
 	{
-		auto& camera = cameraView.get<Components::Camera>(entity);
+		auto& camera = orthographicCameraView.get<Components::OrthographicCamera>(entity);
 		if (camera.IsEnabled())
 		{
-			//projectionMatrix = glm::perspective(glm::radians(camera.m_camera.Zoom), (float)displayData.x / (float)displayData.y, 0.1f, 100.0f);
-			projectionMatrix = glm::ortho(0.0f, (float)displayData.x, 0.0f, (float)displayData.y, 0.1f, 100.0f); // Lower-left origin, y+ is up
-			//projectionMatrix = glm::ortho(0.0f, (float)displayData.x, (float)displayData.y, 0.0f, 0.1f, 100.0f); // Upper-left origin, y+ is down
-			viewMatrix = camera.m_camera.GetViewMatrix();
+			camera.UpdateProjectionMatrix();
 
 			shader->use();
-			shader->setMat4("projection", projectionMatrix);
-			shader->setMat4("view", viewMatrix);
+			shader->setMat4("projection", camera.GetProjectionMatrix());
+			shader->setMat4("view", camera.GetViewMatrix());
 		}
 	}
+	auto perspectiveCameraView = registry.view<Components::PerspectiveCamera>();
+	for (auto entity : perspectiveCameraView)
+	{
+		auto& camera = perspectiveCameraView.get<Components::PerspectiveCamera>(entity);
+		if (camera.IsEnabled())
+		{
+			camera.UpdateProjectionMatrix();
+
+			shader->use();
+			shader->setMat4("projection", camera.GetProjectionMatrix());
+			shader->setMat4("view", camera.GetViewMatrix());
+		}
+	}
+
 
 
 	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Scale>();
@@ -180,7 +182,8 @@ int main()
 	entt::registry registry;
 
 	const auto camera = registry.create();
-	registry.emplace<Components::Camera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 	const auto model = registry.create();
 	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
 	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));

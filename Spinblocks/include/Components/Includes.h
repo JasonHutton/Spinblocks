@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Globals.h"
+
 #include "Component.h"
 #include "Components/Renderable.h"
 #include "Components/Position.h"
