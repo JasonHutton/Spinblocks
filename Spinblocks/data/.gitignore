@@ -1,0 +1,2 @@
+# Explicitly do not ignore anything in data/
+!*
