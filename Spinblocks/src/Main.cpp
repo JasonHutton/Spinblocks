@@ -176,7 +176,7 @@ int main()
 	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 	// Begin ECS
 	entt::registry registry;
@@ -190,12 +190,21 @@ int main()
 	registry.emplace<Components::Position>(model, glm::vec3(50.0f, 50.0f, 0.0f));
 	registry.emplace<Components::Scale>(model, glm::vec3(100.0f, 100.0f, 1.0f));
 	registry.emplace<Components::GameObject>(model);
-
+	/*
 	const auto model2 = registry.create();
 	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
 	registry.emplace<Components::Position>(model2, glm::vec3(300.0f, 200.0f, 0.0f));
 	registry.emplace<Components::Scale>(model2, glm::vec3(50.0f, 50.0f, 1.0f));
-	registry.emplace<Components::GameObject>(model2);
+	registry.emplace<Components::GameObject>(model2);*/
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
+	//registry.emplace<Components::Scale>(playArea, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x/2, displayData.y/2, 0.0f));
+	registry.emplace<Components::Scale>(playArea, glm::vec3(300.0f, 300.0f, 1.0f));
+	//registry.emplace<Components::Container>(playArea);
+	
 	// End ECS
 
 	glfwSwapInterval(1);
