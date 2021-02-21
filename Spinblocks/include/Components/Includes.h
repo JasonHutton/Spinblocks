@@ -8,3 +8,4 @@
 #include "Components/Scale.h"
 #include "Components/Camera.h"
 #include "Components/GameObject.h"
+#include "Components/Container.h"

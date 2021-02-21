@@ -181,6 +181,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
   <ItemGroup>
     <ClInclude Include="include\Components\Camera.h" />
     <ClInclude Include="include\Components\Component.h" />
+    <ClInclude Include="include\Components\Container.h" />
     <ClInclude Include="include\Components\GameObject.h" />
     <ClInclude Include="include\Components\Includes.h" />
     <ClInclude Include="include\Components\Position.h" />

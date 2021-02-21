@@ -75,6 +75,19 @@ void update(entt::registry& registry) {
 			position.Set(pos + posAdj);
 		}
 	}
+
+	auto containerView = registry.view<Components::Container, Components::Scale>();
+	for (auto entity : containerView)
+	{
+		auto& container = containerView.get<Components::Container>(entity);
+		if (container.IsEnabled())
+		{
+			auto& scale = containerView.get<Components::Scale>(entity);
+			glm::vec2 pod = container.GetPercentageOfDimensions();
+
+			scale.Set(glm::vec2(displayData.x * pod.x, displayData.y * pod.y));
+		}
+	}
 }
 
 void render(entt::registry& registry, double normalizedTime)
@@ -184,12 +197,13 @@ int main()
 	const auto camera = registry.create();
 	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+	/*
 	const auto model = registry.create();
 	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
 	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));
 	registry.emplace<Components::Position>(model, glm::vec3(50.0f, 50.0f, 0.0f));
 	registry.emplace<Components::Scale>(model, glm::vec3(100.0f, 100.0f, 1.0f));
-	registry.emplace<Components::GameObject>(model);
+	registry.emplace<Components::GameObject>(model);*/
 	/*
 	const auto model2 = registry.create();
 	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
@@ -202,8 +216,8 @@ int main()
 	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
 	//registry.emplace<Components::Scale>(playArea, glm::vec3(1.0f, 1.0f, 1.0f));
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x/2, displayData.y/2, 0.0f));
-	registry.emplace<Components::Scale>(playArea, glm::vec3(300.0f, 300.0f, 1.0f));
-	//registry.emplace<Components::Container>(playArea);
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container>(playArea, glm::uvec2(10, 20), glm::uvec2(displayData.x, displayData.y), glm::vec2(0.4f, 0.8f));
 	
 	// End ECS
 
