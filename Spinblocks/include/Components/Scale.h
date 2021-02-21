@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
 namespace Components
@@ -24,6 +25,11 @@ namespace Components
 		void Set(const glm::vec3& scale)
 		{
 			m_scale = scale;
+		}
+
+		void Set(const glm::vec2& scale)
+		{
+			m_scale = glm::vec3(scale.x, scale.y, 1.0f);
 		}
 	};
 }
