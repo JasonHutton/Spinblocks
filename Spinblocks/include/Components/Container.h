@@ -14,37 +14,20 @@ namespace Components
 		
 		// These should be normalized values between 1.0 and 0.0
 		glm::vec2 m_percentageOfDimensions; // How much space from the containing component are we consuming in each direction?
-		glm::vec2 m_paddingPercentage; // How much should the grid be padded within the container? TODO not implemented yet
+		//glm::vec2 m_paddingPercentage; // How much should the grid be padded within the container? TODO not implemented yet
 
-		glm::uvec2 m_parentDimensions; // In screen coordinates, how much room do we have to work with?
-		
+		//glm::uvec2 m_parentDimensions; // In screen coordinates, how much room do we have to work with?
+	public:
 		std::vector<entt::entity> m_grid;
+	protected:
 		glm::vec2 m_gridSquareDimensions;
 	public:
-		Container(const glm::uvec2& gridDimensions, const glm::uvec2& parentDimensions, const glm::vec2& percentageOfDimensions, const glm::vec2& paddingPercentage = glm::vec2(1.0f, 1.0f)) : 
-			m_gridDimensions(gridDimensions), m_parentDimensions(parentDimensions), m_percentageOfDimensions(percentageOfDimensions), m_paddingPercentage(paddingPercentage)
+		Container(const glm::vec2& percentageOfDimensions, const glm::uvec2& gridDimensions, const glm::uvec2& gridSquareDimensions) :
+			m_percentageOfDimensions(percentageOfDimensions), m_gridDimensions(gridDimensions), m_gridSquareDimensions(gridSquareDimensions)
 		{
 			//for(int i = 0;i < m_gridDimensions.x * m_gridDimensions.y;i++)
 
 			m_grid.reserve((size_t)m_gridDimensions.x * (size_t)m_gridDimensions.y);
-
-			UpdateGridSquareDimensions();
-		}
-
-		// Just have a fixed target resolution to avoid floating point alignment issues?
-		// 640 * 0.4 = 256 / 10 = 25.6...truncated to 25?
-		// Do a floating point coordinate? Look into if that's possible.
-		void UpdateGridSquareDimensions()
-		{
-			glm::uvec2 dim;
-
-			dim.x = (glm::uint)((float)m_parentDimensions.x * m_percentageOfDimensions.x);
-			dim.y = (glm::uint)((float)m_parentDimensions.y * m_percentageOfDimensions.y);
-
-			dim.x /= m_gridDimensions.x;
-			dim.y /= m_gridDimensions.y;
-
-			m_gridSquareDimensions = dim;
 		}
 
 		const glm::vec2& GetGridDimensions() const
@@ -57,24 +40,19 @@ namespace Components
 			return m_percentageOfDimensions;
 		}
 
-		/*
-	protected:
-		glm::vec3 m_scale;
-
-	public:
-		Scale(const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f))
+		// Gets coordinates relative to the parent(this) position
+		const glm::vec2& GetGridSquareCoordinates(const glm::uvec2& gridPos) const
 		{
-			m_scale = scale;
+			int x = 0;
+			int y = 0;
+
+			y = gridPos.y;
+
+
+			x = -(m_gridDimensions.x/2 * m_gridSquareDimensions.x);
+			x += gridPos.x * m_gridSquareDimensions.x;
+
+			return glm::vec2(x, y);
 		}
-
-		const glm::vec3& Get() const
-		{
-			return m_scale;
-		}
-
-		void Set(const glm::vec3& scale)
-		{
-			m_scale = scale;
-		}*/
 	};
 }
