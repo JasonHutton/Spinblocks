@@ -219,18 +219,19 @@ int main()
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container>(playArea, glm::vec2(0.4, 0.8), glm::uvec2(10, 20), glm::uvec2(25, 25));
 	auto temp = registry.get<Components::Container>(playArea);
-	for (int i = 0; i < temp.GetGridDimensions().x * 1; i++)
+	for (int i = 0; i < temp.GetGridDimensions().x; i++)
 	{
-		const auto gridCoordinate = registry.create();
-		glm::vec2 pos = temp.GetGridSquareCoordinates(glm::uvec2(i, 0));
-		/*if (i % 2)
-			pos.y =- 20;*/
-		registry.emplace<Components::Renderable>(gridCoordinate, Model("./data/block/block.obj"));
-		glm::vec3 pos2 = glm::vec3(displayData.x / 2 + pos.x, displayData.y / 2 + pos.y, 0.0f);
-		registry.emplace<Components::Position>(gridCoordinate, pos2);
-		registry.emplace<Components::Scale>(gridCoordinate, glm::vec3(25.0f, 25.0f, 1.0f));
-		int q = 0;
-		q++;
+		for (int j = 0; j < temp.GetGridDimensions().y; j++)
+		{
+			const auto gridCoordinate = registry.create();
+			glm::vec2 pos = temp.GetGridSquareCoordinates(glm::uvec2(i, j));
+			/*if (i % 2)
+				pos.y =- 20;*/
+			registry.emplace<Components::Renderable>(gridCoordinate, Model("./data/block/block.obj"));
+			glm::vec3 pos2 = glm::vec3(displayData.x / 2 + pos.x, displayData.y / 2 + pos.y, 0.0f);
+			registry.emplace<Components::Position>(gridCoordinate, pos2);
+			registry.emplace<Components::Scale>(gridCoordinate, glm::vec3(25.0f, 25.0f, 1.0f));
+		}
 	}
 	
 	// End ECS

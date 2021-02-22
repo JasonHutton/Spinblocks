@@ -46,11 +46,11 @@ namespace Components
 			int x = 0;
 			int y = 0;
 
-			y = gridPos.y;
-
-
 			x = -(m_gridDimensions.x/2 * m_gridSquareDimensions.x);
 			x += gridPos.x * m_gridSquareDimensions.x;
+
+			y = -(m_gridDimensions.y / 2 * m_gridSquareDimensions.y);
+			y += gridPos.y * m_gridSquareDimensions.y;
 
 			return glm::vec2(x, y);
 		}
