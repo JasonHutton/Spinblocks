@@ -217,7 +217,7 @@ int main()
 	//registry.emplace<Components::Scale>(playArea, glm::vec3(1.0f, 1.0f, 1.0f));
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x/2, displayData.y/2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 2), glm::uvec2(25, 25));
 	registry.emplace<Components::Tag>(playArea, "Play Area");
 
 	const auto grid1 = registry.create();
