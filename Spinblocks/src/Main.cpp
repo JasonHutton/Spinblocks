@@ -76,7 +76,7 @@ void update(entt::registry& registry) {
 		}
 	}
 
-	auto containerView = registry.view<Components::Container, Components::Scale>();
+	/*auto containerView = registry.view<Components::Container, Components::Scale>();
 	for (auto entity : containerView)
 	{
 		auto& container = containerView.get<Components::Container>(entity);
@@ -87,7 +87,7 @@ void update(entt::registry& registry) {
 
 			scale.Set(glm::vec2(displayData.x * pod.x, displayData.y * pod.y));
 		}
-	}
+	}*/
 }
 
 void render(entt::registry& registry, double normalizedTime)
@@ -217,7 +217,74 @@ int main()
 	//registry.emplace<Components::Scale>(playArea, glm::vec3(1.0f, 1.0f, 1.0f));
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x/2, displayData.y/2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container>(playArea, glm::vec2(0.4, 0.8), glm::uvec2(10, 20), glm::uvec2(25, 25));
+	registry.emplace<Components::Container2>(playArea);
+	registry.emplace<Components::Tag>(playArea, "Play Area");
+
+	const auto grid1 = registry.create();
+	registry.emplace<Components::Coordinate>(grid1, glm::uvec2(0, 0));
+	registry.emplace<Components::Cell>(grid1, playArea);
+	registry.emplace<Components::Tag>(grid1, "Grid1");
+
+	const auto grid2 = registry.create();
+	registry.emplace<Components::Coordinate>(grid2, glm::uvec2(0, 1));
+	registry.emplace<Components::Cell>(grid2, playArea);
+	registry.emplace<Components::Tag>(grid2, "Grid2");
+
+	const auto grid3 = registry.create();
+	registry.emplace<Components::Coordinate>(grid3, glm::uvec2(1, 0));
+	registry.emplace<Components::Cell>(grid3, playArea);
+	registry.emplace<Components::Tag>(grid3, "Grid3");
+	
+	const auto grid4 = registry.create();
+	registry.emplace<Components::Coordinate>(grid4, glm::uvec2(1, 1));
+	registry.emplace<Components::Cell>(grid4, playArea);
+	registry.emplace<Components::Tag>(grid4, "Grid4");
+
+
+	// G1 G2
+	// G3 G4
+
+	auto& grid1cell = registry.get<Components::Cell>(grid1);
+	grid1cell.SetDown(grid3);
+	grid1cell.SetRight(grid2);
+
+	auto& grid2cell = registry.get<Components::Cell>(grid2);
+	grid2cell.SetLeft(grid1);
+	grid2cell.SetDown(grid4);
+
+	auto& grid3cell = registry.get<Components::Cell>(grid3);
+	grid3cell.SetUp(grid1);
+	grid3cell.SetRight(grid4);
+
+	auto& grid4cell = registry.get<Components::Cell>(grid4);
+	grid4cell.SetUp(grid2);
+	grid4cell.SetLeft(grid3);
+
+	// Testing
+
+	auto gridCellView = registry.view<Components::Cell, Components::Coordinate, Components::Tag>();
+	for (auto entity : gridCellView)
+	{
+		auto& cell = gridCellView.get<Components::Cell>(entity);
+		auto& coordinate = gridCellView.get<Components::Coordinate>(entity);
+		auto& tag = gridCellView.get<Components::Tag>(entity);
+		if (cell.IsEnabled() && coordinate.IsEnabled())
+		{
+			glm::uvec2 coord = coordinate.Get();
+
+			cout << "Cell(" << coord.x << "," << coord.y << "): " << tag.Get() << endl;
+			auto parent = registry.get<Components::Tag>(cell.GetParent()); // Assume this succeeds for now.
+			cout << "Parent(" << parent.Get() << ")" << endl;
+			cout << "Up(" << (cell.GetUp() == entt::null ? "null" : "notnull") << ")" << endl;
+			cout << "Down(" << (cell.GetDown() == entt::null ? "null" : "notnull") << ")" << endl;
+			cout << "Left(" << (cell.GetLeft() == entt::null ? "null" : "notnull") << ")" << endl;
+			cout << "Right(" << (cell.GetRight() == entt::null ? "null" : "notnull") << ")" << endl;
+
+			
+		}
+	}
+
+	/*registry.emplace<Components::Container>(playArea, glm::vec2(0.4, 0.8), glm::uvec2(10, 20), glm::uvec2(25, 25));
 	auto temp = registry.get<Components::Container>(playArea);
 	for (int i = 0; i < temp.GetGridDimensions().x; i++)
 	{
@@ -225,14 +292,18 @@ int main()
 		{
 			const auto gridCoordinate = registry.create();
 			glm::vec2 pos = temp.GetGridSquareCoordinates(glm::uvec2(i, j));
-			/*if (i % 2)
-				pos.y =- 20;*/
-			registry.emplace<Components::Renderable>(gridCoordinate, Model("./data/block/block.obj"));
+			//if (i % 2)
+				//pos.y =- 20;
+			//registry.emplace<Components::Renderable>(gridCoordinate, Model("./data/block/block.obj"));
 			glm::vec3 pos2 = glm::vec3(displayData.x / 2 + pos.x, displayData.y / 2 + pos.y, 0.0f);
 			registry.emplace<Components::Position>(gridCoordinate, pos2);
 			registry.emplace<Components::Scale>(gridCoordinate, glm::vec3(25.0f, 25.0f, 1.0f));
+
+			temp.m_grid.push_back(gridCoordinate);
 		}
 	}
+
+	glm::uvec2 dim = temp.GetGridSquareDimensions(registry, playArea);*/
 	
 	// End ECS
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "GridCell.h"
 #include "glm/vec2.hpp"
 #include <entt/entity/registry.hpp>
 #include <vector>
@@ -53,6 +54,17 @@ namespace Components
 			y += gridPos.y * m_gridSquareDimensions.y;
 
 			return glm::vec2(x, y);
+		}
+
+		const glm::uvec2 GetGridSquareDimensions(const entt::registry& registry, const entt::entity& entity)
+		{
+			auto& gridCell = registry.get<Components::GridCell>(entity);
+			return gridCell.GetDimensions();
+		}
+
+		entt::entity GetGridCell(const entt::registry& registry, const entt::entity& entity, const glm::uvec2 pos)
+		{
+
 		}
 	};
 }

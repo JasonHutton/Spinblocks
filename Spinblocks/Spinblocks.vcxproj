@@ -180,13 +180,18 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Components\Camera.h" />
+    <ClInclude Include="include\Components\Cell.h" />
     <ClInclude Include="include\Components\Component.h" />
     <ClInclude Include="include\Components\Container.h" />
+    <ClInclude Include="include\Components\Container2.h" />
+    <ClInclude Include="include\Components\Coordinate.h" />
     <ClInclude Include="include\Components\GameObject.h" />
+    <ClInclude Include="include\Components\GridCell.h" />
     <ClInclude Include="include\Components\Includes.h" />
     <ClInclude Include="include\Components\Position.h" />
     <ClInclude Include="include\Components\Renderable.h" />
     <ClInclude Include="include\Components\Scale.h" />
+    <ClInclude Include="include\Components\Tag.h" />
     <ClInclude Include="include\GameTime.h" />
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\learnopengl\camera.h" />
