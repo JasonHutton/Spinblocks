@@ -2,6 +2,7 @@
 
 #include "Component.h"
 #include "glm/vec2.hpp"
+#include <ostream>
 
 namespace Components
 {
@@ -24,5 +25,8 @@ namespace Components
 		{
 			m_coordinate = coordinate;
 		}
+
+	public:
+		friend std::ostream& operator<<(std::ostream& out, const Coordinate& coord);
 	};
 }
