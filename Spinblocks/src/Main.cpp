@@ -150,6 +150,73 @@ void render(entt::registry& registry, double normalizedTime)
 	}
 }
 
+void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
+{
+	Components::Container2 container2 = registry.get<Components::Container2>(parentEntity);
+	// We want a copy of this to be stored in this scope, because the component reference may change without warning.
+	// We could also just store the vector coordinate. Either way.
+	Components::Position parentPosition = registry.get<Components::Position>(parentEntity);
+
+	for (int i = 0; i < container2.GetGridDimensions().x; i++)
+	{
+		for (int k = 0; k < container2.GetGridDimensions().y; k++)
+		{
+			std::string tagName = "Grid";
+			tagName += std::to_string(i);
+			tagName += "-";
+			tagName += std::to_string(k);
+
+			const auto cell = registry.create();
+			registry.emplace<Components::Coordinate>(cell, glm::uvec2(i, k));
+			registry.emplace<Components::Cell>(cell, parentEntity);
+			registry.emplace<Components::Tag>(cell, tagName);
+			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
+			registry.emplace<Components::Position>(cell, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(i, k)));
+			registry.emplace<Components::Renderable>(cell, Model("./data/block/grey.obj"));
+		}
+	}
+
+	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto entity1 : cellView)
+	{
+		auto& cell1 = cellView.get<Components::Cell>(entity1);
+		auto& coordinate1 = cellView.get<Components::Coordinate>(entity1);
+		for (auto entity2 : cellView)
+		{
+			if (entity1 == entity2)
+				continue;
+
+			auto& cell2 = cellView.get<Components::Cell>(entity2);
+			auto& coordinate2 = cellView.get<Components::Coordinate>(entity2);
+
+			if (coordinate1.Get().y == coordinate2.Get().y)
+			{
+				if (coordinate1.Get().x + 1 == coordinate2.Get().x)
+				{
+					cell1.SetEast(entity2);
+				}
+
+				if (coordinate1.Get().x - 1 == coordinate2.Get().x)
+				{
+					cell1.SetWest(entity2);
+				}
+			}
+			if (coordinate1.Get().x == coordinate2.Get().x)
+			{
+				if (coordinate1.Get().y + 1 == coordinate2.Get().y)
+				{
+					cell1.SetSouth(entity2);
+				}
+
+				if (coordinate1.Get().y - 1 == coordinate2.Get().y)
+				{
+					cell1.SetNorth(entity2);
+				}
+			}
+		}
+	}
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -220,6 +287,9 @@ int main()
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 2), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(playArea, "Play Area");
 
+	BuildGrid(registry, playArea);
+
+	/*
 	auto& container2 = registry.get<Components::Container2>(playArea);
 	// We want a copy of this to be stored in this scope, because the component reference may change without warning.
 	// We could also just store the vector coordinate. Either way.
@@ -256,11 +326,11 @@ int main()
 	registry.emplace<Components::Scale>(grid4, container2.GetCellDimensions3());
 	registry.emplace<Components::Position>(grid4, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 1)));
 	registry.emplace<Components::Renderable>(grid4, Model("./data/block/grey.obj"));
-	
+	*/
 
 	// G1 G2
 	// G3 G4
-
+	/*
 	auto& grid1cell = registry.get<Components::Cell>(grid1);
 	
 	grid1cell.SetSouth(grid3);
@@ -277,10 +347,11 @@ int main()
 	auto& grid4cell = registry.get<Components::Cell>(grid4);
 	grid4cell.SetNorth(grid2);
 	grid4cell.SetWest(grid3);
+	*/
 
 	// Testing
 
-	/*auto gridCellView = registry.view<Components::Cell, Components::Coordinate, Components::Tag, Components::Scale, Components::Position>();
+	auto gridCellView = registry.view<Components::Cell, Components::Coordinate, Components::Tag, Components::Scale, Components::Position>();
 	for (auto entity : gridCellView)
 	{
 		auto& cell = gridCellView.get<Components::Cell>(entity);
@@ -293,17 +364,36 @@ int main()
 		{
 			glm::uvec2 coord = coordinate.Get();
 
-			cout << "Cell(" << coord.x << "," << coord.y << "): " << tag.Get() << endl;
+			cout << "Cell(" << coordinate << "): " << tag.Get() << endl;
 			auto parent = registry.get<Components::Tag>(cell.GetParent()); // Assume this succeeds for now.
 			cout << "Parent(" << parent.Get() << ")" << endl;
-			cout << "Up(" << (cell.GetUp() == entt::null ? "null" : "notnull") << ")" << endl;
-			cout << "Down(" << (cell.GetDown() == entt::null ? "null" : "notnull") << ")" << endl;
-			cout << "Left(" << (cell.GetLeft() == entt::null ? "null" : "notnull") << ")" << endl;
-			cout << "Right(" << (cell.GetRight() == entt::null ? "null" : "notnull") << ")" << endl;
-
-			
+			Components::Coordinate* pCoord = NULL;
+			if (cell.GetNorth() != entt::null)
+			{
+				pCoord = &registry.get<Components::Coordinate>(cell.GetNorth());
+				cout << "North(" << to_string(*pCoord) << ")" << endl;
+				pCoord = NULL;
+			}
+			if (cell.GetSouth() != entt::null)
+			{
+				pCoord = &registry.get<Components::Coordinate>(cell.GetSouth());
+				cout << "South(" << to_string(*pCoord) << ")" << endl;
+				pCoord = NULL;
+			}
+			if (cell.GetWest() != entt::null)
+			{
+				pCoord = &registry.get<Components::Coordinate>(cell.GetWest());
+				cout << "West(" << to_string(*pCoord) << ")" << endl;
+				pCoord = NULL;
+			}
+			if (cell.GetEast() != entt::null)
+			{
+				pCoord = &registry.get<Components::Coordinate>(cell.GetEast());
+				cout << "East(" << to_string(*pCoord) << ")" << endl;
+				pCoord = NULL;
+			}
 		}
-	}*/
+	}
 
 	/*registry.emplace<Components::Container>(playArea, glm::vec2(0.4, 0.8), glm::uvec2(10, 20), glm::uvec2(25, 25));
 	auto temp = registry.get<Components::Container>(playArea);
