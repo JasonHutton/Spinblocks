@@ -9,48 +9,48 @@ namespace Components
 	{
 	protected:
 		entt::entity m_parent { entt::null };
-		entt::entity m_up { entt::null };
-		entt::entity m_down { entt::null };
-		entt::entity m_left { entt::null };
-		entt::entity m_right { entt::null };
+		entt::entity m_north { entt::null };
+		entt::entity m_south { entt::null };
+		entt::entity m_west { entt::null };
+		entt::entity m_east { entt::null };
 		
 	public:
 		Cell(entt::entity parent) : m_parent(parent)
 		{
 		}
 
-		void SetUp(entt::entity ent)
+		void SetNorth(entt::entity ent)
 		{
-			m_up = ent;
+			m_north = ent;
 		}
-		void SetDown(entt::entity ent)
+		void SetSouth(entt::entity ent)
 		{
-			m_down = ent;
+			m_south = ent;
 		}
-		void SetLeft(entt::entity ent)
+		void SetWest(entt::entity ent)
 		{
-			m_left = ent;
+			m_west = ent;
 		}
-		void SetRight(entt::entity ent)
+		void SetEast(entt::entity ent)
 		{
-			m_right = ent;
+			m_east = ent;
 		}
 
-		entt::entity GetUp()
+		entt::entity GetNorth()
 		{
-			return m_up;
+			return m_north;
 		}
-		entt::entity GetDown()
+		entt::entity GetSouth()
 		{
-			return m_down;
+			return m_south;
 		}
-		entt::entity GetLeft()
+		entt::entity GetWest()
 		{
-			return m_left;
+			return m_west;
 		}
-		entt::entity GetRight()
+		entt::entity GetEast()
 		{
-			return m_right;
+			return m_east;
 		}
 
 		entt::entity GetParent()

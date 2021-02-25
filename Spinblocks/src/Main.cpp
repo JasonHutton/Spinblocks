@@ -263,20 +263,20 @@ int main()
 
 	auto& grid1cell = registry.get<Components::Cell>(grid1);
 	
-	grid1cell.SetDown(grid3);
-	grid1cell.SetRight(grid2);
+	grid1cell.SetSouth(grid3);
+	grid1cell.SetEast(grid2);
 
 	auto& grid2cell = registry.get<Components::Cell>(grid2);
-	grid2cell.SetLeft(grid1);
-	grid2cell.SetDown(grid4);
+	grid2cell.SetWest(grid1);
+	grid2cell.SetSouth(grid4);
 
 	auto& grid3cell = registry.get<Components::Cell>(grid3);
-	grid3cell.SetUp(grid1);
-	grid3cell.SetRight(grid4);
+	grid3cell.SetNorth(grid1);
+	grid3cell.SetEast(grid4);
 
 	auto& grid4cell = registry.get<Components::Cell>(grid4);
-	grid4cell.SetUp(grid2);
-	grid4cell.SetLeft(grid3);
+	grid4cell.SetNorth(grid2);
+	grid4cell.SetWest(grid3);
 
 	// Testing
 
