@@ -231,7 +231,7 @@ int main()
 	registry.emplace<Components::Tag>(grid1, "Grid1");
 	registry.emplace<Components::Scale>(grid1, container2.GetCellDimensions3());
 	registry.emplace<Components::Position>(grid1, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(0, 0)));
-	registry.emplace<Components::Renderable>(grid1, Model("./data/block/block.obj"));
+	registry.emplace<Components::Renderable>(grid1, Model("./data/block/grey.obj"));
 	
 	const auto grid2 = registry.create();
 	registry.emplace<Components::Coordinate>(grid2, glm::uvec2(0, 1));
@@ -239,7 +239,7 @@ int main()
 	registry.emplace<Components::Tag>(grid2, "Grid2");
 	registry.emplace<Components::Scale>(grid2, container2.GetCellDimensions3());
 	registry.emplace<Components::Position>(grid2, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(0, 1))); // Parent Position abruptly corrupt?
-	registry.emplace<Components::Renderable>(grid2, Model("./data/block/block.obj"));
+	registry.emplace<Components::Renderable>(grid2, Model("./data/block/grey.obj"));
 
 	const auto grid3 = registry.create();
 	registry.emplace<Components::Coordinate>(grid3, glm::uvec2(1, 0));
@@ -247,7 +247,7 @@ int main()
 	registry.emplace<Components::Tag>(grid3, "Grid3");
 	registry.emplace<Components::Scale>(grid3, container2.GetCellDimensions3());
 	registry.emplace<Components::Position>(grid3, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 0)));
-	registry.emplace<Components::Renderable>(grid3, Model("./data/block/block.obj"));
+	registry.emplace<Components::Renderable>(grid3, Model("./data/block/grey.obj"));
 	
 	const auto grid4 = registry.create();
 	registry.emplace<Components::Coordinate>(grid4, glm::uvec2(1, 1));
@@ -255,7 +255,7 @@ int main()
 	registry.emplace<Components::Tag>(grid4, "Grid4");
 	registry.emplace<Components::Scale>(grid4, container2.GetCellDimensions3());
 	registry.emplace<Components::Position>(grid4, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 1)));
-	registry.emplace<Components::Renderable>(grid4, Model("./data/block/block.obj"));
+	registry.emplace<Components::Renderable>(grid4, Model("./data/block/grey.obj"));
 	
 
 	// G1 G2
