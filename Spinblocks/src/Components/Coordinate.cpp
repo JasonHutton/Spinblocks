@@ -1,10 +1,8 @@
 #include "Components/Coordinate.h"
 
-namespace Components
+std::string to_string(Components::Coordinate coord)
 {
-	std::ostream& operator<<(std::ostream& out, const Coordinate& coord)
-	{
-		out << coord.m_coordinate.x << "," << coord.m_coordinate.y;
-		return out;
-	}
+	std::ostringstream ss;
+	ss << coord;
+	return ss.str();
 }
