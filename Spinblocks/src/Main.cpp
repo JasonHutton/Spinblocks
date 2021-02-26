@@ -289,52 +289,6 @@ int main()
 
 	BuildGrid(registry, playArea);
 
-	// Testing
-
-	auto gridCellView = registry.view<Components::Cell, Components::Coordinate, Components::Tag, Components::Scale, Components::Position>();
-	for (auto entity : gridCellView)
-	{
-		auto& cell = gridCellView.get<Components::Cell>(entity);
-		auto& coordinate = gridCellView.get<Components::Coordinate>(entity);
-		auto& tag = gridCellView.get<Components::Tag>(entity);
-
-		auto& scale = gridCellView.get<Components::Scale>(entity);
-		auto& position = gridCellView.get<Components::Position>(entity);
-		if (cell.IsEnabled() && coordinate.IsEnabled())
-		{
-			glm::uvec2 coord = coordinate.Get();
-
-			cout << "Cell(" << coordinate << "): " << tag.Get() << endl;
-			auto parent = registry.get<Components::Tag>(cell.GetParent()); // Assume this succeeds for now.
-			cout << "Parent(" << parent.Get() << ")" << endl;
-			Components::Coordinate* pCoord = NULL;
-			if (cell.GetNorth() != entt::null)
-			{
-				pCoord = &registry.get<Components::Coordinate>(cell.GetNorth());
-				cout << "North(" << to_string(*pCoord) << ")" << endl;
-				pCoord = NULL;
-			}
-			if (cell.GetSouth() != entt::null)
-			{
-				pCoord = &registry.get<Components::Coordinate>(cell.GetSouth());
-				cout << "South(" << to_string(*pCoord) << ")" << endl;
-				pCoord = NULL;
-			}
-			if (cell.GetWest() != entt::null)
-			{
-				pCoord = &registry.get<Components::Coordinate>(cell.GetWest());
-				cout << "West(" << to_string(*pCoord) << ")" << endl;
-				pCoord = NULL;
-			}
-			if (cell.GetEast() != entt::null)
-			{
-				pCoord = &registry.get<Components::Coordinate>(cell.GetEast());
-				cout << "East(" << to_string(*pCoord) << ")" << endl;
-				pCoord = NULL;
-			}
-		}
-	}
-	
 	// End ECS
 
 	glfwSwapInterval(1);
