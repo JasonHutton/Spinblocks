@@ -289,66 +289,6 @@ int main()
 
 	BuildGrid(registry, playArea);
 
-	/*
-	auto& container2 = registry.get<Components::Container2>(playArea);
-	// We want a copy of this to be stored in this scope, because the component reference may change without warning.
-	// We could also just store the vector coordinate. Either way.
-	Components::Position parentPosition = registry.get<Components::Position>(playArea);
-
-	const auto grid1 = registry.create();
-	registry.emplace<Components::Coordinate>(grid1, glm::uvec2(0, 0));
-	registry.emplace<Components::Cell>(grid1, playArea);
-	registry.emplace<Components::Tag>(grid1, "Grid1");
-	registry.emplace<Components::Scale>(grid1, container2.GetCellDimensions3());
-	registry.emplace<Components::Position>(grid1, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(0, 0)));
-	registry.emplace<Components::Renderable>(grid1, Model("./data/block/grey.obj"));
-	
-	const auto grid2 = registry.create();
-	registry.emplace<Components::Coordinate>(grid2, glm::uvec2(0, 1));
-	registry.emplace<Components::Cell>(grid2, playArea);
-	registry.emplace<Components::Tag>(grid2, "Grid2");
-	registry.emplace<Components::Scale>(grid2, container2.GetCellDimensions3());
-	registry.emplace<Components::Position>(grid2, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(0, 1))); // Parent Position abruptly corrupt?
-	registry.emplace<Components::Renderable>(grid2, Model("./data/block/grey.obj"));
-
-	const auto grid3 = registry.create();
-	registry.emplace<Components::Coordinate>(grid3, glm::uvec2(1, 0));
-	registry.emplace<Components::Cell>(grid3, playArea);
-	registry.emplace<Components::Tag>(grid3, "Grid3");
-	registry.emplace<Components::Scale>(grid3, container2.GetCellDimensions3());
-	registry.emplace<Components::Position>(grid3, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 0)));
-	registry.emplace<Components::Renderable>(grid3, Model("./data/block/grey.obj"));
-	
-	const auto grid4 = registry.create();
-	registry.emplace<Components::Coordinate>(grid4, glm::uvec2(1, 1));
-	registry.emplace<Components::Cell>(grid4, playArea);
-	registry.emplace<Components::Tag>(grid4, "Grid4");
-	registry.emplace<Components::Scale>(grid4, container2.GetCellDimensions3());
-	registry.emplace<Components::Position>(grid4, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 1)));
-	registry.emplace<Components::Renderable>(grid4, Model("./data/block/grey.obj"));
-	*/
-
-	// G1 G2
-	// G3 G4
-	/*
-	auto& grid1cell = registry.get<Components::Cell>(grid1);
-	
-	grid1cell.SetSouth(grid3);
-	grid1cell.SetEast(grid2);
-
-	auto& grid2cell = registry.get<Components::Cell>(grid2);
-	grid2cell.SetWest(grid1);
-	grid2cell.SetSouth(grid4);
-
-	auto& grid3cell = registry.get<Components::Cell>(grid3);
-	grid3cell.SetNorth(grid1);
-	grid3cell.SetEast(grid4);
-
-	auto& grid4cell = registry.get<Components::Cell>(grid4);
-	grid4cell.SetNorth(grid2);
-	grid4cell.SetWest(grid3);
-	*/
-
 	// Testing
 
 	auto gridCellView = registry.view<Components::Cell, Components::Coordinate, Components::Tag, Components::Scale, Components::Position>();
@@ -394,27 +334,6 @@ int main()
 			}
 		}
 	}
-
-	/*registry.emplace<Components::Container>(playArea, glm::vec2(0.4, 0.8), glm::uvec2(10, 20), glm::uvec2(25, 25));
-	auto temp = registry.get<Components::Container>(playArea);
-	for (int i = 0; i < temp.GetGridDimensions().x; i++)
-	{
-		for (int j = 0; j < temp.GetGridDimensions().y; j++)
-		{
-			const auto gridCoordinate = registry.create();
-			glm::vec2 pos = temp.GetGridSquareCoordinates(glm::uvec2(i, j));
-			//if (i % 2)
-				//pos.y =- 20;
-			//registry.emplace<Components::Renderable>(gridCoordinate, Model("./data/block/block.obj"));
-			glm::vec3 pos2 = glm::vec3(displayData.x / 2 + pos.x, displayData.y / 2 + pos.y, 0.0f);
-			registry.emplace<Components::Position>(gridCoordinate, pos2);
-			registry.emplace<Components::Scale>(gridCoordinate, glm::vec3(25.0f, 25.0f, 1.0f));
-
-			temp.m_grid.push_back(gridCoordinate);
-		}
-	}
-
-	glm::uvec2 dim = temp.GetGridSquareDimensions(registry, playArea);*/
 	
 	// End ECS
 
