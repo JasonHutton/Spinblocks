@@ -190,6 +190,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\GridCell.h" />
     <ClInclude Include="include\Components\Includes.h" />
     <ClInclude Include="include\Components\Position.h" />
+    <ClInclude Include="include\Components\ReferenceEntity.h" />
     <ClInclude Include="include\Components\Renderable.h" />
     <ClInclude Include="include\Components\Scale.h" />
     <ClInclude Include="include\Components\ScaleToCellDimensions.h" />

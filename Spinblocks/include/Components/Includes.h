@@ -14,4 +14,5 @@
 #include "Components/Container2.h"
 #include "Components/Cell.h"
 #include "Components/Tag.h"
+#include "Components/ReferenceEntity.h"
 #include "Components/ScaleToCellDimensions.h"

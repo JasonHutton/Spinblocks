@@ -4,7 +4,7 @@
 
 namespace Components
 {
-	class Tag
+	class Tag : public Component
 	{
 	protected:
 		std::string m_tag;

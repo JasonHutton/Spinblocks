@@ -1,28 +1,16 @@
 #pragma once
 
 #include "Component.h"
+#include "Components/ReferenceEntity.h"
 #include <entt/entity/registry.hpp>
 
 namespace Components
 {
-	class ScaleToCellDimensions : public Component
+	class ScaleToCellDimensions : public ReferenceEntity
 	{
-	protected:
-		entt::entity m_parent{ entt::null };
-
 	public:
-		ScaleToCellDimensions(entt::entity parent) : m_parent(parent)
+		ScaleToCellDimensions(entt::entity entity) : ReferenceEntity(entity)
 		{
-		}
-
-		const entt::entity& Get() const
-		{
-			return m_parent;
-		}
-
-		void Set(const entt::entity parent)
-		{
-			m_parent = parent;
 		}
 	};
 }
