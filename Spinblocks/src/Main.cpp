@@ -102,7 +102,19 @@ void postupdate(entt::registry& registry)
 
 void prerender(entt::registry& registry, double normalizedTime)
 {
-
+	auto scaleView = registry.view<Components::ScaleToCellDimensions, Components::Scale, Components::Cell>();
+	for (auto entity : scaleView)
+	{
+		auto& scaleToCellDimensions = scaleView.get<Components::ScaleToCellDimensions>(entity);
+		auto& scale = scaleView.get<Components::Scale>(entity);
+		auto& cell = scaleView.get<Components::Cell>(entity);
+		
+		if (scaleToCellDimensions.IsEnabled() && scale.IsEnabled() && cell.IsEnabled())
+		{
+			Components::Container2 container2 = registry.get<Components::Container2>(cell.GetParent());
+			scale.Set(container2.GetCellDimensions3());
+		}
+	}
 }
 void render(entt::registry& registry, double normalizedTime)
 {
@@ -188,9 +200,10 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Coordinate>(cell, glm::uvec2(i, k));
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
-			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
+			registry.emplace<Components::Scale>(cell);
 			registry.emplace<Components::Position>(cell, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(i, k)));
 			registry.emplace<Components::Renderable>(cell, Model("./data/block/grey.obj"));
+			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 		}
 	}
 

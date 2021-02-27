@@ -103,5 +103,8 @@
     <ClInclude Include="include\Components\Tag.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\ScaleToCellDimensions.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
