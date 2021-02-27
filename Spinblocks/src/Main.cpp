@@ -58,7 +58,12 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-void update(entt::registry& registry) {
+void preupdate(entt::registry& registry)
+{
+
+}
+void update(entt::registry& registry)
+{
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
@@ -89,7 +94,16 @@ void update(entt::registry& registry) {
 		}
 	}*/
 }
+void postupdate(entt::registry& registry)
+{
 
+}
+
+
+void prerender(entt::registry& registry, double normalizedTime)
+{
+
+}
 void render(entt::registry& registry, double normalizedTime)
 {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
@@ -148,6 +162,10 @@ void render(entt::registry& registry, double normalizedTime)
 			render.Draw(*shader);
 		}
 	}
+}
+void postrender(entt::registry& registry, double normalizedTime)
+{
+
 }
 
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
@@ -359,11 +377,16 @@ int main()
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{
 			// Update game logic for ECS
+			preupdate(registry);
 			update(registry);
+			postupdate(registry);
+
 			GameTime::accumulator -= GameTime::fixedDeltaTime;
 		}
 		// Update render objects.
+		prerender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 		render(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
+		postrender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!
