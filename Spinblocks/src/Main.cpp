@@ -115,6 +115,37 @@ void prerender(entt::registry& registry, double normalizedTime)
 			scale.Set(container2.GetCellDimensions3());
 		}
 	}
+
+	auto positionFromParentView = registry.view<Components::DerivePositionFromParent, Components::Position>();
+	for (auto entity : positionFromParentView)
+	{
+		auto& derivePositionFromParent = positionFromParentView.get<Components::DerivePositionFromParent>(entity);
+		auto& position = positionFromParentView.get<Components::Position>(entity);
+
+		if (derivePositionFromParent.IsEnabled() && position.IsEnabled())
+		{
+			Components::Position parentPosition = registry.get<Components::Position>(derivePositionFromParent.Get());
+
+			position.Set(parentPosition.Get());
+		}
+	}
+
+	// We're getting a position based upon the coordinates here, relative to the parent entity's position, as coordinates have no meaning without that parent container.
+	auto derivedPositionView = registry.view<Components::DerivePositionFromCoordinates, Components::Position, Components::Coordinate>();
+	for (auto entity : derivedPositionView)
+	{
+		auto& derivePositionFromCoordinates = derivedPositionView.get<Components::DerivePositionFromCoordinates>(entity);
+		auto& position = derivedPositionView.get<Components::Position>(entity);
+		auto& coordinates = derivedPositionView.get<Components::Coordinate>(entity);
+
+		if (derivePositionFromCoordinates.IsEnabled() && position.IsEnabled() && coordinates.IsEnabled())
+		{
+			Components::Position parentPosition = registry.get<Components::Position>(derivePositionFromCoordinates.Get());
+			Components::Container2 container2 = registry.get<Components::Container2>(derivePositionFromCoordinates.Get());
+
+			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()));
+		}
+	}
 }
 void render(entt::registry& registry, double normalizedTime)
 {
@@ -201,7 +232,8 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
 			registry.emplace<Components::Scale>(cell);
-			registry.emplace<Components::Position>(cell, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(i, k)));
+			registry.emplace<Components::Position>(cell);
+			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
 			registry.emplace<Components::Renderable>(cell, Model("./data/block/grey.obj"));
 			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 		}
@@ -325,43 +357,51 @@ int main()
 
 	const auto piece1 = registry.create();
 	registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
-	registry.emplace<Components::Position>(piece1, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(0, 0)));
+	registry.emplace<Components::Position>(piece1);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece1, playArea);
 	registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
 
+	
 	const auto piece2 = registry.create();
 	registry.emplace<Components::Coordinate>(piece2, glm::uvec2(1, 0));
-	registry.emplace<Components::Position>(piece2, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(1, 0)));
+	registry.emplace<Components::Position>(piece2);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece2, playArea);
 	registry.emplace<Components::Scale>(piece2, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece2, Model("./data/block/lightblue.obj"));
-
+	
 	const auto piece3 = registry.create();
 	registry.emplace<Components::Coordinate>(piece3, glm::uvec2(2, 0));
-	registry.emplace<Components::Position>(piece3, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(2, 0)));
+	registry.emplace<Components::Position>(piece3);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece3, playArea);
 	registry.emplace<Components::Scale>(piece3, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece3, Model("./data/block/purple.obj"));
 
 	const auto piece4 = registry.create();
 	registry.emplace<Components::Coordinate>(piece4, glm::uvec2(3, 0));
-	registry.emplace<Components::Position>(piece4, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(3, 0)));
+	registry.emplace<Components::Position>(piece4);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece4, playArea);
 	registry.emplace<Components::Scale>(piece4, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece4, Model("./data/block/orange.obj"));
 
 	const auto piece5 = registry.create();
 	registry.emplace<Components::Coordinate>(piece5, glm::uvec2(4, 0));
-	registry.emplace<Components::Position>(piece5, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(4, 0)));
+	registry.emplace<Components::Position>(piece5);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece5, playArea);
 	registry.emplace<Components::Scale>(piece5, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece5, Model("./data/block/darkblue.obj"));
 
 	const auto piece6 = registry.create();
 	registry.emplace<Components::Coordinate>(piece6, glm::uvec2(5, 0));
-	registry.emplace<Components::Position>(piece6, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(5, 0)));
+	registry.emplace<Components::Position>(piece6);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece6, playArea);
 	registry.emplace<Components::Scale>(piece6, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece6, Model("./data/block/green.obj"));
 
 	const auto piece7 = registry.create();
 	registry.emplace<Components::Coordinate>(piece7, glm::uvec2(6, 0));
-	registry.emplace<Components::Position>(piece7, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(6, 0)));
+	registry.emplace<Components::Position>(piece7);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece7, playArea);
 	registry.emplace<Components::Scale>(piece7, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece7, Model("./data/block/red.obj"));
 
