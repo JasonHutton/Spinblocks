@@ -5,10 +5,9 @@
 
 InputHandler::InputHandler()
 {
-
-	for (std::map<int, keyState>::iterator it = keys.begin(); it != keys.end(); it++)
+	for(auto& key : keys)
 	{
-		UnBind(it->second);
+		UnBind(key.second);
 	}
 
 	// Setup the default controls.
@@ -49,18 +48,18 @@ void InputHandler::ResetBinding(const int& key)
 	{
 		std::vector<std::string> contexts;
 		control.GetContexts(contexts);
-		for (std::vector<std::string>::const_iterator it = contexts.begin(); it != contexts.end(); it++)
+		for(auto& context : contexts)
 		{
-			Bind(key, control.GetControl(*it), *it);
+			Bind(key, control.GetControl(context), context);
 		}
 	}
 }
 
 void InputHandler::ResetBindings()
 {
-	for (std::map<int, keyState>::iterator it = keys.begin(); it != keys.end(); it++)
+	for(auto& key : keys)
 	{
-		ResetBinding(it->first);
+		ResetBinding(key.first);
 	}
 }
 
@@ -89,9 +88,9 @@ void InputHandler::UnBind(keyState& key, const std::string& context)
 
 void InputHandler::UnBindAll()
 {
-	for (std::map<int, keyState>::iterator it = keys.begin(); it != keys.end(); it++)
+	for(auto& key : keys)
 	{
-		UnBind(it->second);
+		UnBind(key.second);
 	}
 }
 

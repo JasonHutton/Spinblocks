@@ -69,13 +69,13 @@ void processinput(GLFWwindow* window)
 	GameInput::clearState();
 
 	// Check all bound controls
-	for (std::map<int, keyState>::iterator it = input.GetAllKeyStates().begin(); it != input.GetAllKeyStates().end(); it++)
+	for(auto& keyState : input.GetAllKeyStates())
 	{
 		// If the bound control is being pressed....
-		if (glfwGetKey(window, it->first) == GLFW_PRESS)
+		if (glfwGetKey(window, keyState.first) == GLFW_PRESS)
 		{
 			// See if a bound control has a User Button associated with it.
-			ContextControl cc = input.GetControl(it->first);
+			ContextControl cc = input.GetControl(keyState.first);
 			// Do what the context control->User Button says to do.
 			switch (cc.GetControl("")) // Default context.
 			{
