@@ -16,3 +16,5 @@
 #include "Components/Tag.h"
 #include "Components/ReferenceEntity.h"
 #include "Components/ScaleToCellDimensions.h"
+#include "Components/DerivePositionFromCoordinates.h"
+#include "Components/DerivePositionFromParent.h"
