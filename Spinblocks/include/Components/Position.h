@@ -11,9 +11,8 @@ namespace Components
 		glm::vec3 m_position;
 
 	public:
-		Position(const glm::vec3& position)
+		Position(const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f)) : m_position(position)
 		{
-			m_position = position;
 		}
 
 		const glm::vec3& Get() const
