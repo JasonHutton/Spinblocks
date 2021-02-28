@@ -173,6 +173,10 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
   <ItemGroup>
     <ClCompile Include="src\Components\Coordinate.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\Input\ContextControl.cpp" />
+    <ClCompile Include="src\Input\GameInput.cpp" />
+    <ClCompile Include="src\Input\InputHandler.cpp" />
+    <ClCompile Include="src\Input\KeyInput.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +203,10 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Tag.h" />
     <ClInclude Include="include\GameTime.h" />
     <ClInclude Include="include\Globals.h" />
+    <ClInclude Include="include\Input\ContextControl.h" />
+    <ClInclude Include="include\Input\GameInput.h" />
+    <ClInclude Include="include\Input\InputHandler.h" />
+    <ClInclude Include="include\Input\KeyInput.h" />
     <ClInclude Include="include\learnopengl\camera.h" />
     <ClInclude Include="include\learnopengl\mesh.h" />
     <ClInclude Include="include\learnopengl\model.h" />

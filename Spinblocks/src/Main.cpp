@@ -29,6 +29,9 @@
 #include "GameTime.h"
 #include "Globals.h"
 
+#include "Input/InputHandler.h"
+#include "Input/GameInput.h"
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -57,6 +60,41 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 }
 
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+InputHandler input;
+
+void processinput(GLFWwindow* window)
+{
+	// clear last gameinput state
+	GameInput::clearState();
+
+	// Check all bound controls
+	for (std::map<int, keyState>::iterator it = input.GetAllKeyStates().begin(); it != input.GetAllKeyStates().end(); it++)
+	{
+		// If the bound control is being pressed....
+		if (glfwGetKey(window, it->first) == GLFW_PRESS)
+		{
+			// See if a bound control has a User Button associated with it.
+			ContextControl cc = input.GetControl(it->first);
+			// Do what the context control->User Button says to do.
+			switch (cc.GetControl("")) // Default context.
+			{
+			case KeyInput::usercmdButton_t::UB_FORCE_QUIT:
+				glfwSetWindowShouldClose(window, true);
+				break;
+			case KeyInput::usercmdButton_t::UB_NONE:
+			default:
+				break;
+			}
+
+			/*switch (cc.GetControl("Menu")) // Some other context.
+			{
+
+			}*/
+		}
+	}
+}
+
 
 void preupdate(entt::registry& registry)
 {
@@ -321,6 +359,9 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	//stbi_set_flip_vertically_on_load(true);
 
+	GameInput::setVerticalAxis(0);
+	GameInput::setHorizontalAxis(0);
+
 	// Begin ECS
 	entt::registry registry;
 
@@ -426,6 +467,8 @@ int main()
 		GameTime::accumulator += deltaTime;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		processinput(window);
 		
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{
