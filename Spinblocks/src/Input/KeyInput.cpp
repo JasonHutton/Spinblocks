@@ -8,6 +8,8 @@ namespace KeyInput
 	KeyInput::userCmdString_t	userCmdStrings[] = {
 		{ "_force_quit", usercmdButton_t::UB_FORCE_QUIT },
 
+		{ "_debug_spawn_1", usercmdButton_t::UB_DEBUG_SPAWN_1 },
+
 		{ NULL, usercmdButton_t::UB_MAX_BUTTONS },
 
 		{ NULL,	usercmdButton_t::UB_NONE } // Must be last.

@@ -11,7 +11,7 @@ namespace KeyInput
 		UB_NONE,
 
 		UB_FORCE_QUIT,
-
+		UB_DEBUG_SPAWN_1,
 		UB_MAX_BUTTONS
 	};
 

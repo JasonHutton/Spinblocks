@@ -12,6 +12,7 @@ InputHandler::InputHandler()
 
 	// Setup the default controls.
 	BindDefault(GLFW_KEY_ESCAPE, KeyInput::usercmdButton_t::UB_FORCE_QUIT);
+	BindDefault(GLFW_KEY_1, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1);
 
 	ResetBindings(); // Set the default controls.
 

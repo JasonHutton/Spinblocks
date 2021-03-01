@@ -82,6 +82,11 @@ void processinput(GLFWwindow* window)
 			case KeyInput::usercmdButton_t::UB_FORCE_QUIT:
 				glfwSetWindowShouldClose(window, true);
 				break;
+			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
+				// Spawn a block in column 1
+				cout << "Key 1 is being triggered." << endl; // Need to have this only trigger once, or on a slow repeat.
+
+				break;
 			case KeyInput::usercmdButton_t::UB_NONE:
 			default:
 				break;
