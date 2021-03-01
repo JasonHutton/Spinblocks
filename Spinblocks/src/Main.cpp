@@ -68,11 +68,26 @@ void processinput(GLFWwindow* window)
 	// clear last gameinput state
 	GameInput::clearState();
 
-	// Check all bound controls
-	for(auto& keyState : input.GetAllKeyStates())
+	// Check all potentially-pressed keys
+	for (auto& keyState : input.GetAllKeyStates())
 	{
-		// If the bound control is being pressed....
+		keyState.second.prevKeyDown = keyState.second.keyDown;
 		if (glfwGetKey(window, keyState.first) == GLFW_PRESS)
+		{
+			keyState.second.keyDown = true;
+		}
+		else
+		{
+			keyState.second.keyDown = false;
+		}
+	}
+
+	// Check all bound controls, as single buttons
+	for (auto& keyState : input.GetAllKeyStates())
+	{
+		
+		// If the bound control is being pressed....
+		if (keyState.second.keyDown == true)
 		{
 			// See if a bound control has a User Button associated with it.
 			ContextControl cc = input.GetControl(keyState.first);
@@ -83,8 +98,11 @@ void processinput(GLFWwindow* window)
 				glfwSetWindowShouldClose(window, true);
 				break;
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
+				if (keyState.second.prevKeyDown == true)
+					break;
+
 				// Spawn a block in column 1
-				cout << "Key 1 is being triggered." << endl; // Need to have this only trigger once, or on a slow repeat.
+				cout << "Key 1 is being triggered." << endl;
 
 				break;
 			case KeyInput::usercmdButton_t::UB_NONE:
