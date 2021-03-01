@@ -63,7 +63,7 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 
 InputHandler input;
 
-void processinput(GLFWwindow* window)
+void processinput(GLFWwindow* window, entt::registry& registry)
 {
 	// clear last gameinput state
 	GameInput::clearState();
@@ -98,13 +98,34 @@ void processinput(GLFWwindow* window)
 				glfwSetWindowShouldClose(window, true);
 				break;
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
+			{
 				if (keyState.second.prevKeyDown == true)
 					break;
 
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
+				auto containerView = registry.view<Components::Container2, Components::Tag>();
+				for (auto entity : containerView)
+				{
+					auto& container2 = containerView.get<Components::Container2>(entity);
+					auto& tag = containerView.get<Components::Tag>(entity);
+					if (container2.IsEnabled() && tag.IsEnabled())
+					{
+						Components::Container2 container2 = registry.get<Components::Container2>(entity);
+						Components::Position parentPosition = registry.get<Components::Position>(entity);
+
+						const auto piece1 = registry.create();
+						registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
+						registry.emplace<Components::Position>(piece1);
+						registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
+						registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+						registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
+					}
+				}
+
 				break;
+			}
 			case KeyInput::usercmdButton_t::UB_NONE:
 			default:
 				break;
@@ -415,7 +436,7 @@ int main()
 	registry.emplace<Components::Tag>(playArea, "Play Area");
 
 	BuildGrid(registry, playArea);
-
+	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);
 
@@ -468,7 +489,7 @@ int main()
 	registry.emplace<Components::DerivePositionFromCoordinates>(piece7, playArea);
 	registry.emplace<Components::Scale>(piece7, container2.GetCellDimensions3());
 	registry.emplace<Components::Renderable>(piece7, Model("./data/block/red.obj"));
-
+	*/
 	// End ECS
 
 	glfwSwapInterval(1);
@@ -491,7 +512,7 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		processinput(window);
+		processinput(window, registry);
 		
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{
