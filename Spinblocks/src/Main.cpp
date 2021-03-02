@@ -63,6 +63,14 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 
 InputHandler input;
 
+const Components::Coordinate& GetCoordinateFromEntity(entt::registry& registry, const entt::entity& entity)
+{
+	if (!registry.has<Components::Coordinate>(entity))
+		throw std::runtime_error("Entity does not have component!");
+
+	return registry.get<Components::Coordinate>(entity);
+}
+
 void processinput(GLFWwindow* window, entt::registry& registry)
 {
 	// clear last gameinput state
@@ -123,9 +131,72 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 						registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
 						registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
 						//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+						registry.emplace<Components::Controllable>(piece1, entity);
 					}
 				}
 
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
+			{
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+				for (auto entity1 : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity1);
+					auto& moveable = controllableView.get<Components::Moveable>(entity1);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						for (auto entity2 : cellView)
+						{
+							auto& cell = cellView.get<Components::Cell>(entity2);
+							auto& coordinate = cellView.get<Components::Coordinate>(entity2);
+
+							if (cell.IsEnabled() && coordinate.IsEnabled())
+							{
+								if (controllable.Get() == cell.GetParent())
+								{
+									if (moveable.GetCurrentCoordinate() == coordinate)
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateFromEntity(registry, cell.GetWest()));
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
+			{
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+				for (auto entity1 : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity1);
+					auto& moveable = controllableView.get<Components::Moveable>(entity1);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						for (auto entity2 : cellView)
+						{
+							auto& cell = cellView.get<Components::Cell>(entity2);
+							auto& coordinate = cellView.get<Components::Coordinate>(entity2);
+
+							if (cell.IsEnabled() && coordinate.IsEnabled())
+							{
+								if (controllable.Get() == cell.GetParent())
+								{
+									if (moveable.GetCurrentCoordinate() == coordinate)
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateFromEntity(registry, cell.GetEast()));
+									}
+								}
+							}
+						}
+					}
+				}
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
