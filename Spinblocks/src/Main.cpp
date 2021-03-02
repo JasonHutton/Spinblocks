@@ -121,6 +121,8 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 						registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
 						registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
 						registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
+						registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+						//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
 					}
 				}
 
@@ -160,6 +162,22 @@ void update(entt::registry& registry)
 			glm::vec3 pos = position.Get();
 			glm::vec3 posAdj = glm::vec3(0.0, 0.01, 0.0);
 			position.Set(pos + posAdj);
+		}
+	}
+
+	auto moveableView = registry.view<Components::Moveable, Components::Coordinate>();
+	for (auto entity : moveableView)
+	{
+		auto& moveable = moveableView.get<Components::Moveable>(entity);
+		auto& coordinate = moveableView.get<Components::Coordinate>(entity);
+		if (moveable.IsEnabled() && coordinate.IsEnabled())
+		{
+			if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+			{
+				// Need to detect if a move is allowed before permitting it.
+				coordinate = moveable.GetDesiredCoordinate();
+				moveable.SetCurrentCoordinate(coordinate);
+			}
 		}
 	}
 

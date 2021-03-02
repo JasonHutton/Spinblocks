@@ -145,5 +145,11 @@
     <ClInclude Include="include\Input\KeyInput.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Controllable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Moveable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

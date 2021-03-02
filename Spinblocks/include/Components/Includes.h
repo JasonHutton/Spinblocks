@@ -18,3 +18,5 @@
 #include "Components/ScaleToCellDimensions.h"
 #include "Components/DerivePositionFromCoordinates.h"
 #include "Components/DerivePositionFromParent.h"
+#include "Components/Moveable.h"
+#include "Components/Controllable.h"
