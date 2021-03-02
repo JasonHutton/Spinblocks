@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include <glm/glm.hpp>
 #include "glm/vec2.hpp"
 #include <sstream>
 
@@ -31,6 +32,16 @@ namespace Components
 		{
 			out << coord.m_coordinate.x << "," << coord.m_coordinate.y;
 			return out;
+		}
+
+	public:
+		friend bool operator==(const Coordinate& lhs, const Coordinate& rhs)
+		{
+			return glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
+		}
+		friend bool operator!=(const Coordinate& lhs, const Coordinate& rhs)
+		{
+			return !glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
 		}
 	};
 }
