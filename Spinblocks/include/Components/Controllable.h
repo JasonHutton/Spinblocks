@@ -1,16 +1,17 @@
 #pragma once
 
 #include "Component.h"
+#include "Components/ReferenceEntity.h"
+#include <entt/entity/registry.hpp>
 
 namespace Components
 {
-	class Controllable : public Component
+	class Controllable : public ReferenceEntity
 	{
 	protected:
-		glm::uvec2 m_coordinate;
 
 	public:
-		Controllable()
+		Controllable(entt::entity entity) : ReferenceEntity(entity)
 		{
 		}
 	};
