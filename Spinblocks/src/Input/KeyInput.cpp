@@ -10,6 +10,9 @@ namespace KeyInput
 
 		{ "_debug_spawn_1", usercmdButton_t::UB_DEBUG_SPAWN_1 },
 
+		{ "_move_left", usercmdButton_t::UB_MOVE_LEFT },
+		{ "_move_right", usercmdButton_t::UB_MOVE_RIGHT },
+
 		{ NULL, usercmdButton_t::UB_MAX_BUTTONS },
 
 		{ NULL,	usercmdButton_t::UB_NONE } // Must be last.
