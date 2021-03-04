@@ -20,3 +20,4 @@
 #include "Components/DerivePositionFromParent.h"
 #include "Components/Moveable.h"
 #include "Components/Controllable.h"
+#include "Components/Block.h"
