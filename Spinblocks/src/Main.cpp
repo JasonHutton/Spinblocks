@@ -63,13 +63,71 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 
 InputHandler input;
 
-const Components::Coordinate& GetCoordinateFromEntity(entt::registry& registry, const entt::entity& entity)
+const Components::Coordinate& GetCoordinateOfEntity(entt::registry& registry, const entt::entity& entity)
 {
+	if(entity == entt::null)
+		throw std::runtime_error("Entity is NULL!");
+
 	if (!registry.has<Components::Coordinate>(entity))
 		throw std::runtime_error("Entity does not have component!");
 
 	return registry.get<Components::Coordinate>(entity);
 }
+
+const Components::Cell& GetCellOfEntity(entt::registry& registry, const entt::entity& entity)
+{
+	if (entity == entt::null)
+		throw std::runtime_error("Entity is NULL!");
+
+	if (!registry.has<Components::Cell>(entity))
+		throw std::runtime_error("Entity does not have component!");
+
+	return registry.get<Components::Cell>(entity);
+}
+
+const Components::Cell& GetCellAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
+{
+	auto cellView = registry.view<Components::Cell>();
+	for (auto entity : cellView)
+	{
+		auto& cell = cellView.get<Components::Cell>(entity);
+
+		if (cell.IsEnabled())
+		{
+			auto& cellCoordinate = registry.get<Components::Coordinate>(cell.GetParent());
+			if (cellCoordinate == coordinate)
+			{
+				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
+				return cell;
+			}
+		}
+	}
+
+	throw std::runtime_error("Unable to find Cell at coordinates!");
+}
+
+const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
+{
+	auto blockView = registry.view<Components::Block>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+
+		if (block.IsEnabled())
+		{
+			auto& blockCoordinate = registry.get<Components::Coordinate>(block.Get());
+			if (blockCoordinate == coordinate)
+			{
+				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
+				return block;
+			}
+		}
+	}
+
+	throw std::runtime_error("Unable to find Block at coordinates!");
+}
+
+//CanOccupyCell(entt::registry& registry, )
 
 void processinput(GLFWwindow* window, entt::registry& registry)
 {
@@ -132,6 +190,7 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 						registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
 						//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
 						registry.emplace<Components::Controllable>(piece1, entity);
+						registry.emplace<Components::Block>(piece1, entity);
 					}
 				}
 
@@ -159,7 +218,15 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 								{
 									if (moveable.GetCurrentCoordinate() == coordinate)
 									{
-										moveable.SetDesiredCoordinate(GetCoordinateFromEntity(registry, cell.GetWest()));
+										try
+										{
+											GetCoordinateOfEntity(registry, cell.GetWest());
+											moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
+										}
+										catch (std::runtime_error ex)
+										{
+											cerr << ex.what() << endl;
+										}
 									}
 								}
 							}
@@ -190,7 +257,15 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 								{
 									if (moveable.GetCurrentCoordinate() == coordinate)
 									{
-										moveable.SetDesiredCoordinate(GetCoordinateFromEntity(registry, cell.GetEast()));
+										try
+										{
+											GetCoordinateOfEntity(registry, cell.GetEast());
+											moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
+										}
+										catch (std::runtime_error ex)
+										{
+											cerr << ex.what() << endl;
+										}
 									}
 								}
 							}
