@@ -26,6 +26,8 @@ void InputHandler::Bind(const int& key, const KeyInput::usercmdButton_t& button,
 	keys[key].prevKeyDown = false;
 	keys[key].currentKeyDownBeginTime = 0.0;
 	keys[key].currentKeyUpBeginTime = 0.0;
+	keys[key].lastKeyDownRepeatTime = 0.0;
+	keys[key].lastKeyUpRepeatTime = 0.0;
 	keys[key].controls.SetControl(button, context);
 }
 
@@ -88,6 +90,8 @@ void InputHandler::UnBind(keyState& key, const std::string& context)
 	key.prevKeyDown = false;
 	key.currentKeyDownBeginTime = 0.0;
 	key.currentKeyUpBeginTime = 0.0;
+	key.lastKeyDownRepeatTime = 0.0;
+	key.lastKeyUpRepeatTime = 0.0;
 	key.controls.UnSetAllControls();
 }
 

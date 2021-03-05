@@ -197,6 +197,10 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
 	return true;
 }
 
+const int PlayAreaWidth = 10;
+const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
+const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
+
 void processinput(GLFWwindow* window, entt::registry& registry, double currentFrameTime)
 {
 	// clear last gameinput state
@@ -261,8 +265,15 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
-				if (keyState.second.prevKeyDown == true && keyState.second.currentKeyDownBeginTime + 0.3 >= currentFrameTime)
-					break;
+				if (keyState.second.prevKeyDown == true)
+				{
+					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
+						break;
+
+					if (keyState.second.lastKeyDownRepeatTime + KeyRepeatRate >= currentFrameTime)
+						break;
+				}
+				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
 				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
@@ -305,8 +316,15 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
 			{
-				if (keyState.second.prevKeyDown == true && keyState.second.currentKeyDownBeginTime + 0.3 >= currentFrameTime)
-					break;
+				if (keyState.second.prevKeyDown == true)
+				{
+					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
+						break;
+
+					if (keyState.second.lastKeyDownRepeatTime + KeyRepeatRate >= currentFrameTime)
+						break;
+				}
+				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
 				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
