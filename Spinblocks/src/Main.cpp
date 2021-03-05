@@ -161,8 +161,41 @@ void SpawnBlock(entt::registry& registry, const Components::Coordinate& spawnCoo
 	}
 }
 
-//CanOccupyCell(entt::registry& registry, )
-// TODO: Implement this without exceptions, just check for issues. before they come up.
+bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
+{
+	if (cellEntity == entt::null)
+		return false;
+
+	if (!registry.has<Components::Cell>(cellEntity))
+		return false;
+
+	if (!registry.has<Components::Coordinate>(cellEntity))
+		return false;
+
+	auto& cell = registry.get<Components::Cell>(cellEntity);
+	auto& cellCoordinate = registry.get<Components::Coordinate>(cellEntity);
+
+	if (!cell.IsEnabled() || !cellCoordinate.IsEnabled())
+		return false;
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto blockEntity : blockView)
+	{
+		auto& block = registry.get<Components::Block>(blockEntity);
+		auto& blockCoordinate = registry.get<Components::Coordinate>(blockEntity);
+
+		if (block.IsEnabled() && blockCoordinate.IsEnabled())
+		{
+			if (blockCoordinate == cellCoordinate)
+			{
+				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
 
 void processinput(GLFWwindow* window, entt::registry& registry)
 {
@@ -234,8 +267,10 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 									{
 										try
 										{
-											GetCoordinateOfEntity(registry, cell.GetWest());
-											moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
+											if (CanOccupyCell(registry, cell.GetWest()))
+											{
+												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
+											}
 										}
 										catch (std::runtime_error ex)
 										{
@@ -273,8 +308,10 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 									{
 										try
 										{
-											GetCoordinateOfEntity(registry, cell.GetEast());
-											moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
+											if (CanOccupyCell(registry, cell.GetEast()))
+											{
+												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
+											}
 										}
 										catch (std::runtime_error ex)
 										{
