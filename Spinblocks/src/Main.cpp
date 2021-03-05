@@ -127,7 +127,42 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const C
 	throw std::runtime_error("Unable to find Block at coordinates!");
 }
 
+// We'll want to spawn whole tetrominoes later, not just blocks.
+void SpawnBlock(entt::registry& registry, const Components::Coordinate& spawnCoordinate)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+		if (container2.IsEnabled() && tag.IsEnabled())
+		{
+			// Remove all existing controllable blocks.
+			// We probably want this more where one locks down, not here, but for now this is fine.
+			auto blockView = registry.view<Components::Block, Components::Controllable>();
+			for (auto block : blockView)
+			{
+				registry.remove_if_exists<Components::Controllable>(block);
+			}
+			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Position parentPosition = registry.get<Components::Position>(entity);
+
+			const auto piece1 = registry.create();
+			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate);
+			registry.emplace<Components::Position>(piece1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
+			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
+			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+			registry.emplace<Components::Controllable>(piece1, entity);
+			registry.emplace<Components::Block>(piece1, entity);
+		}
+	}
+}
+
 //CanOccupyCell(entt::registry& registry, )
+// TODO: Implement this without exceptions, just check for issues. before they come up.
 
 void processinput(GLFWwindow* window, entt::registry& registry)
 {
@@ -171,28 +206,7 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				auto containerView = registry.view<Components::Container2, Components::Tag>();
-				for (auto entity : containerView)
-				{
-					auto& container2 = containerView.get<Components::Container2>(entity);
-					auto& tag = containerView.get<Components::Tag>(entity);
-					if (container2.IsEnabled() && tag.IsEnabled())
-					{
-						Components::Container2 container2 = registry.get<Components::Container2>(entity);
-						Components::Position parentPosition = registry.get<Components::Position>(entity);
-
-						const auto piece1 = registry.create();
-						registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
-						registry.emplace<Components::Position>(piece1);
-						registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
-						registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-						registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
-						registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
-						//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
-						registry.emplace<Components::Controllable>(piece1, entity);
-						registry.emplace<Components::Block>(piece1, entity);
-					}
-				}
+				SpawnBlock(registry, glm::uvec2(0, 19));
 
 				break;
 			}
