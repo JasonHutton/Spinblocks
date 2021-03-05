@@ -197,7 +197,7 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
 	return true;
 }
 
-void processinput(GLFWwindow* window, entt::registry& registry)
+void processinput(GLFWwindow* window, entt::registry& registry, double currentFrameTime)
 {
 	// clear last gameinput state
 	GameInput::clearState();
@@ -219,7 +219,23 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 	// Check all bound controls, as single buttons
 	for (auto& keyState : input.GetAllKeyStates())
 	{
-		
+		// Manage keydown/keyup begin times
+		if (keyState.second.keyDown == true)
+		{
+			keyState.second.currentKeyUpBeginTime = 0.0;
+
+			if (keyState.second.prevKeyDown == false)
+				keyState.second.currentKeyDownBeginTime = currentFrameTime;
+		}
+		else // keyDown == false
+		{
+			keyState.second.currentKeyDownBeginTime = 0.0;
+
+			if (keyState.second.prevKeyDown == true)
+				keyState.second.currentKeyUpBeginTime = currentFrameTime;
+		}
+
+
 		// If the bound control is being pressed....
 		if (keyState.second.keyDown == true)
 		{
@@ -245,6 +261,9 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
+				if (keyState.second.prevKeyDown == true && keyState.second.currentKeyDownBeginTime + 0.3 >= currentFrameTime)
+					break;
+
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
 				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 				for (auto entity1 : controllableView)
@@ -286,6 +305,9 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
 			{
+				if (keyState.second.prevKeyDown == true && keyState.second.currentKeyDownBeginTime + 0.3 >= currentFrameTime)
+					break;
+
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
 				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 				for (auto entity1 : controllableView)
@@ -339,11 +361,11 @@ void processinput(GLFWwindow* window, entt::registry& registry)
 }
 
 
-void preupdate(entt::registry& registry)
+void preupdate(entt::registry& registry, double currentFrameTime)
 {
 
 }
-void update(entt::registry& registry)
+void update(entt::registry& registry, double currentFrameTime)
 {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
 	// Views are cheap to make/destroy.
@@ -391,7 +413,7 @@ void update(entt::registry& registry)
 		}
 	}*/
 }
-void postupdate(entt::registry& registry)
+void postupdate(entt::registry& registry, double currentFrameTime)
 {
 
 }
@@ -727,14 +749,14 @@ int main()
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		processinput(window, registry);
+		processinput(window, registry, currentFrameTime);
 		
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{
 			// Update game logic for ECS
-			preupdate(registry);
-			update(registry);
-			postupdate(registry);
+			preupdate(registry, currentFrameTime);
+			update(registry, currentFrameTime);
+			postupdate(registry, currentFrameTime);
 
 			GameTime::accumulator -= GameTime::fixedDeltaTime;
 		}

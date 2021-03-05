@@ -7,7 +7,8 @@ struct keyState
 {
 	bool	keyDown;
 	bool	prevKeyDown;
-	int		repeats;
+	double	currentKeyDownBeginTime; // When did we start sending keyDowns, since the last keyUp?
+	double	currentKeyUpBeginTime; // When did we start sending keyUps, since the last keyDown?
 	ContextControl controls;
 	ContextControl defaultControls;
 };
