@@ -43,6 +43,9 @@ namespace Components
 		{
 			return !glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
 		}
+	public:
+		operator glm::uvec2() const { return Get(); }
+
 	};
 }
 
