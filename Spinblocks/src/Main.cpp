@@ -85,16 +85,16 @@ const Components::Cell& GetCellOfEntity(entt::registry& registry, const entt::en
 	return registry.get<Components::Cell>(entity);
 }
 
-const Components::Cell& GetCellAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
+Components::Cell& GetCellAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
 {
-	auto cellView = registry.view<Components::Cell>();
+	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 	for (auto entity : cellView)
 	{
 		auto& cell = cellView.get<Components::Cell>(entity);
+		auto& cellCoordinate = registry.get<Components::Coordinate>(entity);
 
-		if (cell.IsEnabled())
+		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
 		{
-			auto& cellCoordinate = registry.get<Components::Coordinate>(cell.GetParent());
 			if (cellCoordinate == coordinate)
 			{
 				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
@@ -383,6 +383,10 @@ void preupdate(entt::registry& registry, double currentFrameTime)
 {
 
 }
+
+const double FallSpeed = 1.0;
+double lastFallUpdate = 0.0;
+
 void update(entt::registry& registry, double currentFrameTime)
 {
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
@@ -399,6 +403,29 @@ void update(entt::registry& registry, double currentFrameTime)
 			glm::vec3 pos = position.Get();
 			glm::vec3 posAdj = glm::vec3(0.0, 0.01, 0.0);
 			position.Set(pos + posAdj);
+		}
+	}
+
+	if (currentFrameTime >= lastFallUpdate + FallSpeed)
+	{
+		lastFallUpdate = currentFrameTime;
+
+		auto moveableViewx = registry.view<Components::Moveable, Components::Coordinate>();
+		for (auto entity : moveableViewx)
+		{
+			auto& moveable = moveableViewx.get<Components::Moveable>(entity);
+			auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
+			if (moveable.IsEnabled() && coordinate.IsEnabled())
+			{
+				auto& cell = GetCellAtCoordinates(registry, moveable.GetCurrentCoordinate());
+				if (cell.IsEnabled())
+				{
+					if (CanOccupyCell(registry, cell.GetNorth()))
+					{
+						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetNorth()));
+					}
+				}
+			}
 		}
 	}
 
