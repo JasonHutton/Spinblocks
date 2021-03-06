@@ -709,11 +709,11 @@ int main()
 	registry.emplace<Components::GameObject>(model2);*/
 
 	const auto playArea = registry.create();
-	//registry.emplace<Components::Renderable>(playArea, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Renderable>(playArea, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
 	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
-	//registry.emplace<Components::Scale>(playArea, glm::vec3(1.0f, 1.0f, 1.0f));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(25*10, 25*20)); // celldimensions * gridwidth or height
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x/2, displayData.y/2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(playArea, "Play Area");
 
