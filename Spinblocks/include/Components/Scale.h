@@ -16,6 +16,11 @@ namespace Components
 		{
 			m_scale = scale;
 		}
+		
+		Scale(const glm::vec2& scale)
+		{
+			Set(scale);
+		}
 
 		const glm::vec3& Get() const
 		{
