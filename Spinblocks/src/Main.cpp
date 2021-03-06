@@ -420,9 +420,9 @@ void update(entt::registry& registry, double currentFrameTime)
 				auto& cell = GetCellAtCoordinates(registry, moveable.GetCurrentCoordinate());
 				if (cell.IsEnabled())
 				{
-					if (CanOccupyCell(registry, cell.GetNorth()))
+					if (CanOccupyCell(registry, cell.GetSouth()))
 					{
-						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetNorth()));
+						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
 					}
 				}
 			}
@@ -632,12 +632,12 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			{
 				if (coordinate1.Get().y + 1 == coordinate2.Get().y)
 				{
-					cell1.SetSouth(entity2);
+					cell1.SetNorth(entity2);
 				}
 
 				if (coordinate1.Get().y - 1 == coordinate2.Get().y)
 				{
-					cell1.SetNorth(entity2);
+					cell1.SetSouth(entity2);
 				}
 			}
 		}
