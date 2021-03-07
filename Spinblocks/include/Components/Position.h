@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
 namespace Components
@@ -15,6 +16,11 @@ namespace Components
 		{
 		}
 
+		Position(const glm::vec2& position)
+		{
+			Set(position);
+		}
+
 		const glm::vec3& Get() const
 		{
 			return m_position;
@@ -23,6 +29,11 @@ namespace Components
 		void Set(const glm::vec3& position)
 		{
 			m_position = position;
+		}
+
+		void Set(const glm::vec2& position)
+		{
+			m_position = glm::vec3(position.x, position.y, 0.0f);
 		}
 	};
 }
