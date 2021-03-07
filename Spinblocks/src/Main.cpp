@@ -535,6 +535,7 @@ void render(entt::registry& registry, double normalizedTime)
 			shader->setMat4("view", camera.GetViewMatrix());
 		}
 	}
+
 	auto perspectiveCameraView = registry.view<Components::PerspectiveCamera>();
 	for (auto entity : perspectiveCameraView)
 	{
@@ -549,18 +550,25 @@ void render(entt::registry& registry, double normalizedTime)
 		}
 	}
 
-
-
 	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Scale>();
 	for (auto entity : renderView)
 	{
 		auto& render = renderView.get<Components::Renderable>(entity);
 		auto& position = renderView.get<Components::Position>(entity);
 		auto& scale = renderView.get<Components::Scale>(entity);
-			
+
+		if (registry.has<Components::Tag>(entity))
+		{
+			auto& tag = registry.get<Components::Tag>(entity);
+			if (tag.Get() != "Play Area")
+			{
+				continue;
+			}
+		}
+
 		if (render.IsEnabled() && position.IsEnabled())
 		{
-			
+
 			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
 			modelMatrix = glm::translate(modelMatrix, position.Get());
 			modelMatrix = glm::scale(modelMatrix, scale.Get());
@@ -569,6 +577,64 @@ void render(entt::registry& registry, double normalizedTime)
 			render.Draw(*shader);
 		}
 	}
+
+	auto renderView2 = registry.view<Components::Renderable, Components::Position, Components::Scale>();
+	for (auto entity : renderView2)
+	{
+		auto& render = renderView2.get<Components::Renderable>(entity);
+		auto& position = renderView2.get<Components::Position>(entity);
+		auto& scale = renderView2.get<Components::Scale>(entity);
+		if (registry.has<Components::Tag>(entity))
+		{
+			auto& tag = registry.get<Components::Tag>(entity);
+			if (tag.Get() == "Play Area")
+			{
+				continue;
+			}
+		}
+		if (registry.has<Components::Block>(entity))
+			continue;
+			
+		if (render.IsEnabled() && position.IsEnabled())
+		{
+			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+			modelMatrix = glm::translate(modelMatrix, position.Get());
+			modelMatrix = glm::scale(modelMatrix, scale.Get());
+
+			shader->setMat4("model", modelMatrix);
+			render.Draw(*shader);
+		}
+	}
+
+	auto renderView3 = registry.view<Components::Renderable, Components::Position, Components::Scale>();
+	for (auto entity : renderView3)
+	{
+		auto& render = renderView3.get<Components::Renderable>(entity);
+		auto& position = renderView3.get<Components::Position>(entity);
+		auto& scale = renderView3.get<Components::Scale>(entity);
+		if (registry.has<Components::Tag>(entity))
+		{
+			auto& tag = registry.get<Components::Tag>(entity);
+			if (tag.Get() == "Play Area")
+			{
+				continue;
+			}
+		}
+		if (!registry.has<Components::Block>(entity))
+			continue;
+
+		if (render.IsEnabled() && position.IsEnabled())
+		{
+			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+			modelMatrix = glm::translate(modelMatrix, position.Get());
+			modelMatrix = glm::scale(modelMatrix, scale.Get());
+
+			shader->setMat4("model", modelMatrix);
+			render.Draw(*shader);
+		}
+	}
+
+
 }
 void postrender(entt::registry& registry, double normalizedTime)
 {
@@ -775,7 +841,7 @@ int main()
 	// End ECS
 
 	glfwSwapInterval(1);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
@@ -792,7 +858,8 @@ int main()
 		GameTime::lastFrameTime = currentFrameTime;
 		GameTime::accumulator += deltaTime;
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		processinput(window, registry, currentFrameTime);
 		
