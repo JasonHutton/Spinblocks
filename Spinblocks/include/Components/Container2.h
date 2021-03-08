@@ -39,9 +39,13 @@ namespace Components
 
 			x = -(m_gridDimensions.x / 2 * m_cellDimensions.x);
 			x += coordinates.x * m_cellDimensions.x;
+			if (m_gridDimensions.x % 2 == 0)
+				x += m_cellDimensions.x / 2;
 
 			y = -(m_gridDimensions.y / 2 * m_cellDimensions.y);
 			y += coordinates.y * m_cellDimensions.y;
+			if (m_gridDimensions.y % 2 == 0)
+				y += m_cellDimensions.y / 2;
 
 			return glm::vec2(parentPosition.x + x, parentPosition.y + y);
 		}
