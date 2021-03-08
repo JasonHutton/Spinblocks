@@ -152,7 +152,7 @@ void SpawnBlock(entt::registry& registry, const Components::Coordinate& spawnCoo
 			registry.emplace<Components::Position>(piece1);
 			registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
 			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
+			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
 			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
 			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
 			registry.emplace<Components::Controllable>(piece1, entity);
@@ -551,90 +551,29 @@ void render(entt::registry& registry, double normalizedTime)
 	}
 
 	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Scale>();
-	for (auto entity : renderView)
+	for (int i = Components::renderLayer_t::RL_MIN+1; i < Components::renderLayer_t::RL_MAX; i++)
 	{
-		auto& render = renderView.get<Components::Renderable>(entity);
-		auto& position = renderView.get<Components::Position>(entity);
-		auto& scale = renderView.get<Components::Scale>(entity);
-
-		if (registry.has<Components::Tag>(entity))
+		for (auto entity : renderView)
 		{
-			auto& tag = registry.get<Components::Tag>(entity);
-			if (tag.Get() != "Play Area")
-			{
+			auto& render = renderView.get<Components::Renderable>(entity);
+			if (render.GetLayer() != i)
 				continue;
+
+			auto& position = renderView.get<Components::Position>(entity);
+			auto& scale = renderView.get<Components::Scale>(entity);
+
+			if (render.IsEnabled() && position.IsEnabled())
+			{
+
+				glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+				modelMatrix = glm::translate(modelMatrix, position.Get());
+				modelMatrix = glm::scale(modelMatrix, scale.Get());
+
+				shader->setMat4("model", modelMatrix);
+				render.Draw(*shader);
 			}
 		}
-
-		if (render.IsEnabled() && position.IsEnabled())
-		{
-
-			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-			modelMatrix = glm::translate(modelMatrix, position.Get());
-			modelMatrix = glm::scale(modelMatrix, scale.Get());
-
-			shader->setMat4("model", modelMatrix);
-			render.Draw(*shader);
-		}
 	}
-
-	auto renderView2 = registry.view<Components::Renderable, Components::Position, Components::Scale>();
-	for (auto entity : renderView2)
-	{
-		auto& render = renderView2.get<Components::Renderable>(entity);
-		auto& position = renderView2.get<Components::Position>(entity);
-		auto& scale = renderView2.get<Components::Scale>(entity);
-		if (registry.has<Components::Tag>(entity))
-		{
-			auto& tag = registry.get<Components::Tag>(entity);
-			if (tag.Get() == "Play Area")
-			{
-				continue;
-			}
-		}
-		if (registry.has<Components::Block>(entity))
-			continue;
-			
-		if (render.IsEnabled() && position.IsEnabled())
-		{
-			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-			modelMatrix = glm::translate(modelMatrix, position.Get());
-			modelMatrix = glm::scale(modelMatrix, scale.Get());
-
-			shader->setMat4("model", modelMatrix);
-			render.Draw(*shader);
-		}
-	}
-
-	auto renderView3 = registry.view<Components::Renderable, Components::Position, Components::Scale>();
-	for (auto entity : renderView3)
-	{
-		auto& render = renderView3.get<Components::Renderable>(entity);
-		auto& position = renderView3.get<Components::Position>(entity);
-		auto& scale = renderView3.get<Components::Scale>(entity);
-		if (registry.has<Components::Tag>(entity))
-		{
-			auto& tag = registry.get<Components::Tag>(entity);
-			if (tag.Get() == "Play Area")
-			{
-				continue;
-			}
-		}
-		if (!registry.has<Components::Block>(entity))
-			continue;
-
-		if (render.IsEnabled() && position.IsEnabled())
-		{
-			glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-			modelMatrix = glm::translate(modelMatrix, position.Get());
-			modelMatrix = glm::scale(modelMatrix, scale.Get());
-
-			shader->setMat4("model", modelMatrix);
-			render.Draw(*shader);
-		}
-	}
-
-
 }
 void postrender(entt::registry& registry, double normalizedTime)
 {
@@ -664,7 +603,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Scale>(cell);
 			registry.emplace<Components::Position>(cell);
 			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
-			registry.emplace<Components::Renderable>(cell, Model("./data/block/grey.obj"));
+			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
 			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 		}
 	}
@@ -775,7 +714,7 @@ int main()
 	registry.emplace<Components::GameObject>(model2);*/
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Renderable>(playArea, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
 	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
 	registry.emplace<Components::Scale>(playArea, glm::vec2(25*10, 25*20)); // celldimensions * gridwidth or height
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x/2, displayData.y/2));
