@@ -128,13 +128,16 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const C
 }
 
 // We'll want to spawn whole tetrominoes later, not just blocks.
-void SpawnBlock(entt::registry& registry, const Components::Coordinate& spawnCoordinate)
+void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
 	{
 		auto& container2 = containerView.get<Components::Container2>(entity);
 		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+		if (!tag.IsEnabled() || containerTag != tag.Get())
+			continue;
+
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
 			// Remove all existing controllable blocks.
@@ -259,7 +262,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				SpawnBlock(registry, glm::uvec2(0, 19));
+				SpawnBlock(registry, "Play Area", glm::uvec2(0, 19));
 
 				break;
 			}
@@ -722,7 +725,15 @@ int main()
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(playArea, "Play Area");
 
+	const auto bagArea = registry.create();
+	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
+	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
+	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(bagArea, "Bag Area");
+
 	BuildGrid(registry, playArea);
+	BuildGrid(registry, bagArea);
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);
