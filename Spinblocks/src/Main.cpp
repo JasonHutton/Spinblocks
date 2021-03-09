@@ -256,7 +256,9 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 enum class movePiece_t
 {
 	MOVE_LEFT,
-	MOVE_RIGHT
+	MOVE_RIGHT,
+	MOVE_UP,
+	MOVE_DOWN
 };
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
@@ -298,6 +300,20 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 									{
 										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
 									}
+									break;
+								case movePiece_t::MOVE_UP:
+									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetNorth()))
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetNorth()));
+									}
+									break;
+								case movePiece_t::MOVE_DOWN:
+									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+									}
+									break;
+								default:
 									break;
 								}
 							}
@@ -391,6 +407,22 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 				break;
 			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP:
+			{
+				if (keyState.second.prevKeyDown == true)
+				{
+					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
+						break;
+
+					if (keyState.second.lastKeyDownRepeatTime + KeyRepeatRate >= currentFrameTime)
+						break;
+				}
+				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
+
+				MovePiece(registry, "Play Area", movePiece_t::MOVE_UP);
+
+				break;
+			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
 				if (keyState.second.prevKeyDown == true)
@@ -420,6 +452,21 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
 				MovePiece(registry, "Play Area", movePiece_t::MOVE_RIGHT);
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_SOFT_DROP:
+			{
+				if (keyState.second.prevKeyDown == true)
+				{
+					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
+						break;
+
+					if (keyState.second.lastKeyDownRepeatTime + KeyRepeatRate >= currentFrameTime)
+						break;
+				}
+				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
+
+				MovePiece(registry, "Play Area", movePiece_t::MOVE_DOWN);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
