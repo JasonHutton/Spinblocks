@@ -200,6 +200,24 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
 	return true;
 }
 
+entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName)
+{
+	entt::entity foundEntity = entt::null;
+
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity);
+		if (container2.IsEnabled() && tag.IsEnabled() && tag.Get() == tagName)
+		{
+			foundEntity = entity;
+		}
+	}
+
+	return foundEntity;
+}
+
 const int PlayAreaWidth = 10;
 const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
 const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
@@ -262,7 +280,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				SpawnBlock(registry, "Play Area", glm::uvec2(0, 19));
+				SpawnBlock(registry, Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
 
 				break;
 			}
@@ -600,7 +618,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			tagName += std::to_string(k);
 
 			const auto cell = registry.create();
-			registry.emplace<Components::Coordinate>(cell, glm::uvec2(i, k));
+			registry.emplace<Components::Coordinate>(cell, parentEntity, glm::uvec2(i, k));
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
 			registry.emplace<Components::Scale>(cell);
@@ -624,6 +642,9 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			auto& cell2 = cellView.get<Components::Cell>(entity2);
 			auto& coordinate2 = cellView.get<Components::Coordinate>(entity2);
 
+			if (coordinate1.GetParent() != coordinate2.GetParent())
+				continue;
+			
 			if (coordinate1.Get().y == coordinate2.Get().y)
 			{
 				if (coordinate1.Get().x + 1 == coordinate2.Get().x)
