@@ -280,7 +280,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				SpawnBlock(registry, Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
+				SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
 
 				break;
 			}
