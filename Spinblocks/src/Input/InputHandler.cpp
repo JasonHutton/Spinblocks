@@ -14,8 +14,15 @@ InputHandler::InputHandler()
 	BindDefault(GLFW_KEY_ESCAPE, KeyInput::usercmdButton_t::UB_FORCE_QUIT);
 	BindDefault(GLFW_KEY_1, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1);
 	BindDefault(GLFW_KEY_2, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_2);
+	BindDefault(GLFW_KEY_HOME, KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP);
 	BindDefault(GLFW_KEY_LEFT, KeyInput::usercmdButton_t::UB_MOVE_LEFT);
 	BindDefault(GLFW_KEY_RIGHT, KeyInput::usercmdButton_t::UB_MOVE_RIGHT);
+	BindDefault(GLFW_KEY_DOWN, KeyInput::usercmdButton_t::UB_SOFT_DROP);
+	BindDefault(GLFW_KEY_UP, KeyInput::usercmdButton_t::UB_HARD_DROP);
+	BindDefault(GLFW_KEY_Z, KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE);
+	BindDefault(GLFW_KEY_X, KeyInput::usercmdButton_t::UB_ROTATE_CLOCKWISE);
+	BindDefault(GLFW_KEY_SPACE, KeyInput::usercmdButton_t::UB_HOLD);
+	BindDefault(GLFW_KEY_PAUSE, KeyInput::usercmdButton_t::UB_PAUSE);
 
 	ResetBindings(); // Set the default controls.
 
