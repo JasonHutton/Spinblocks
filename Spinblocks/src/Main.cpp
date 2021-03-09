@@ -799,9 +799,9 @@ int main()
 
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
-	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*2, 25*2));
+	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
-	registry.emplace<Components::Container2>(bagArea, glm::uvec2(2, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(bagArea, "Bag Area");
 
 	BuildGrid(registry, playArea);
