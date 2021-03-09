@@ -365,7 +365,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 									{
 										try
 										{
-											if (CanOccupyCell(registry, "Play Area", cell.GetWest()))
+											if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetWest()))
 											{
 												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
 											}
@@ -416,7 +416,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 									{
 										try
 										{
-											if (CanOccupyCell(registry, "Play Area", cell.GetEast()))
+											if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetEast()))
 											{
 												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
 											}
