@@ -162,7 +162,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			Components::Position parentPosition = registry.get<Components::Position>(entity);
 
 			const auto piece1 = registry.create();
-			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate);
+			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 			registry.emplace<Components::Position>(piece1);
 			registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
 			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
@@ -234,6 +234,25 @@ entt::entity FindContainerEntityByTag(entt::registry& registry, const std::strin
 	return foundEntity;
 }
 
+const std::string FindTagOfContainerEntity(entt::registry& registry, const entt::entity& containerEntity)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		if (containerEntity != entity)
+			continue;
+
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity);
+		if (container2.IsEnabled() && tag.IsEnabled())
+		{
+			return tag.Get();
+		}
+	}
+
+	throw std::runtime_error("Unable to find tag of container entity!");
+}
+
 const int PlayAreaWidth = 10;
 const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
 const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
@@ -296,9 +315,18 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				//SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
-				//SpawnBlock(registry, "Play Area", glm::uvec2(0, 19));
-				//SpawnBlock(registry, "Bag Area", glm::uvec2(0, 5));
+				SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
+
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_2:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				// Spawn a block in column 1
+				cout << "Key 2 is being triggered." << endl;
+
 				SpawnBlock(registry, "Bag Area", Components::Coordinate(FindContainerEntityByTag(registry, "Bag Area"), glm::uvec2(0, 1)));
 
 				break;
@@ -457,10 +485,14 @@ void update(entt::registry& registry, double currentFrameTime)
 			auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
 			if (moveable.IsEnabled() && coordinate.IsEnabled())
 			{
-				auto& cell = GetCellAtCoordinates(registry, "Bag Area"/*"Play Area"*/, moveable.GetCurrentCoordinate());
+				Components::Coordinate movableCoord = moveable.GetCurrentCoordinate();
+				entt::entity moveableParentEntity = movableCoord.GetParent();
+				std::string tagOfContainerEntity = FindTagOfContainerEntity(registry, moveableParentEntity);
+
+				auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
 				if (cell.IsEnabled())
 				{
-					if (CanOccupyCell(registry, "Bag Area"/*"Play Area"*/, cell.GetSouth()))
+					if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
 					{
 						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
 					}
