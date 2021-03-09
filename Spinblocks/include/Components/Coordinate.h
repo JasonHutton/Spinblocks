@@ -50,8 +50,8 @@ namespace Components
 		{
 			return (lhs.GetParent() != rhs.GetParent()) || !glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
 		}
-	public:
-		operator glm::uvec2() const { return Get(); }
+	//public:
+		//operator glm::uvec2() const { return Get(); }
 
 	};
 }
