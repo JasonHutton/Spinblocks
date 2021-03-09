@@ -253,6 +253,66 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 	throw std::runtime_error("Unable to find tag of container entity!");
 }
 
+enum class movePiece_t
+{
+	MOVE_LEFT,
+	MOVE_RIGHT
+};
+
+// Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
+// As we'll only really have one piece moving at a time, probably fine. Change later if not.
+void MovePiece(entt::registry& registry, const std::string& containerTag, const movePiece_t& movePiece)
+{
+	auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto entity1 : controllableView)
+	{
+		auto& controllable = controllableView.get<Components::Controllable>(entity1);
+		auto& moveable = controllableView.get<Components::Moveable>(entity1);
+
+		if (controllable.IsEnabled() && moveable.IsEnabled())
+		{
+			for (auto entity2 : cellView)
+			{
+				auto& cell = cellView.get<Components::Cell>(entity2);
+				auto& coordinate = cellView.get<Components::Coordinate>(entity2);
+
+				if (cell.IsEnabled() && coordinate.IsEnabled())
+				{
+					if (controllable.Get() == cell.GetParent())
+					{
+						if (moveable.GetCurrentCoordinate() == coordinate)
+						{
+							try
+							{
+								switch (movePiece)
+								{
+								case movePiece_t::MOVE_LEFT:
+									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetWest()))
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
+									}
+									break;
+								case movePiece_t::MOVE_RIGHT:
+									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetEast()))
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
+									}
+									break;
+								}
+							}
+							catch (std::runtime_error ex)
+							{
+								cerr << ex.what() << endl;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 const int PlayAreaWidth = 10;
 const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
 const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
@@ -343,43 +403,8 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
-				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
-				for (auto entity1 : controllableView)
-				{
-					auto& controllable = controllableView.get<Components::Controllable>(entity1);
-					auto& moveable = controllableView.get<Components::Moveable>(entity1);
+				MovePiece(registry, "Play Area", movePiece_t::MOVE_LEFT);
 
-					if (controllable.IsEnabled() && moveable.IsEnabled())
-					{
-						for (auto entity2 : cellView)
-						{
-							auto& cell = cellView.get<Components::Cell>(entity2);
-							auto& coordinate = cellView.get<Components::Coordinate>(entity2);
-
-							if (cell.IsEnabled() && coordinate.IsEnabled())
-							{
-								if (controllable.Get() == cell.GetParent())
-								{
-									if (moveable.GetCurrentCoordinate() == coordinate)
-									{
-										try
-										{
-											if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetWest()))
-											{
-												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
-											}
-										}
-										catch (std::runtime_error ex)
-										{
-											cerr << ex.what() << endl;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
@@ -394,43 +419,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
-				auto cellView = registry.view<Components::Cell, Components::Coordinate>();
-				for (auto entity1 : controllableView)
-				{
-					auto& controllable = controllableView.get<Components::Controllable>(entity1);
-					auto& moveable = controllableView.get<Components::Moveable>(entity1);
-
-					if (controllable.IsEnabled() && moveable.IsEnabled())
-					{
-						for (auto entity2 : cellView)
-						{
-							auto& cell = cellView.get<Components::Cell>(entity2);
-							auto& coordinate = cellView.get<Components::Coordinate>(entity2);
-
-							if (cell.IsEnabled() && coordinate.IsEnabled())
-							{
-								if (controllable.Get() == cell.GetParent())
-								{
-									if (moveable.GetCurrentCoordinate() == coordinate)
-									{
-										try
-										{
-											if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetEast()))
-											{
-												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
-											}
-										}
-										catch (std::runtime_error ex)
-										{
-											cerr << ex.what() << endl;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				MovePiece(registry, "Play Area", movePiece_t::MOVE_RIGHT);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
