@@ -332,6 +332,8 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 const int PlayAreaWidth = 10;
 const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
 const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
+const double FallSpeed = 1.0; // Base fall speed, time it takes to move 1 line.
+double lastFallUpdate = 0.0;
 
 void processinput(GLFWwindow* window, entt::registry& registry, double currentFrameTime)
 {
@@ -487,9 +489,6 @@ void preupdate(entt::registry& registry, double currentFrameTime)
 {
 
 }
-
-const double FallSpeed = 1.0;
-double lastFallUpdate = 0.0;
 
 void update(entt::registry& registry, double currentFrameTime)
 {
