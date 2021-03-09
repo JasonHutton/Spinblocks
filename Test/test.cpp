@@ -51,9 +51,11 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Coordinate>(cell, glm::uvec2(i, k));
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
-			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
-			registry.emplace<Components::Position>(cell, container2.GetCellPosition3(parentPosition.Get(), glm::uvec2(i, k)));
-			//registry.emplace<Components::Renderable>(cell, Model("./data/block/grey.obj"));
+			registry.emplace<Components::Scale>(cell);
+			registry.emplace<Components::Position>(cell);
+			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
+			//registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
+			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 		}
 	}
 
@@ -86,12 +88,12 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			{
 				if (coordinate1.Get().y + 1 == coordinate2.Get().y)
 				{
-					cell1.SetSouth(entity2);
+					cell1.SetNorth(entity2);
 				}
 
 				if (coordinate1.Get().y - 1 == coordinate2.Get().y)
 				{
-					cell1.SetNorth(entity2);
+					cell1.SetSouth(entity2);
 				}
 			}
 		}
@@ -186,16 +188,16 @@ TEST(GridTest, Grid1x2) {
 
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 1)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 	}
@@ -221,30 +223,30 @@ TEST(GridTest, Grid2x2) {
 
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 1)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 1 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 		if (coordinate.Get().x == 1 && coordinate.Get().y == 1)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 	}
@@ -312,9 +314,9 @@ TEST(GridTest, Grid1x3) {
 
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 1)
@@ -326,9 +328,9 @@ TEST(GridTest, Grid1x3) {
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 2)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 	}
@@ -354,23 +356,23 @@ TEST(GridTest, Grid3x3) {
 
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 1 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 		if (coordinate.Get().x == 2 && coordinate.Get().y == 0)
 		{
-			EXPECT_TRUE(cell.GetNorth() == entt::null);
+			EXPECT_TRUE(cell.GetNorth() != entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() != entt::null);
+			EXPECT_TRUE(cell.GetSouth() == entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 1)
@@ -396,23 +398,23 @@ TEST(GridTest, Grid3x3) {
 		}
 		if (coordinate.Get().x == 0 && coordinate.Get().y == 2)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() == entt::null);
 		}
 		if (coordinate.Get().x == 1 && coordinate.Get().y == 2)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() != entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 		if (coordinate.Get().x == 2 && coordinate.Get().y == 2)
 		{
-			EXPECT_TRUE(cell.GetNorth() != entt::null);
+			EXPECT_TRUE(cell.GetNorth() == entt::null);
 			EXPECT_TRUE(cell.GetEast() == entt::null);
-			EXPECT_TRUE(cell.GetSouth() == entt::null);
+			EXPECT_TRUE(cell.GetSouth() != entt::null);
 			EXPECT_TRUE(cell.GetWest() != entt::null);
 		}
 	}
