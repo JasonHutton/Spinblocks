@@ -296,10 +296,10 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
+				//SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
 				//SpawnBlock(registry, "Play Area", glm::uvec2(0, 19));
 				//SpawnBlock(registry, "Bag Area", glm::uvec2(0, 5));
-				//SpawnBlock(registry, "Bag Area", glm::uvec2(0, 1));
+				SpawnBlock(registry, "Bag Area", Components::Coordinate(FindContainerEntityByTag(registry, "Bag Area"), glm::uvec2(0, 1)));
 
 				break;
 			}
@@ -457,10 +457,10 @@ void update(entt::registry& registry, double currentFrameTime)
 			auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
 			if (moveable.IsEnabled() && coordinate.IsEnabled())
 			{
-				auto& cell = GetCellAtCoordinates(registry, "Play Area", moveable.GetCurrentCoordinate());
+				auto& cell = GetCellAtCoordinates(registry, "Bag Area"/*"Play Area"*/, moveable.GetCurrentCoordinate());
 				if (cell.IsEnabled())
 				{
-					if (CanOccupyCell(registry, "Play Area", cell.GetSouth()))
+					if (CanOccupyCell(registry, "Bag Area"/*"Play Area"*/, cell.GetSouth()))
 					{
 						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
 					}
