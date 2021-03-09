@@ -85,16 +85,22 @@ const Components::Cell& GetCellOfEntity(entt::registry& registry, const entt::en
 	return registry.get<Components::Cell>(entity);
 }
 
-Components::Cell& GetCellAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
+Components::Cell& GetCellAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
 {
 	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 	for (auto entity : cellView)
 	{
 		auto& cell = cellView.get<Components::Cell>(entity);
+		
 		auto& cellCoordinate = registry.get<Components::Coordinate>(entity);
 
 		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
 		{
+			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
+			auto& tag = registry.get<Components::Tag>(cell.GetParent()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+			if (!tag.IsEnabled() || containerTag != tag.Get())
+				continue;
+
 			if (cellCoordinate == coordinate)
 			{
 				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
@@ -106,7 +112,7 @@ Components::Cell& GetCellAtCoordinates(entt::registry& registry, const Component
 	throw std::runtime_error("Unable to find Cell at coordinates!");
 }
 
-const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate)
+const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
 {
 	auto blockView = registry.view<Components::Block>();
 	for (auto entity : blockView)
@@ -115,6 +121,11 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const C
 
 		if (block.IsEnabled())
 		{
+			auto& container2 = registry.get<Components::Container2>(block.Get());
+			auto& tag = registry.get<Components::Tag>(block.Get()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+			if (!tag.IsEnabled() || containerTag != tag.Get())
+				continue;
+
 			auto& blockCoordinate = registry.get<Components::Coordinate>(block.Get());
 			if (blockCoordinate == coordinate)
 			{
@@ -164,7 +175,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
-bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
+bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, const entt::entity& cellEntity)
 {
 	if (cellEntity == entt::null)
 		return false;
@@ -189,6 +200,11 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity)
 
 		if (block.IsEnabled() && blockCoordinate.IsEnabled())
 		{
+			auto& container2 = registry.get<Components::Container2>(block.Get());
+			auto& tag = registry.get<Components::Tag>(block.Get()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+			if (!tag.IsEnabled() || containerTag != tag.Get())
+				continue;
+
 			if (blockCoordinate == cellCoordinate)
 			{
 				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
@@ -281,6 +297,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				cout << "Key 1 is being triggered." << endl;
 
 				SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
+				//SpawnBlock(registry, "Play Area", glm::uvec2(0, 19));
+				//SpawnBlock(registry, "Bag Area", glm::uvec2(0, 5));
+				//SpawnBlock(registry, "Bag Area", glm::uvec2(0, 1));
 
 				break;
 			}
@@ -318,7 +337,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 									{
 										try
 										{
-											if (CanOccupyCell(registry, cell.GetWest()))
+											if (CanOccupyCell(registry, "Play Area", cell.GetWest()))
 											{
 												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
 											}
@@ -369,7 +388,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 									{
 										try
 										{
-											if (CanOccupyCell(registry, cell.GetEast()))
+											if (CanOccupyCell(registry, "Play Area", cell.GetEast()))
 											{
 												moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
 											}
@@ -438,10 +457,10 @@ void update(entt::registry& registry, double currentFrameTime)
 			auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
 			if (moveable.IsEnabled() && coordinate.IsEnabled())
 			{
-				auto& cell = GetCellAtCoordinates(registry, moveable.GetCurrentCoordinate());
+				auto& cell = GetCellAtCoordinates(registry, "Play Area", moveable.GetCurrentCoordinate());
 				if (cell.IsEnabled())
 				{
-					if (CanOccupyCell(registry, cell.GetSouth()))
+					if (CanOccupyCell(registry, "Play Area", cell.GetSouth()))
 					{
 						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
 					}
@@ -748,9 +767,9 @@ int main()
 
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
-	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
+	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*2, 25*2));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
-	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
+	registry.emplace<Components::Container2>(bagArea, glm::uvec2(2, 2), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(bagArea, "Bag Area");
 
 	BuildGrid(registry, playArea);
