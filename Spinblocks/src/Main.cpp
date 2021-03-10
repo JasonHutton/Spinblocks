@@ -421,6 +421,18 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			}
 			case KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP:
 			{
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				for (auto entity : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity);
+					auto& moveable = controllableView.get<Components::Moveable>(entity);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
+					}
+				}
+
 				if (keyState.second.prevKeyDown == true)
 				{
 					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
@@ -468,6 +480,18 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			}
 			case KeyInput::usercmdButton_t::UB_SOFT_DROP:
 			{
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				for (auto entity : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity);
+					auto& moveable = controllableView.get<Components::Moveable>(entity);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						moveable.SetMovementState(Components::movementStates_t::FALL);
+					}
+				}
+
 				if (keyState.second.prevKeyDown == true)
 				{
 					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
@@ -565,23 +589,32 @@ void update(entt::registry& registry, double currentFrameTime)
 
 		if (moveable.IsEnabled() && coordinate.IsEnabled())
 		{
-
 			if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
 			{
 				// Need to detect if a move is allowed before permitting it.
 				coordinate = moveable.GetDesiredCoordinate();
 				moveable.SetCurrentCoordinate(coordinate);
-
-				switch (moveable.GetMovementState())
-				{
-				case Components::movementStates_t::UNMOVING:
-					moveable.SetMovementState(Components::movementStates_t::FALL);
-					break;
-				default:
-					break;
-				}
 			}
+		}
+	}
 
+	auto moveableView2 = registry.view<Components::Moveable, Components::Coordinate>();
+	for (auto entity : moveableView2)
+	{
+		auto& moveable = moveableView2.get<Components::Moveable>(entity);
+
+		if (moveable.IsEnabled())
+		{
+			switch (moveable.GetMovementState())
+			{
+			case Components::movementStates_t::DEBUG_MOVE_UP:
+			case Components::movementStates_t::SOFT_DROP:
+				lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
+				moveable.SetMovementState(Components::movementStates_t::FALL);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
