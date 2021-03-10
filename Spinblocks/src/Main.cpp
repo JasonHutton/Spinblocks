@@ -171,6 +171,14 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
 			registry.emplace<Components::Controllable>(piece1, entity);
 			registry.emplace<Components::Block>(piece1, entity);
+
+			// Temporary for testing. Switch directly to the falling state.
+			if (registry.has<Components::Moveable>(piece1))
+			{
+				auto& moveable = registry.get<Components::Moveable>(piece1);
+				moveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+
 		}
 	}
 }
@@ -305,12 +313,14 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetNorth()))
 									{
 										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetNorth()));
+										moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
 									}
 									break;
 								case movePiece_t::MOVE_DOWN:
 									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
 									{
 										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+										moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
 									}
 									break;
 								default:
@@ -518,20 +528,31 @@ void update(entt::registry& registry, double currentFrameTime)
 		{
 			auto& moveable = moveableViewx.get<Components::Moveable>(entity);
 			auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
+				
 			if (moveable.IsEnabled() && coordinate.IsEnabled())
 			{
-				Components::Coordinate movableCoord = moveable.GetCurrentCoordinate();
-				entt::entity moveableParentEntity = movableCoord.GetParent();
-				std::string tagOfContainerEntity = FindTagOfContainerEntity(registry, moveableParentEntity);
-
-				auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
-				if (cell.IsEnabled())
+				switch (moveable.GetMovementState())
 				{
-					if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
+				case Components::movementStates_t::FALL:
+				{
+					Components::Coordinate movableCoord = moveable.GetCurrentCoordinate();
+					entt::entity moveableParentEntity = movableCoord.GetParent();
+					std::string tagOfContainerEntity = FindTagOfContainerEntity(registry, moveableParentEntity);
+
+					auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
+					if (cell.IsEnabled())
 					{
-						moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+						if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
+						{
+							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+						}
 					}
+					break;
 				}
+				default:
+					break;
+				}
+				
 			}
 		}
 	}
@@ -541,14 +562,26 @@ void update(entt::registry& registry, double currentFrameTime)
 	{
 		auto& moveable = moveableView.get<Components::Moveable>(entity);
 		auto& coordinate = moveableView.get<Components::Coordinate>(entity);
+
 		if (moveable.IsEnabled() && coordinate.IsEnabled())
 		{
+
 			if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
 			{
 				// Need to detect if a move is allowed before permitting it.
 				coordinate = moveable.GetDesiredCoordinate();
 				moveable.SetCurrentCoordinate(coordinate);
+
+				switch (moveable.GetMovementState())
+				{
+				case Components::movementStates_t::UNMOVING:
+					moveable.SetMovementState(Components::movementStates_t::FALL);
+					break;
+				default:
+					break;
+				}
 			}
+
 		}
 	}
 
