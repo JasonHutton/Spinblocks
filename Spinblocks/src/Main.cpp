@@ -266,7 +266,8 @@ enum class movePiece_t
 	MOVE_LEFT,
 	MOVE_RIGHT,
 	MOVE_UP,
-	MOVE_DOWN
+	SOFT_DROP,
+	HARD_DROP
 };
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
@@ -316,13 +317,46 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 										moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
 									}
 									break;
-								case movePiece_t::MOVE_DOWN:
+								case movePiece_t::SOFT_DROP:
 									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
 									{
 										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
 										moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
 									}
 									break;
+								case movePiece_t::HARD_DROP:
+								{
+									entt::entity south = cell.GetSouth();
+									entt::entity parent = cell.GetParent();
+
+									while (CanOccupyCell(registry, FindTagOfContainerEntity(registry, parent), south))
+									{
+										try
+										{
+											Components::Cell temp = GetCellOfEntity(registry, south);
+
+											if (!CanOccupyCell(registry, FindTagOfContainerEntity(registry, temp.GetParent()), temp.GetSouth()))
+											{
+												break;
+											}
+											
+											south = temp.GetSouth();
+											parent = temp.GetParent();
+										}
+										catch (std::runtime_error ex)
+										{
+											break;
+										}
+									}
+
+									if (CanOccupyCell(registry, "Play Area", south))
+									{
+										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, south));
+									}
+
+									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
+									break;
+								}
 								default:
 									break;
 								}
@@ -502,7 +536,27 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, "Play Area", movePiece_t::MOVE_DOWN);
+				MovePiece(registry, "Play Area", movePiece_t::SOFT_DROP);
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_HARD_DROP:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				for (auto entity : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity);
+					auto& moveable = controllableView.get<Components::Moveable>(entity);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						moveable.SetMovementState(Components::movementStates_t::FALL);
+					}
+				}
+
+				MovePiece(registry, "Play Area", movePiece_t::HARD_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
@@ -589,11 +643,31 @@ void update(entt::registry& registry, double currentFrameTime)
 
 		if (moveable.IsEnabled() && coordinate.IsEnabled())
 		{
-			if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+			switch (moveable.GetMovementState())
 			{
-				// Need to detect if a move is allowed before permitting it.
-				coordinate = moveable.GetDesiredCoordinate();
-				moveable.SetCurrentCoordinate(coordinate);
+			case Components::movementStates_t::DEBUG_MOVE_UP:
+			case Components::movementStates_t::SOFT_DROP:
+			case Components::movementStates_t::FALL:
+			{
+				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+				{
+					// Need to detect if a move is allowed before permitting it.
+					coordinate = moveable.GetDesiredCoordinate();
+					moveable.SetCurrentCoordinate(coordinate);
+				}
+				break;
+			}
+			case Components::movementStates_t::HARD_DROP:
+			{
+				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+				{
+					// Need to detect if a move is allowed before permitting it.
+					coordinate = moveable.GetDesiredCoordinate();
+					moveable.SetCurrentCoordinate(coordinate);
+				}
+			}
+			default:
+				break;
 			}
 		}
 	}
@@ -611,6 +685,11 @@ void update(entt::registry& registry, double currentFrameTime)
 			case Components::movementStates_t::SOFT_DROP:
 				lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
 				moveable.SetMovementState(Components::movementStates_t::FALL);
+				break;
+			case Components::movementStates_t::HARD_DROP:
+				lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
+				moveable.SetMovementState(Components::movementStates_t::LOCKED);
+				registry.remove_if_exists<Components::Controllable>(entity);
 				break;
 			default:
 				break;
