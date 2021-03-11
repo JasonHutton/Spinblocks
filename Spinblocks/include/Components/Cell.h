@@ -36,24 +36,24 @@ namespace Components
 			m_east = ent;
 		}
 
-		entt::entity GetNorth()
+		entt::entity GetNorth() const
 		{
 			return m_north;
 		}
-		entt::entity GetSouth()
+		entt::entity GetSouth() const
 		{
 			return m_south;
 		}
-		entt::entity GetWest()
+		entt::entity GetWest() const
 		{
 			return m_west;
 		}
-		entt::entity GetEast()
+		entt::entity GetEast() const
 		{
 			return m_east;
 		}
 
-		entt::entity GetParent()
+		entt::entity GetParent() const
 		{
 			return m_parent;
 		}
