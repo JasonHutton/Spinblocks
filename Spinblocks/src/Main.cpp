@@ -378,6 +378,7 @@ const double KeyRepeatDelay = 0.3; // Delay before starting to repeat.
 const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats.
 const double FallSpeed = 1.0; // Base fall speed, time it takes to move 1 line.
 double lastFallUpdate = 0.0;
+double lockdownDelay = 0.5;
 
 void processinput(GLFWwindow* window, entt::registry& registry, double currentFrameTime)
 {
@@ -597,6 +598,7 @@ void update(entt::registry& registry, double currentFrameTime)
 		}
 	}
 
+	// (Normal) Falling System
 	if (currentFrameTime >= lastFallUpdate + FallSpeed)
 	{
 		lastFallUpdate = currentFrameTime;
@@ -623,7 +625,6 @@ void update(entt::registry& registry, double currentFrameTime)
 						if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
 						{
 							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
-							
 						}
 						else
 						{
@@ -631,6 +632,7 @@ void update(entt::registry& registry, double currentFrameTime)
 							{
 								auto& block = registry.get<Components::Block>(entity);
 								block.SetIsFallingObstructed(true);
+								moveable.SetLastObstructedTime(currentFrameTime);
 							}
 						}
 					}
@@ -694,10 +696,8 @@ void update(entt::registry& registry, double currentFrameTime)
 			switch (moveable.GetMovementState())
 			{
 			case Components::movementStates_t::FALL:
-
-				if (block.GetIsFallingObstructed())
+				if (block.GetIsFallingObstructed() && currentFrameTime >= moveable.GetLastObstructedTime() + lockdownDelay)
 				{
-					cout << "A block's falling is obstructed, while in fall state." << endl;
 					moveable.SetMovementState(Components::movementStates_t::LOCKED);
 					registry.remove_if_exists<Components::Controllable>(entity);
 				}
@@ -713,8 +713,7 @@ void update(entt::registry& registry, double currentFrameTime)
 			case Components::movementStates_t::SOFT_DROP:
 				if (block.GetIsFallingObstructed())
 				{
-					// This never gets called, probably due to the fall state being set places instead. Not necessarily a problem.
-					cout << "A block's soft drop is obstructed, while in soft drop state." << endl;
+					// This never gets called, probably due to the fall state being set places instead, and the obstructed flag being set from the fall state. Not necessarily a problem.
 					moveable.SetMovementState(Components::movementStates_t::LOCKED);
 					registry.remove_if_exists<Components::Controllable>(entity);
 				}
