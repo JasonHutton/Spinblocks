@@ -623,6 +623,15 @@ void update(entt::registry& registry, double currentFrameTime)
 						if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
 						{
 							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+							
+						}
+						else
+						{
+							if (registry.has<Components::Block>(entity))
+							{
+								auto& block = registry.get<Components::Block>(entity);
+								block.SetIsFallingObstructed(true);
+							}
 						}
 					}
 					break;
@@ -665,6 +674,7 @@ void update(entt::registry& registry, double currentFrameTime)
 					coordinate = moveable.GetDesiredCoordinate();
 					moveable.SetCurrentCoordinate(coordinate);
 				}
+				break;
 			}
 			default:
 				break;
@@ -672,19 +682,48 @@ void update(entt::registry& registry, double currentFrameTime)
 		}
 	}
 
-	auto moveableView2 = registry.view<Components::Moveable, Components::Coordinate>();
-	for (auto entity : moveableView2)
+	auto blockView = registry.view<Components::Block>();
+	for (auto entity : blockView)
 	{
-		auto& moveable = moveableView2.get<Components::Moveable>(entity);
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& moveable = registry.get<Components::Moveable>(entity);
+		auto& coordinate = registry.get<Components::Coordinate>(entity);
 
-		if (moveable.IsEnabled())
+		if (block.IsEnabled() && moveable.IsEnabled())
 		{
 			switch (moveable.GetMovementState())
 			{
+			case Components::movementStates_t::FALL:
+
+				if (block.GetIsFallingObstructed())
+				{
+					cout << "A block's falling is obstructed, while in fall state." << endl;
+					moveable.SetMovementState(Components::movementStates_t::LOCKED);
+					registry.remove_if_exists<Components::Controllable>(entity);
+				}
+				// Do nothing
+				//lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
+				//moveable.SetMovementState(Components::movementStates_t::FALL);
+				break;
 			case Components::movementStates_t::DEBUG_MOVE_UP:
-			case Components::movementStates_t::SOFT_DROP:
 				lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
-				moveable.SetMovementState(Components::movementStates_t::FALL);
+				block.SetIsFallingObstructed(false);
+				moveable.SetMovementState(Components::movementStates_t::FALL); // Reset to falling state for the next tick.
+				break;
+			case Components::movementStates_t::SOFT_DROP:
+				if (block.GetIsFallingObstructed())
+				{
+					// This never gets called, probably due to the fall state being set places instead. Not necessarily a problem.
+					cout << "A block's soft drop is obstructed, while in soft drop state." << endl;
+					moveable.SetMovementState(Components::movementStates_t::LOCKED);
+					registry.remove_if_exists<Components::Controllable>(entity);
+				}
+				else
+				{
+					lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
+					//block.SetIsFallingObstructed(false);
+					moveable.SetMovementState(Components::movementStates_t::FALL); // Reset to falling state for the next tick.
+				}
 				break;
 			case Components::movementStates_t::HARD_DROP:
 				lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
