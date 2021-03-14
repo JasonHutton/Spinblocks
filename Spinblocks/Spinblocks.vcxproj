@@ -177,6 +177,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClCompile Include="src\Input\GameInput.cpp" />
     <ClCompile Include="src\Input\InputHandler.cpp" />
     <ClCompile Include="src\Input\KeyInput.cpp" />
+    <ClCompile Include="src\learnopengl\model.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
