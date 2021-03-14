@@ -179,6 +179,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClCompile Include="src\Input\KeyInput.cpp" />
     <ClCompile Include="src\learnopengl\model.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\assimp-vc142-mt.dll" />
@@ -216,6 +217,8 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\learnopengl\model.h" />
     <ClInclude Include="include\learnopengl\shader.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Systems\SystemShared.h" />
+    <ClInclude Include="include\Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{e864ea41-792c-4d27-b6cb-b21f4691e8a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{dcff5baf-cc7c-465e-ba82-796126865507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{dbe7db25-2c45-4b72-beed-19dac1e1299a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -52,6 +58,9 @@
       <Filter>Source Files\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\learnopengl\model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,6 +165,12 @@
     </ClInclude>
     <ClInclude Include="include\Components\Block.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Systems\SystemShared.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Utility.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

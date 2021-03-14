@@ -1,6 +1,6 @@
 #pragma once
 
-struct displayData_t
+inline struct displayData_t
 {
 	int x{ 800 };
 	int y{ 600 };
