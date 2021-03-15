@@ -50,6 +50,29 @@ namespace Components
 		{
 			return (lhs.GetParent() != rhs.GetParent()) || !glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
 		}
+	public:
+		friend bool operator<(const Coordinate& lhs, const Coordinate& rhs)
+		{
+			if (lhs.GetParent() < rhs.GetParent())
+				return true;
+
+			if (lhs.GetParent() == rhs.GetParent())
+			{
+				if (lhs.m_coordinate.y < rhs.m_coordinate.y)
+					return true;
+
+				if (lhs.m_coordinate.y == rhs.m_coordinate.y)
+				{
+					if (lhs.m_coordinate.x < lhs.m_coordinate.x)
+						return true;
+				}
+			}
+
+			return false;
+		}
+		friend bool operator>(const Coordinate& lhs, const Coordinate& rhs) { return rhs < lhs; }
+		friend bool operator<=(const Coordinate& lhs, const Coordinate& rhs) { return !(lhs > rhs); }
+		friend bool operator>=(const Coordinate& lhs, const Coordinate& rhs) { return !(lhs < rhs); }
 	//public:
 		//operator glm::uvec2() const { return Get(); }
 
