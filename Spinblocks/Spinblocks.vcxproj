@@ -179,6 +179,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClCompile Include="src\Input\KeyInput.cpp" />
     <ClCompile Include="src\learnopengl\model.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Systems\EliminateSystem.cpp" />
     <ClCompile Include="src\Systems\FallingSystem.cpp" />
     <ClCompile Include="src\Systems\MovementSystem.cpp" />
     <ClCompile Include="src\Systems\PatternSystem.cpp" />
@@ -223,6 +224,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\learnopengl\model.h" />
     <ClInclude Include="include\learnopengl\shader.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Systems\EliminateSystem.h" />
     <ClInclude Include="include\Systems\FallingSystem.h" />
     <ClInclude Include="include\Systems\MovementSystem.h" />
     <ClInclude Include="include\Systems\PatternSystem.h" />

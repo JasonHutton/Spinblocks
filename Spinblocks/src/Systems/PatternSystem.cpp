@@ -54,12 +54,5 @@ namespace Systems
 				}
 			}
 		}
-
-		// Clear all hitlist marked ents
-		auto hittableView = registry.view<Components::Block, Components::Hittable>();
-		for (auto entity : hittableView)
-		{
-			registry.destroy(entity);
-		}
 	}
 }

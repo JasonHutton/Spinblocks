@@ -36,6 +36,7 @@
 #include "Systems/MovementSystem.h"
 #include "Systems/StateChangeSystem.h"
 #include "Systems/PatternSystem.h"
+#include "Systems/EliminateSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
@@ -450,6 +451,7 @@ void update(entt::registry& registry, double currentFrameTime)
 	Systems::MovementSystem(registry, currentFrameTime);
 	Systems::StateChangeSystem(registry, currentFrameTime);
 	Systems::PatternSystem(registry, currentFrameTime);
+	Systems::EliminateSystem(registry, currentFrameTime);
 
 	/*auto containerView = registry.view<Components::Container, Components::Scale>();
 	for (auto entity : containerView)
