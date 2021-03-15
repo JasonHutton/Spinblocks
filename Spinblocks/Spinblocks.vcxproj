@@ -181,6 +181,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Systems\FallingSystem.cpp" />
     <ClCompile Include="src\Systems\MovementSystem.cpp" />
+    <ClCompile Include="src\Systems\PatternSystem.cpp" />
     <ClCompile Include="src\Systems\StateChangeSystem.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
@@ -199,8 +200,10 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Coordinate.h" />
     <ClInclude Include="include\Components\DerivePositionFromCoordinates.h" />
     <ClInclude Include="include\Components\DerivePositionFromParent.h" />
+    <ClInclude Include="include\Components\Flag.h" />
     <ClInclude Include="include\Components\GameObject.h" />
     <ClInclude Include="include\Components\GridCell.h" />
+    <ClInclude Include="include\Components\Hittable.h" />
     <ClInclude Include="include\Components\Includes.h" />
     <ClInclude Include="include\Components\Moveable.h" />
     <ClInclude Include="include\Components\Position.h" />
@@ -222,6 +225,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Systems\FallingSystem.h" />
     <ClInclude Include="include\Systems\MovementSystem.h" />
+    <ClInclude Include="include\Systems\PatternSystem.h" />
     <ClInclude Include="include\Systems\StateChangeSystem.h" />
     <ClInclude Include="include\Systems\SystemShared.h" />
     <ClInclude Include="include\Utility.h" />

@@ -21,3 +21,5 @@
 #include "Components/Moveable.h"
 #include "Components/Controllable.h"
 #include "Components/Block.h"
+#include "Components/Flag.h"
+#include "Components/Hittable.h"
