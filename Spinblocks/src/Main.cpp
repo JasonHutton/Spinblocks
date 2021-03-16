@@ -146,30 +146,18 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 								switch (movePiece)
 								{
 								case movePiece_t::MOVE_LEFT:
-									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetWest()))
-									{
-										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetWest()));
-									}
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity1, moveDirection_t::WEST, 1)));
 									break;
 								case movePiece_t::MOVE_RIGHT:
-									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetEast()))
-									{
-										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetEast()));
-									}
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity1, moveDirection_t::EAST, 1)));
 									break;
 								case movePiece_t::MOVE_UP:
-									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetNorth()))
-									{
-										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetNorth()));
-										moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
-									}
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity1, moveDirection_t::NORTH, 1)));
+									moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
 									break;
 								case movePiece_t::SOFT_DROP:
-									if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
-									{
-										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
-										moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
-									}
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity1, moveDirection_t::SOUTH, 1)));
+									moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
 									break;
 								case movePiece_t::HARD_DROP:
 								{
