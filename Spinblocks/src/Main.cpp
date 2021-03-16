@@ -117,15 +117,6 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
-enum class movePiece_t
-{
-	MOVE_LEFT,
-	MOVE_RIGHT,
-	MOVE_UP,
-	SOFT_DROP,
-	HARD_DROP
-};
-
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
 // As we'll only really have one piece moving at a time, probably fine. Change later if not.
 void MovePiece(entt::registry& registry, const std::string& containerTag, const movePiece_t& movePiece)
@@ -182,34 +173,7 @@ void MovePiece(entt::registry& registry, const std::string& containerTag, const 
 									break;
 								case movePiece_t::HARD_DROP:
 								{
-									entt::entity south = cell.GetSouth();
-									entt::entity parent = cell.GetParent();
-
-									while (CanOccupyCell(registry, FindTagOfContainerEntity(registry, parent), south))
-									{
-										try
-										{
-											Components::Cell temp = GetCellOfEntity(registry, south);
-
-											if (!CanOccupyCell(registry, FindTagOfContainerEntity(registry, temp.GetParent()), temp.GetSouth()))
-											{
-												break;
-											}
-											
-											south = temp.GetSouth();
-											parent = temp.GetParent();
-										}
-										catch (std::runtime_error ex)
-										{
-											break;
-										}
-									}
-
-									if (CanOccupyCell(registry, "Play Area", south))
-									{
-										moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, south));
-									}
-
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity1, moveDirection_t::SOUTH, PlayAreaHeight)));
 									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
 									break;
 								}

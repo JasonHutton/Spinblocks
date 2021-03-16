@@ -127,6 +127,41 @@ Components::Cell& GetCellAtCoordinates(entt::registry& registry, const std::stri
 	throw std::runtime_error("Unable to find Cell at coordinates!");
 }
 
+const entt::entity& GetCellAtCoordinates2(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
+{
+	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto entity : cellView)
+	{
+		auto& cell = cellView.get<Components::Cell>(entity);
+		auto& cellCoordinate = cellView.get<Components::Coordinate>(entity);
+
+		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
+		{
+			if (!registry.has<Components::Container2>(cell.GetParent()))
+				continue;
+			if (!registry.has<Components::Tag>(cell.GetParent()))
+				continue;
+
+			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
+			// Not really doing anything with container currently.
+			// May not be required, or might be covered by some of the checks in coordinate comparisons already.
+			auto& tag = registry.get<Components::Tag>(cell.GetParent());
+			
+			// If we're not looking for this containerTag, this isn't the cell we're looking for. Keep looking.
+			if (!tag.IsEnabled() || containerTag != tag.Get())
+				continue;
+
+			// The cell we've found shares the same coordinates as what we've specified.
+			if (cellCoordinate == coordinate)
+			{
+				return entity;
+			}
+		}
+	}
+
+	return entt::null;
+}
+
 const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
 {
 	auto blockView = registry.view<Components::Block>();
@@ -151,4 +186,65 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 	}
 
 	throw std::runtime_error("Unable to find Block at coordinates!");
+}
+
+/*
+* A Block will always have the following components in the same entity: (Probably want some way to enforce that somewhere, but whatever for now.)
+* There can be other components, these are just relevant to this function.
+* Coordinate
+* Moveable (Even lockeed blocks are still moveable.)
+* Block
+* Controllable (NOT ALWAYS THERE. Only there on the currently active piece.)
+*/
+entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& containerTag, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance)
+{
+	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
+	auto& moveable = registry.get<Components::Moveable>(blockEnt);
+	auto& controllable = registry.get<Components::Controllable>(blockEnt);
+
+	entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, coordinate);
+	if (cellEnt == entt::null)
+		return entt::null;
+
+	entt::entity newCellEnt = cellEnt;
+
+	for (int i = 0; i < distance; i++)
+	{
+		entt::entity tempCellEnt = newCellEnt;
+		if (!registry.has<Components::Cell>(tempCellEnt))
+			continue;
+		Components::Cell& tempCell = registry.get<Components::Cell>(tempCellEnt);
+
+		switch (direction)
+		{
+		case moveDirection_t::NORTH:
+			if (CanOccupyCell(registry, containerTag, tempCell.GetNorth()))
+			{
+				newCellEnt = tempCell.GetNorth();
+			}
+			break;
+		case moveDirection_t::SOUTH:
+			if (CanOccupyCell(registry, containerTag, tempCell.GetSouth()))
+			{
+				newCellEnt = tempCell.GetSouth();
+			}
+			break;
+		case moveDirection_t::EAST:
+			if (CanOccupyCell(registry, containerTag, tempCell.GetEast()))
+			{
+				newCellEnt = tempCell.GetEast();
+			}
+			break;
+		case moveDirection_t::WEST:
+			if (CanOccupyCell(registry, containerTag, tempCell.GetWest()))
+			{
+				newCellEnt = tempCell.GetWest();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	return newCellEnt;
 }
