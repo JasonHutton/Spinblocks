@@ -29,9 +29,10 @@ namespace Systems
 						auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
 						if (cell.IsEnabled())
 						{
-							if (CanOccupyCell(registry, FindTagOfContainerEntity(registry, cell.GetParent()), cell.GetSouth()))
+							entt::entity desiredCell = MoveBlockInDirection(registry, "Play Area", entity, moveDirection_t::SOUTH, 1);
+							if (GetCoordinateOfEntity(registry, desiredCell) != GetCoordinateOfEntity(registry, entity))
 							{
-								moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, cell.GetSouth()));
+								moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, desiredCell));
 							}
 							else
 							{
