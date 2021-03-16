@@ -200,7 +200,6 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 {
 	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
 	auto& moveable = registry.get<Components::Moveable>(blockEnt);
-	auto& controllable = registry.get<Components::Controllable>(blockEnt);
 
 	entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, coordinate);
 	if (cellEnt == entt::null)
