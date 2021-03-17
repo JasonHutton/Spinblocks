@@ -54,6 +54,10 @@ bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, co
 	if (!cell.IsEnabled() || !cellCoordinate.IsEnabled())
 		return false;
 
+	auto& tag1 = registry.get<Components::Tag>(cell.GetParent());
+	if (containerTag != tag1.Get())
+		return false;
+
 	auto blockView = registry.view<Components::Block, Components::Coordinate>();
 	for (auto blockEntity : blockView)
 	{
