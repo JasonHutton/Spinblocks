@@ -208,5 +208,8 @@
     <ClInclude Include="include\Systems\EliminateSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Marker.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
