@@ -1,5 +1,23 @@
 #include "Utility.h"
 
+// Ensure containerType_t and this function are in sync
+const std::string& GetTagFromContainerType(const containerType_t& t)
+{
+	switch (t)
+	{
+	case containerType_t::PLAY_AREA:
+		return "Play Area";
+	case containerType_t::MATRIX:
+		return "Matrix";
+	case containerType_t::BUFFER:
+		return "Buffer";
+	case containerType_t::BAG_AREA:
+		return "Bag Area";
+	default:
+		throw std::runtime_error("Unable to convert container type to tag!");
+	}
+}
+
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName)
 {
 	entt::entity foundEntity = entt::null;

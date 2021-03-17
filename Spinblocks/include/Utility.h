@@ -21,6 +21,17 @@ enum class moveDirection_t
 	WEST
 };
 
+// Ensure GetTagFromContainerType() and this enum are in sync
+enum class containerType_t
+{
+	PLAY_AREA = 0,
+	MATRIX,
+	BUFFER,
+	BAG_AREA
+};
+// Ensure containerType_t and this function are in sync
+const std::string& GetTagFromContainerType(const containerType_t& t);
+
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName);
 const std::string FindTagOfContainerEntity(entt::registry& registry, const entt::entity& containerEntity);
 bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, const entt::entity& cellEntity, const bool& disableObstruction = false);
