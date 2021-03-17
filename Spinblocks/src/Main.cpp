@@ -117,6 +117,36 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
+void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& containerTag2 = containerView.get<Components::Tag>(entity);
+
+		if (container2.IsEnabled() && containerTag2.IsEnabled())
+		{
+			if (containerTag2.Get() != containerTag)
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, markerCoordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto marker = registry.create();
+			registry.emplace<Components::Marker>(marker, entity);
+			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
+			registry.emplace<Components::Position>(marker);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker, entity);
+			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/red.obj"));
+			registry.emplace<Components::Tag>(marker, markerTag);
+		}
+	}
+}
+
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
 // As we'll only really have one piece moving at a time, probably fine. Change later if not.
 void MovePiece(entt::registry& registry, const std::string& containerTag, const movePiece_t& movePiece)
@@ -695,6 +725,9 @@ int main()
 
 	BuildGrid(registry, playArea);
 	BuildGrid(registry, bagArea);
+
+	PlaceMarker(registry, "Play Area", "Spawn Marker", Components::Coordinate(playArea, glm::uvec2(0, 0)));
+	PlaceMarker(registry, "Bag Area", "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);

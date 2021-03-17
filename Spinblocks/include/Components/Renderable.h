@@ -11,6 +11,7 @@ namespace Components
 		RL_MIN = 0,
 		RL_CONTAINER,
 		RL_CELL,
+		RL_MARKER,
 		RL_BLOCK,
 		RL_MAX
 	};
