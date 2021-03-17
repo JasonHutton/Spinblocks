@@ -29,7 +29,7 @@ namespace Systems
 						auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
 						if (cell.IsEnabled())
 						{
-							entt::entity desiredCell = MoveBlockInDirection(registry, "Play Area", entity, moveDirection_t::SOUTH, 1);
+							entt::entity desiredCell = MoveBlockInDirection(registry, tagOfContainerEntity, entity, moveDirection_t::SOUTH, 1);
 							if (GetCoordinateOfEntity(registry, desiredCell) != GetCoordinateOfEntity(registry, entity))
 							{
 								moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, desiredCell));
