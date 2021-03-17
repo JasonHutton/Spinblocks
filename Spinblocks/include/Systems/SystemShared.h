@@ -9,4 +9,6 @@
 	const double FallSpeed = 1.0; // Base fall speed, time it takes to move 1 line.
 	inline double lastFallUpdate = 0.0;
 	const double lockdownDelay = 0.5;
+	const unsigned int cellWidth = 25;
+	const unsigned int cellHeight = 25;
 //}
