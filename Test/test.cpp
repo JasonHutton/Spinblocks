@@ -27,9 +27,26 @@
 #include <iostream>
 #include <vector>
 
+#include "Systems/SystemShared.h"
+
 #include "Components/Includes.h"
 #include "GameTime.h"
 #include "Globals.h"
+#include "Utility.h"
+
+#include "Systems/FallingSystem.h"
+#include "Systems/MovementSystem.h"
+#include "Systems/StateChangeSystem.h"
+#include "Systems/PatternSystem.h"
+#include "Systems/EliminateSystem.h"
+
+#include "Input/InputHandler.h"
+#include "Input/GameInput.h"
+
+using std::string;
+using std::cout;
+using std::endl;
+using std::vector;
 
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 {
@@ -115,8 +132,7 @@ TEST(GridTest, Grid1x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
-
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 	
 	BuildGrid(registry, playArea);
 
@@ -143,7 +159,7 @@ TEST(GridTest, Grid2x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
@@ -178,7 +194,7 @@ TEST(GridTest, Grid1x2) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 2), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
@@ -213,7 +229,7 @@ TEST(GridTest, Grid2x2) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 2), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
@@ -262,7 +278,7 @@ TEST(GridTest, Grid3x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
@@ -304,7 +320,7 @@ TEST(GridTest, Grid1x3) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
@@ -346,7 +362,7 @@ TEST(GridTest, Grid3x3) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 
 
 	BuildGrid(registry, playArea);
