@@ -1,7 +1,7 @@
 #include "Utility.h"
 
 // Ensure containerType_t and this function are in sync
-const std::string& GetTagFromContainerType(const containerType_t& t)
+const std::string GetTagFromContainerType(const containerType_t& t)
 {
 	switch (t)
 	{
@@ -153,7 +153,7 @@ Components::Cell& GetCellAtCoordinates(entt::registry& registry, const std::stri
 	throw std::runtime_error("Unable to find Cell at coordinates!");
 }
 
-const entt::entity& GetCellAtCoordinates2(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
+entt::entity GetCellAtCoordinates2(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
 {
 	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 	for (auto entity : cellView)
@@ -233,7 +233,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 
 	entt::entity newCellEnt = cellEnt;
 
-	for (int i = 0; i < distance; i++)
+	for (unsigned int i = 0; i < distance; i++)
 	{
 		entt::entity tempCellEnt = newCellEnt;
 		if (!registry.has<Components::Cell>(tempCellEnt))
