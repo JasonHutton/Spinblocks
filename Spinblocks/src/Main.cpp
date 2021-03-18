@@ -481,7 +481,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 		{
 			Components::Position parentPosition = registry.get<Components::Position>(derivePositionFromParent.Get());
 
-			position.Set(parentPosition.Get());
+			position.Set(parentPosition.Get() + derivePositionFromParent.GetOffset());
 		}
 	}
 
@@ -710,11 +710,27 @@ int main()
 	const auto playArea = registry.create();
 	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
 	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
-	registry.emplace<Components::Scale>(playArea, glm::vec2(25*10, 25*20)); // celldimensions * gridwidth or height
-	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x/2, displayData.y/2));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
 	//registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, "Play Area");
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Scale>(buffer, glm::uvec2(cellWidth * 10, cellHeight * 20));
+	registry.emplace<Components::Position>(buffer);
+	registry.emplace<Components::DerivePositionFromParent>(buffer, playArea, glm::uvec2(0, cellHeight * 20));
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
 
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
@@ -723,7 +739,8 @@ int main()
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
 	BuildGrid(registry, bagArea);
 
 	PlaceMarker(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), "Spawn Marker", Components::Coordinate(playArea, glm::uvec2(0, 0)));
