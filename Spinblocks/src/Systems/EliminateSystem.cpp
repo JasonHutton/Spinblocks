@@ -31,7 +31,7 @@ namespace Systems
 
 				if (moveable.GetCurrentCoordinate().Get().y > lowestRow)
 				{
-					moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, "Play Area", entity, moveDirection_t::SOUTH, rows.size(), true)));
+					moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), entity, moveDirection_t::SOUTH, rows.size(), true)));
 					moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
 				}
 			}
