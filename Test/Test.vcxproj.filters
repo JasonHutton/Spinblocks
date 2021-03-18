@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\Spinblocks\src\Components\Coordinate.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Input\ContextControl.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Input\GameInput.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Input\InputHandler.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Input\KeyInput.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\EliminateSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\FallingSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\MovementSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\PatternSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\StateChangeSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\learnopengl\model.cpp">
+      <Filter>Source Files\learnopengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="..\Spinblocks\include\GameTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\EliminateSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\FallingSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\MovementSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\PatternSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\StateChangeSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\SystemShared.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\learnopengl\camera.h">
+      <Filter>Header Files\learnopengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\learnopengl\mesh.h">
+      <Filter>Header Files\learnopengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\learnopengl\model.h">
+      <Filter>Header Files\learnopengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\learnopengl\shader.h">
+      <Filter>Header Files\learnopengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\KHR\khrplatform.h">
+      <Filter>Header Files\KHR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Input\ContextControl.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Input\GameInput.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Input\InputHandler.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Input\KeyInput.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\GLFW\glfw3.h">
+      <Filter>Header Files\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\GLFW\glfw3native.h">
+      <Filter>Header Files\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\glad\glad.h">
+      <Filter>Header Files\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Block.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Camera.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Cell.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Component.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Container.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Container2.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Controllable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Coordinate.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\DerivePositionFromCoordinates.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\DerivePositionFromParent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Flag.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\GameObject.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\GridCell.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Hittable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Includes.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Marker.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Moveable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Position.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\ReferenceEntity.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Renderable.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Scale.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\ScaleToCellDimensions.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Tag.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{c7415b88-f5db-4865-982c-51d5b8c9b021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2a834500-2b92-4efe-ada1-37bccfdd6cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{1cba9657-3641-4fc0-b229-aa1e90bae3a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{d25b5a91-aa7d-4607-a66b-c8ab54a79f31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{95be7bf7-102e-4fe0-b7a8-7f6492ec90f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\learnopengl">
+      <UniqueIdentifier>{4ac4eafe-55c2-4a27-8890-fc721858fe11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\assimp">
+      <UniqueIdentifier>{8fd16ac4-46b4-4676-bc7b-446bf7bf7f49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{8486a570-2151-4228-a229-24bb58be33d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\entt">
+      <UniqueIdentifier>{f05248d7-28c7-466b-ad8e-1d0f795900c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glad">
+      <UniqueIdentifier>{43e29367-60f7-44fb-901f-c2469089ca74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLFW">
+      <UniqueIdentifier>{3a577d54-4017-4bc4-a499-a49e5973646b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glm">
+      <UniqueIdentifier>{ed67c07f-27c8-4877-8f68-ff499539e89a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{0006f603-564d-4eeb-b831-96286fbfca22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KHR">
+      <UniqueIdentifier>{8ff0fdd2-6cf7-4660-bac7-de74738f638f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\learnopengl">
+      <UniqueIdentifier>{cb41000d-ab63-4dce-a8f4-62b51b2d97c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{04e2bc52-6e8b-407d-8a02-5f514fef7a46}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
