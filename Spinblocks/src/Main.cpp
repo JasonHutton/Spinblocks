@@ -117,6 +117,35 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
+void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, entt::entity adjacentEntity, const moveDirection_t& dir)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& containerTag2 = containerView.get<Components::Tag>(entity);
+
+		if (container2.IsEnabled() && containerTag2.IsEnabled())
+		{
+			if (containerTag2.Get() != containerTag)
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, markerCoordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto marker = registry.create();
+			registry.emplace<Components::EdgeMarker>(marker, entity, adjacentEntity, dir);
+			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
+			registry.emplace<Components::Position>(marker);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker, entity);
+			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
+		}
+	}
+}
+
 void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
@@ -566,6 +595,30 @@ void postrender(entt::registry& registry, double normalizedTime)
 
 }
 
+void ConnectGrids(entt::registry& registry, const entt::entity& lhs, moveDirection_t lhsConnectDir, const entt::entity& rhs, moveDirection_t rhsConnectDir)
+{
+	auto lhsContainer = registry.get<Components::Container2>(lhs);
+	auto rhsContainer = registry.get<Components::Container2>(rhs);
+
+	auto lhsDimensions = lhsContainer.GetGridDimensions();
+	auto rhsDimensions = rhsContainer.GetGridDimensions();
+
+
+
+	auto cellView1 = registry.view<Components::Cell, Components::Coordinate>();
+	auto cellView2 = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto cell1 : cellView1)
+	{
+		for (auto cell2 : cellView2)
+		{
+			if (cell1 == cell2)
+				continue;
+
+
+		}
+	}
+}
+
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 {
 	Components::Container2 container2 = registry.get<Components::Container2>(parentEntity);
@@ -736,17 +789,27 @@ int main()
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, northBuffer);
+
+
+	PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 19)), northBuffer, moveDirection_t::NORTH);
+	PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
+
+	//ConnectGrids(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
+	//DisconnectGrids(registry, matrix, northBuffer);
 	BuildGrid(registry, bagArea);
 
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
+	/*PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 2", Components::Coordinate(matrix, glm::uvec2(9, 0)));
 	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 3", Components::Coordinate(matrix, glm::uvec2(0, 19)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 4", Components::Coordinate(matrix, glm::uvec2(9, 19)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 4", Components::Coordinate(matrix, glm::uvec2(9, 19)));*/
 
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 1", Components::Coordinate(northBuffer, glm::uvec2(3, 0)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 2", Components::Coordinate(northBuffer, glm::uvec2(4, 0)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
+
+	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 1", Components::Coordinate(northBuffer, glm::uvec2(3, 0)));
+	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 2", Components::Coordinate(northBuffer, glm::uvec2(4, 0)));
+
+	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);

@@ -24,3 +24,4 @@
 #include "Components/Flag.h"
 #include "Components/Hittable.h"
 #include "Components/Marker.h"
+#include "Components/EdgeMarker.h"

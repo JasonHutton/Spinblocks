@@ -211,5 +211,8 @@
     <ClInclude Include="include\Components\Marker.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\EdgeMarker.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
