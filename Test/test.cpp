@@ -132,7 +132,7 @@ TEST(GridTest, Grid1x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 	
 	BuildGrid(registry, playArea);
 
@@ -159,7 +159,7 @@ TEST(GridTest, Grid2x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
@@ -194,7 +194,7 @@ TEST(GridTest, Grid1x2) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 2), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
@@ -229,7 +229,7 @@ TEST(GridTest, Grid2x2) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(2, 2), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
@@ -278,7 +278,7 @@ TEST(GridTest, Grid3x1) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 1), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
@@ -320,7 +320,7 @@ TEST(GridTest, Grid1x3) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(1, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
@@ -362,7 +362,7 @@ TEST(GridTest, Grid3x3) {
 	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
 	registry.emplace<Components::Scale>(playArea);
 	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
 
 
 	BuildGrid(registry, playArea);
