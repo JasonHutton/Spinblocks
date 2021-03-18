@@ -270,7 +270,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 1 is being triggered." << endl;
 
-				SpawnBlock(registry, "Play Area", Components::Coordinate(FindContainerEntityByTag(registry, "Play Area"), glm::uvec2(0, 19)));
+				SpawnBlock(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)), glm::uvec2(0, 19)));
 
 				break;
 			}
@@ -282,7 +282,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				// Spawn a block in column 1
 				cout << "Key 2 is being triggered." << endl;
 
-				SpawnBlock(registry, "Bag Area", Components::Coordinate(FindContainerEntityByTag(registry, "Bag Area"), glm::uvec2(0, 15)));
+				SpawnBlock(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BAG_AREA)), glm::uvec2(0, 15)));
 
 				break;
 			}
@@ -310,7 +310,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, "Play Area", movePiece_t::MOVE_UP);
+				MovePiece(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), movePiece_t::MOVE_UP);
 
 				break;
 			}
@@ -326,7 +326,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, "Play Area", movePiece_t::MOVE_LEFT);
+				MovePiece(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), movePiece_t::MOVE_LEFT);
 
 				break;
 			}
@@ -342,7 +342,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, "Play Area", movePiece_t::MOVE_RIGHT);
+				MovePiece(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), movePiece_t::MOVE_RIGHT);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_SOFT_DROP:
@@ -369,7 +369,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, "Play Area", movePiece_t::SOFT_DROP);
+				MovePiece(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), movePiece_t::SOFT_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_HARD_DROP:
@@ -389,7 +389,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					}
 				}
 
-				MovePiece(registry, "Play Area", movePiece_t::HARD_DROP);
+				MovePiece(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), movePiece_t::HARD_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
@@ -721,13 +721,13 @@ int main()
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(bagArea, "Bag Area");
+	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 
 	BuildGrid(registry, playArea);
 	BuildGrid(registry, bagArea);
 
-	PlaceMarker(registry, "Play Area", "Spawn Marker", Components::Coordinate(playArea, glm::uvec2(0, 0)));
-	PlaceMarker(registry, "Bag Area", "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::PLAY_AREA), "Spawn Marker", Components::Coordinate(playArea, glm::uvec2(0, 0)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);
