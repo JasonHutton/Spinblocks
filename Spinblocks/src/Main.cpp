@@ -98,7 +98,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			const auto piece1 = registry.create();
 			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 			registry.emplace<Components::Position>(piece1);
-			registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
 			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
 			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
 			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
@@ -136,15 +136,63 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 				continue;
 
 			const auto marker = registry.create();
-			registry.emplace<Components::EdgeMarker>(marker, entity, adjacentEntity, dir);
+			registry.emplace<Components::CellLink>(marker, entity, adjacentEntity, dir);
 			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
 			registry.emplace<Components::Position>(marker);
-			registry.emplace<Components::DerivePositionFromCoordinates>(marker, entity);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
 			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
 			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
 		}
 	}
 }
+
+void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse)
+{
+	auto originCoordView = registry.view<Components::Cell, Components::Coordinate>();
+	auto destinationCoordView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto originEnt : originCoordView)
+	{
+		auto& originCoord = originCoordView.get<Components::Coordinate>(originEnt);
+		auto& originCell = originCoordView.get<Components::Cell>(originEnt);
+
+		if (originCoord.Get() != origin.Get())
+			continue;
+
+		if (originCoord.GetParent() != origin.GetParent())
+			continue;
+
+		for (auto destinationEnt : destinationCoordView)
+		{
+			if (originEnt == destinationEnt)
+				continue;
+
+			auto& destinationCoord = destinationCoordView.get<Components::Coordinate>(destinationEnt);
+			auto& destinationCell = destinationCoordView.get<Components::Cell>(destinationEnt);
+
+			if (destinationCoord.Get() != destination.Get())
+				continue;
+
+			if (destinationCoord.GetParent() != destination.GetParent())
+				continue;
+
+			const auto marker1 = registry.create();
+			registry.emplace<Components::CellLink>(marker1, originEnt, destinationEnt, moveDir);
+
+			registry.emplace<Components::Coordinate>(marker1, originCoord.GetParent(), originCoord.Get());
+			registry.emplace<Components::Position>(marker1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker1);// , originCoord.GetParent());
+
+			if (registry.has<Components::Container2>(originCell.GetParent()))
+			{
+				auto& container = registry.get<Components::Container2>(originCoord.GetParent());
+				registry.emplace<Components::Scale>(marker1, container.GetCellDimensions3());
+			}
+			registry.emplace<Components::Renderable>(marker1, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
+		}
+	}
+}
+
+//void PlaceEdgeMarker2(entt::registry& registry, const std::string& originTag, const Components::Coordinate& originCoordinate, entt::entity destinationTagadjacentEntity, const moveDirection_t& dir)
 
 void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate)
 {
@@ -168,7 +216,7 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 			registry.emplace<Components::Marker>(marker, entity);
 			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
 			registry.emplace<Components::Position>(marker);
-			registry.emplace<Components::DerivePositionFromCoordinates>(marker, entity);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
 			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
 			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/red.obj"));
 			registry.emplace<Components::Tag>(marker, markerTag);
@@ -519,8 +567,13 @@ void prerender(entt::registry& registry, double normalizedTime)
 
 		if (derivePositionFromCoordinates.IsEnabled() && position.IsEnabled() && coordinates.IsEnabled())
 		{
-			Components::Position parentPosition = registry.get<Components::Position>(derivePositionFromCoordinates.Get());
-			Components::Container2 container2 = registry.get<Components::Container2>(derivePositionFromCoordinates.Get());
+			entt::entity deriveCoordinatesFrom = derivePositionFromCoordinates.Get();
+			if (deriveCoordinatesFrom == entt::null)
+			{
+				deriveCoordinatesFrom = coordinates.GetParent();
+			}
+			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom);
+			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
 			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()));
 		}
@@ -641,7 +694,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Tag>(cell, tagName);
 			registry.emplace<Components::Scale>(cell);
 			registry.emplace<Components::Position>(cell);
-			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
+			registry.emplace<Components::DerivePositionFromCoordinates>(cell);// , parentEntity);
 			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
 			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 		}
@@ -791,8 +844,10 @@ int main()
 	BuildGrid(registry, northBuffer);
 
 
-	PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 19)), northBuffer, moveDirection_t::NORTH);
-	PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
+	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 19)), northBuffer, moveDirection_t::NORTH);
+	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
 
 	//ConnectGrids(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
 	//DisconnectGrids(registry, matrix, northBuffer);
