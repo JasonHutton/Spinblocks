@@ -351,3 +351,20 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 
 	return newCellEnt;
 }
+
+// By design, there's only ever going to be zero or one of these.
+entt::entity GetActiveControllable(entt::registry& registry)
+{
+	auto controllableView = registry.view<Components::Controllable>();
+	for (auto entity : controllableView)
+	{
+		auto& controllable = controllableView.get<Components::Controllable>(entity);
+
+		if (controllable.IsEnabled())
+		{
+			return controllable.Get();
+		}
+	}
+
+	return entt::null;
+}
