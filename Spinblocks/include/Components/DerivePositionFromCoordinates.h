@@ -9,7 +9,7 @@ namespace Components
 	class DerivePositionFromCoordinates : public ReferenceEntity
 	{
 	public:
-		DerivePositionFromCoordinates(entt::entity entity) : ReferenceEntity(entity)
+		DerivePositionFromCoordinates(entt::entity entity = entt::null) : ReferenceEntity(entity)
 		{
 		}
 	};
