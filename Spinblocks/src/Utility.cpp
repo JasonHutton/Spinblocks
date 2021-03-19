@@ -277,11 +277,35 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				newCellEnt = tempCell.GetNorth();
 			}
+			else
+			{
+				if (tempCell.GetNorth() == entt::null)
+				{
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					if (cellLinkEnt != entt::null)
+					{
+						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+						newCellEnt = cellLink.GetDestination();
+					}
+				}
+			}
 			break;
 		case moveDirection_t::SOUTH:
 			if (CanOccupyCell(registry, containerTag, tempCell.GetSouth(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetSouth();
+			}
+			else
+			{
+				if (tempCell.GetSouth() == entt::null)
+				{
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					if (cellLinkEnt != entt::null)
+					{
+						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+						newCellEnt = cellLink.GetDestination();
+					}
+				}
 			}
 			break;
 		case moveDirection_t::EAST:
@@ -289,11 +313,35 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				newCellEnt = tempCell.GetEast();
 			}
+			else
+			{
+				if (tempCell.GetEast() == entt::null)
+				{
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					if (cellLinkEnt != entt::null)
+					{
+						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+						newCellEnt = cellLink.GetDestination();
+					}
+				}
+			}
 			break;
 		case moveDirection_t::WEST:
 			if (CanOccupyCell(registry, containerTag, tempCell.GetWest(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetWest();
+			}
+			else
+			{
+				if (tempCell.GetWest() == entt::null)
+				{
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					if (cellLinkEnt != entt::null)
+					{
+						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+						newCellEnt = cellLink.GetDestination();
+					}
+				}
 			}
 			break;
 		default:
