@@ -188,6 +188,36 @@ entt::entity GetCellAtCoordinates2(entt::registry& registry, const std::string& 
 	return entt::null;
 }
 
+entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate, const moveDirection_t& direction)
+{
+	auto cellView = registry.view<Components::CellLink, Components::Coordinate>();
+	for (auto entity : cellView)
+	{
+		auto& cellCoordinate = cellView.get<Components::Coordinate>(entity);
+		auto& cellLink = cellView.get<Components::CellLink>(entity);
+
+		if (cellLink.GetDirection() != direction)
+			continue;
+
+		if (cellCoordinate.IsEnabled() && cellLink.IsEnabled())
+		{
+			if (registry.has<Components::Cell>(cellLink.GetSource()))
+			{
+				auto& cell = registry.get<Components::Cell>(cellLink.GetSource());
+				if (cell.IsEnabled())
+				{
+					if (cellCoordinate == coordinate)
+					{
+						return entity;
+					}
+				}
+			}
+		}
+	}
+
+	return entt::null;
+}
+
 const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
 {
 	auto blockView = registry.view<Components::Block>();
