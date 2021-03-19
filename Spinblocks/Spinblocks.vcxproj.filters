@@ -211,7 +211,7 @@
     <ClInclude Include="include\Components\Marker.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="include\Components\EdgeMarker.h">
+    <ClInclude Include="include\Components\CellLink.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>

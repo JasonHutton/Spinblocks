@@ -201,7 +201,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Coordinate.h" />
     <ClInclude Include="include\Components\DerivePositionFromCoordinates.h" />
     <ClInclude Include="include\Components\DerivePositionFromParent.h" />
-    <ClInclude Include="include\Components\EdgeMarker.h" />
+    <ClInclude Include="include\Components\CellLink.h" />
     <ClInclude Include="include\Components\Flag.h" />
     <ClInclude Include="include\Components\GameObject.h" />
     <ClInclude Include="include\Components\GridCell.h" />
