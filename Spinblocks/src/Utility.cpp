@@ -188,7 +188,7 @@ entt::entity GetCellAtCoordinates2(entt::registry& registry, const std::string& 
 	return entt::null;
 }
 
-entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate, const moveDirection_t& direction)
+entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate, const moveDirection_t& direction)
 {
 	auto cellView = registry.view<Components::CellLink, Components::Coordinate>();
 	for (auto entity : cellView)
@@ -281,7 +281,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				if (tempCell.GetNorth() == entt::null)
 				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
@@ -299,7 +299,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				if (tempCell.GetSouth() == entt::null)
 				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
@@ -317,7 +317,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				if (tempCell.GetEast() == entt::null)
 				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
@@ -335,7 +335,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			{
 				if (tempCell.GetWest() == entt::null)
 				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, containerTag, coordinate, direction);
+					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
