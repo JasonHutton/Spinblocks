@@ -226,7 +226,7 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
 // As we'll only really have one piece moving at a time, probably fine. Change later if not.
-void MovePiece(entt::registry& registry, const std::string& containerTag, const movePiece_t& movePiece)
+void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
 {
 	auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
 	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
@@ -382,7 +382,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, GetTagFromContainerType(containerType_t::MATRIX), movePiece_t::MOVE_UP);
+				MovePiece(registry, movePiece_t::MOVE_UP);
 
 				break;
 			}
@@ -398,7 +398,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, GetTagFromContainerType(containerType_t::MATRIX), movePiece_t::MOVE_LEFT);
+				MovePiece(registry, movePiece_t::MOVE_LEFT);
 
 				break;
 			}
@@ -414,7 +414,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, GetTagFromContainerType(containerType_t::MATRIX), movePiece_t::MOVE_RIGHT);
+				MovePiece(registry, movePiece_t::MOVE_RIGHT);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_SOFT_DROP:
@@ -441,7 +441,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
-				MovePiece(registry, GetTagFromContainerType(containerType_t::MATRIX), movePiece_t::SOFT_DROP);
+				MovePiece(registry, movePiece_t::SOFT_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_HARD_DROP:
@@ -461,7 +461,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					}
 				}
 
-				MovePiece(registry, GetTagFromContainerType(containerType_t::MATRIX), movePiece_t::HARD_DROP);
+				MovePiece(registry, movePiece_t::HARD_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
