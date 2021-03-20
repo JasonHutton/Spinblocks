@@ -848,6 +848,7 @@ int main()
 	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
 
 	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
 
 	//ConnectGrids(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
 	//DisconnectGrids(registry, matrix, northBuffer);
