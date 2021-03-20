@@ -146,7 +146,7 @@ Components::Cell& GetCellAtCoordinates(entt::registry& registry, const std::stri
 	throw std::runtime_error("Unable to find Cell at coordinates!");
 }
 
-entt::entity GetCellAtCoordinates2(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& coordinate)
+entt::entity GetCellAtCoordinates2(entt::registry& registry, const Components::Coordinate& coordinate)
 {
 	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
 	for (auto entity : cellView)
@@ -162,13 +162,6 @@ entt::entity GetCellAtCoordinates2(entt::registry& registry, const std::string& 
 				continue;
 
 			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
-			// Not really doing anything with container currently.
-			// May not be required, or might be covered by some of the checks in coordinate comparisons already.
-			auto& tag = registry.get<Components::Tag>(cell.GetParent());
-			
-			// If we're not looking for this containerTag, this isn't the cell we're looking for. Keep looking.
-			if (!tag.IsEnabled() || containerTag != tag.Get())
-				continue;
 
 			// The cell we've found shares the same coordinates as what we've specified.
 			if (cellCoordinate == coordinate)
@@ -250,7 +243,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
 	auto& moveable = registry.get<Components::Moveable>(blockEnt);
 
-	entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, coordinate);
+	entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
 	if (cellEnt == entt::null)
 		return entt::null;
 

@@ -130,7 +130,7 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 			if (containerTag2.Get() != containerTag)
 				continue;
 
-			entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, markerCoordinate);
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, markerCoordinate);
 
 			if (cellEnt == entt::null)
 				continue;
@@ -207,7 +207,7 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 			if (containerTag2.Get() != containerTag)
 				continue;
 
-			entt::entity cellEnt = GetCellAtCoordinates2(registry, containerTag, markerCoordinate);
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, markerCoordinate);
 
 			if (cellEnt == entt::null)
 				continue;
