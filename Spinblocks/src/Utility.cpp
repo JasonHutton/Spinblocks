@@ -55,7 +55,7 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 	throw std::runtime_error("Unable to find tag of container entity!");
 }
 
-bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, const entt::entity& cellEntity, const bool& disableObstruction)
+bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
 		return false;
@@ -72,10 +72,6 @@ bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, co
 	if (!cell.IsEnabled() || !cellCoordinate.IsEnabled())
 		return false;
 
-	auto& tag1 = registry.get<Components::Tag>(cell.GetParent());
-	if (containerTag != tag1.Get())
-		return false;
-
 	// Don't check for obstructions. Sooooo, we're able to move into here regardless without further checks.
 	if (disableObstruction)
 		return true;
@@ -89,9 +85,6 @@ bool CanOccupyCell(entt::registry& registry, const std::string& containerTag, co
 		if (block.IsEnabled() && blockCoordinate.IsEnabled())
 		{
 			auto& container2 = registry.get<Components::Container2>(block.Get());
-			auto& tag = registry.get<Components::Tag>(block.Get()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
-			if (!tag.IsEnabled() || containerTag != tag.Get())
-				continue;
 
 			if (blockCoordinate == cellCoordinate)
 			{
@@ -273,7 +266,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 		switch (direction)
 		{
 		case moveDirection_t::NORTH:
-			if (CanOccupyCell(registry, containerTag, tempCell.GetNorth(), disableObstruction))
+			if (CanOccupyCell(registry, tempCell.GetNorth(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetNorth();
 			}
@@ -291,7 +284,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			}
 			break;
 		case moveDirection_t::SOUTH:
-			if (CanOccupyCell(registry, containerTag, tempCell.GetSouth(), disableObstruction))
+			if (CanOccupyCell(registry, tempCell.GetSouth(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetSouth();
 			}
@@ -309,7 +302,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			}
 			break;
 		case moveDirection_t::EAST:
-			if (CanOccupyCell(registry, containerTag, tempCell.GetEast(), disableObstruction))
+			if (CanOccupyCell(registry, tempCell.GetEast(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetEast();
 			}
@@ -327,7 +320,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& c
 			}
 			break;
 		case moveDirection_t::WEST:
-			if (CanOccupyCell(registry, containerTag, tempCell.GetWest(), disableObstruction))
+			if (CanOccupyCell(registry, tempCell.GetWest(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetWest();
 			}
