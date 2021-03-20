@@ -5,9 +5,10 @@ namespace Systems
 {
 	void MovementSystem(entt::registry& registry, double currentFrameTime)
 	{
-		auto moveableView = registry.view<Components::Moveable, Components::Coordinate>();
+		auto moveableView = registry.view<Components::Block, Components::Moveable, Components::Coordinate>();
 		for (auto entity : moveableView)
 		{
+			auto& block = moveableView.get<Components::Block>(entity);
 			auto& moveable = moveableView.get<Components::Moveable>(entity);
 			auto& coordinate = moveableView.get<Components::Coordinate>(entity);
 
@@ -34,6 +35,7 @@ namespace Systems
 						// Need to detect if a move is allowed before permitting it.
 						coordinate = moveable.GetDesiredCoordinate();
 						moveable.SetCurrentCoordinate(coordinate);
+						block.SetIsFallingObstructed(true);
 					}
 					break;
 				}
