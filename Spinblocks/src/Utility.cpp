@@ -238,7 +238,7 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 * Block
 * Controllable (NOT ALWAYS THERE. Only there on the currently active piece.)
 */
-entt::entity MoveBlockInDirection(entt::registry& registry, const std::string& containerTag, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance, const bool& disableObstruction)
+entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance, const bool& disableObstruction)
 {
 	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
 	auto& moveable = registry.get<Components::Moveable>(blockEnt);
