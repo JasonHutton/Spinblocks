@@ -43,3 +43,4 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance, const bool& disableObstruction = false);
 entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate, const moveDirection_t& direction);
 entt::entity GetActiveControllable(entt::registry& registry);
+void BuildGrid(entt::registry& registry, const entt::entity& parentEntity);
