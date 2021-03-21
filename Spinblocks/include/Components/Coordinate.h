@@ -34,6 +34,11 @@ namespace Components
 			return m_parent;
 		}
 
+		void SetParent(const entt::entity& parent)
+		{
+			m_parent = parent;
+		}
+
 	public:
 		friend std::ostream& operator<<(std::ostream& out, const Coordinate& coord)
 		{
