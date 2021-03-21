@@ -358,6 +358,15 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 				break;
 			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_3:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
+
+				break;
+			}
 			case KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP:
 			{
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();

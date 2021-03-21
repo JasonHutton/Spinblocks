@@ -14,6 +14,7 @@ InputHandler::InputHandler()
 	BindDefault(GLFW_KEY_ESCAPE, KeyInput::usercmdButton_t::UB_FORCE_QUIT);
 	BindDefault(GLFW_KEY_1, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1);
 	BindDefault(GLFW_KEY_2, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_2);
+	BindDefault(GLFW_KEY_3, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_3);
 	BindDefault(GLFW_KEY_HOME, KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP);
 	BindDefault(GLFW_KEY_LEFT, KeyInput::usercmdButton_t::UB_MOVE_LEFT);
 	BindDefault(GLFW_KEY_RIGHT, KeyInput::usercmdButton_t::UB_MOVE_RIGHT);
