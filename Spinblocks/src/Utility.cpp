@@ -279,13 +279,18 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-						newCellEnt = cellLink.GetDestination();
 
-						if (registry.has<Components::Controllable>(blockEnt))
+						// Only move into the linked cell destination, if we can occupy it.
+						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
 						{
-							auto& controllable = registry.get<Components::Controllable>(blockEnt);
-							auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-							controllable.Set(cellLinkDestination.GetParent());
+							newCellEnt = cellLink.GetDestination();
+
+							if (registry.has<Components::Controllable>(blockEnt))
+							{
+								auto& controllable = registry.get<Components::Controllable>(blockEnt);
+								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+								controllable.Set(cellLinkDestination.GetParent());
+							}
 						}
 					}
 				}
@@ -304,13 +309,18 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-						newCellEnt = cellLink.GetDestination();
 
-						if (registry.has<Components::Controllable>(blockEnt))
+						// Only move into the linked cell destination, if we can occupy it.
+						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
 						{
-							auto& controllable = registry.get<Components::Controllable>(blockEnt);
-							auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-							controllable.Set(cellLinkDestination.GetParent());
+							newCellEnt = cellLink.GetDestination();
+
+							if (registry.has<Components::Controllable>(blockEnt))
+							{
+								auto& controllable = registry.get<Components::Controllable>(blockEnt);
+								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+								controllable.Set(cellLinkDestination.GetParent());
+							}
 						}
 					}
 				}
@@ -329,13 +339,18 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-						newCellEnt = cellLink.GetDestination();
 
-						if (registry.has<Components::Controllable>(blockEnt))
+						// Only move into the linked cell destination, if we can occupy it.
+						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
 						{
-							auto& controllable = registry.get<Components::Controllable>(blockEnt);
-							auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-							controllable.Set(cellLinkDestination.GetParent());
+							newCellEnt = cellLink.GetDestination();
+
+							if (registry.has<Components::Controllable>(blockEnt))
+							{
+								auto& controllable = registry.get<Components::Controllable>(blockEnt);
+								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+								controllable.Set(cellLinkDestination.GetParent());
+							}
 						}
 					}
 				}
@@ -354,13 +369,18 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 					if (cellLinkEnt != entt::null)
 					{
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-						newCellEnt = cellLink.GetDestination();
 
-						if (registry.has<Components::Controllable>(blockEnt))
+						// Only move into the linked cell destination, if we can occupy it.
+						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
 						{
-							auto& controllable = registry.get<Components::Controllable>(blockEnt);
-							auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-							controllable.Set(cellLinkDestination.GetParent());
+							newCellEnt = cellLink.GetDestination();
+
+							if (registry.has<Components::Controllable>(blockEnt))
+							{
+								auto& controllable = registry.get<Components::Controllable>(blockEnt);
+								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+								controllable.Set(cellLinkDestination.GetParent());
+							}
 						}
 					}
 				}
