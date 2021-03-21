@@ -657,26 +657,115 @@ void postrender(entt::registry& registry, double normalizedTime)
 
 }
 
-void ConnectGrids(entt::registry& registry, const entt::entity& lhs, moveDirection_t lhsConnectDir, const entt::entity& rhs, moveDirection_t rhsConnectDir)
+glm::ivec2 GetConnectionLine(const glm::uvec2& dimensions, const moveDirection_t& direction)
 {
-	auto lhsContainer = registry.get<Components::Container2>(lhs);
-	auto rhsContainer = registry.get<Components::Container2>(rhs);
+	switch (direction)
+	{
+	case moveDirection_t::EAST:
+		return glm::ivec2(dimensions.x, -1);
+	case moveDirection_t::NORTH:
+		return glm::ivec2(-1, dimensions.y);
+	case moveDirection_t::SOUTH:
+		return glm::ivec2(-1, 0);
+	case moveDirection_t::WEST:
+		return glm::ivec2(0, -1);
+	}
+}
+
+glm::ivec2 CombineLineCoordinates(const glm::ivec2& line, const glm::uvec2& coords)
+{
+	glm::ivec2 combined;
+
+	if (line.x == -1)
+	{
+		combined.x = coords.x;
+		combined.y = line.y;
+	}
+	else if (line.y == -1)
+	{
+		combined.x = line.x;
+		combined.y = coords.y;
+	}
+
+	return combined;
+}
+
+void ConnectGrids2(entt::registry& registry, entt::entity lhs, moveDirection_t lhsConnectDir, entt::entity rhs, moveDirection_t rhsConnectDir)
+{
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(0, 19)), Components::Coordinate(rhs, glm::uvec2(0, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(1, 19)), Components::Coordinate(rhs, glm::uvec2(1, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(2, 19)), Components::Coordinate(rhs, glm::uvec2(2, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(3, 19)), Components::Coordinate(rhs, glm::uvec2(3, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(4, 19)), Components::Coordinate(rhs, glm::uvec2(4, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(5, 19)), Components::Coordinate(rhs, glm::uvec2(5, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(6, 19)), Components::Coordinate(rhs, glm::uvec2(6, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(7, 19)), Components::Coordinate(rhs, glm::uvec2(7, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(8, 19)), Components::Coordinate(rhs, glm::uvec2(8, 0)), lhsConnectDir, rhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(lhs, glm::uvec2(9, 19)), Components::Coordinate(rhs, glm::uvec2(9, 0)), lhsConnectDir, rhsConnectDir);
+
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(0, 0)), Components::Coordinate(lhs, glm::uvec2(0, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(1, 0)), Components::Coordinate(lhs, glm::uvec2(1, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(2, 0)), Components::Coordinate(lhs, glm::uvec2(2, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(3, 0)), Components::Coordinate(lhs, glm::uvec2(3, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(4, 0)), Components::Coordinate(lhs, glm::uvec2(4, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(5, 0)), Components::Coordinate(lhs, glm::uvec2(5, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(6, 0)), Components::Coordinate(lhs, glm::uvec2(6, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(7, 0)), Components::Coordinate(lhs, glm::uvec2(7, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(8, 0)), Components::Coordinate(lhs, glm::uvec2(8, 19)), rhsConnectDir, lhsConnectDir);
+	LinkCoordinates(registry, Components::Coordinate(rhs, glm::uvec2(9, 0)), Components::Coordinate(lhs, glm::uvec2(9, 19)), rhsConnectDir, lhsConnectDir);
+
+	
+}
+
+void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lhsConnectDir, entt::entity rhs, moveDirection_t rhsConnectDir)
+{
+	// LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	// LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
+	auto& lhsContainer = registry.get<Components::Container2>(lhs);
+	auto& rhsContainer = registry.get<Components::Container2>(rhs);
 
 	auto lhsDimensions = lhsContainer.GetGridDimensions();
 	auto rhsDimensions = rhsContainer.GetGridDimensions();
 
+	if (lhsDimensions != rhsDimensions)
+		throw std::runtime_error("Grid dimensions must be identical to be connected!");
 
+	glm::ivec2 lhsLine = GetConnectionLine(lhsDimensions, lhsConnectDir);
+	glm::ivec2 rhsLine = GetConnectionLine(rhsDimensions, rhsConnectDir);
 
-	auto cellView1 = registry.view<Components::Cell, Components::Coordinate>();
-	auto cellView2 = registry.view<Components::Cell, Components::Coordinate>();
-	for (auto cell1 : cellView1)
+	auto lhsCellView = registry.view<Components::Cell, Components::Coordinate>();
+	auto rhsCellView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto lhsCellEnt : lhsCellView)
 	{
-		for (auto cell2 : cellView2)
+		auto& lhsCell = lhsCellView.get<Components::Cell>(lhsCellEnt);
+		if (lhs != lhsCell.GetParent())
+			continue;
+
+		for (auto rhsCellEnt : rhsCellView)
 		{
-			if (cell1 == cell2)
+			if (lhsCellEnt == rhsCellEnt)
 				continue;
 
+			auto& rhsCell = rhsCellView.get<Components::Cell>(rhsCellEnt);
+			if (rhs != rhsCell.GetParent())
+				continue;
 
+			auto& lhsCellCoord = lhsCellView.get<Components::Coordinate>(lhsCellEnt);
+			auto& rhsCellCoord = rhsCellView.get<Components::Coordinate>(rhsCellEnt);
+
+			//if (lhsLine.x > -1 && lhsCellCoord.Get().x == rhsCellCoord.Get().x)
+
+
+			glm::uvec2 lhsCombined = CombineLineCoordinates(lhsLine, lhsCellCoord.Get());
+			glm::uvec2 rhsCombined = CombineLineCoordinates(rhsLine, rhsCellCoord.Get());
+
+			int q = 0;
+			q++;
+			// lhs 0,-1 / 1,-1
+			// rhs 2,-1
+			//if(lhsLine.x == lhsCellCoord.Get().x && lhsLine.y == lhsCellCoord.Get().y)
+
+			//if(lhsLine.x > -1 && lhsLine.x == lhsCellCoord.Get().x && rhsCellCoord.Get().x == 
 		}
 	}
 }
@@ -856,8 +945,19 @@ int main()
 	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 19)), northBuffer, moveDirection_t::NORTH);
 	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
 
-	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
-	LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
+	ConnectGrids2(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
+
+	//LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	//LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
+
+	/*SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 17)));
+	auto debugView = registry.view<Components::Block, Components::Moveable>();
+	for (auto& entity : debugView)
+	{
+		auto& block = debugView.get<Components::Block>(entity);
+		auto& moveable = debugView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::UNMOVING);
+	}*/
 
 	//ConnectGrids(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
 	//DisconnectGrids(registry, matrix, northBuffer);
