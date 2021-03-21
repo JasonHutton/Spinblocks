@@ -251,6 +251,14 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 
 	for (unsigned int i = 0; i < distance; i++)
 	{
+		// We're moving a bunch in this function. Update our current coordiantes while doing so.
+		if (i > 0 && registry.has<Components::Coordinate>(newCellEnt))
+		{
+			auto& newCoordinate = registry.get<Components::Coordinate>(newCellEnt);
+			coordinate.Set(newCoordinate.Get());
+			coordinate.SetParent(newCoordinate.GetParent());
+		}
+
 		entt::entity tempCellEnt = newCellEnt;
 		if (!registry.has<Components::Cell>(tempCellEnt))
 			continue;
