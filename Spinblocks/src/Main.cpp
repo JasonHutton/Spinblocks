@@ -269,7 +269,7 @@ void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
 									break;
 								case movePiece_t::HARD_DROP:
 								{
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, PlayAreaHeight)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, PlayAreaHeight + BufferAreaHeight)));
 									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
 									break;
 								}
