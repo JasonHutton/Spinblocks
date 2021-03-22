@@ -482,3 +482,93 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 		}
 	}
 }
+
+// We'll want to spawn whole tetrominoes later, not just blocks.
+void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+		if (!tag.IsEnabled() || containerTag != tag.Get())
+			continue;
+
+		if (container2.IsEnabled() && tag.IsEnabled())
+		{
+			// Remove all existing controllable blocks.
+			// We probably want this more where one locks down, not here, but for now this is fine.
+			auto blockView = registry.view<Components::Block, Components::Controllable>();
+			for (auto block : blockView)
+			{
+				registry.remove_if_exists<Components::Controllable>(block);
+			}
+			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Position parentPosition = registry.get<Components::Position>(entity);
+
+			const auto piece1 = registry.create();
+			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+			registry.emplace<Components::Position>(piece1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
+			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
+			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+			registry.emplace<Components::Controllable>(piece1, entity);
+			registry.emplace<Components::Block>(piece1, entity);
+
+			// Temporary for testing. Switch directly to the falling state.
+			if (registry.has<Components::Moveable>(piece1))
+			{
+				auto& moveable = registry.get<Components::Moveable>(piece1);
+				moveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+}
+
+void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse)
+{
+	auto originCoordView = registry.view<Components::Cell, Components::Coordinate>();
+	auto destinationCoordView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto originEnt : originCoordView)
+	{
+		auto& originCoord = originCoordView.get<Components::Coordinate>(originEnt);
+		auto& originCell = originCoordView.get<Components::Cell>(originEnt);
+
+		if (originCoord.Get() != origin.Get())
+			continue;
+
+		if (originCoord.GetParent() != origin.GetParent())
+			continue;
+
+		for (auto destinationEnt : destinationCoordView)
+		{
+			if (originEnt == destinationEnt)
+				continue;
+
+			auto& destinationCoord = destinationCoordView.get<Components::Coordinate>(destinationEnt);
+			auto& destinationCell = destinationCoordView.get<Components::Cell>(destinationEnt);
+
+			if (destinationCoord.Get() != destination.Get())
+				continue;
+
+			if (destinationCoord.GetParent() != destination.GetParent())
+				continue;
+
+			const auto marker1 = registry.create();
+			registry.emplace<Components::CellLink>(marker1, originEnt, destinationEnt, moveDir);
+
+			registry.emplace<Components::Coordinate>(marker1, originCoord.GetParent(), originCoord.Get());
+			registry.emplace<Components::Position>(marker1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker1);// , originCoord.GetParent());
+
+			if (registry.has<Components::Container2>(originCell.GetParent()))
+			{
+				auto& container = registry.get<Components::Container2>(originCoord.GetParent());
+				registry.emplace<Components::Scale>(marker1, container.GetCellDimensions3());
+			}
+			registry.emplace<Components::Renderable>(marker1, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
+		}
+	}
+}
