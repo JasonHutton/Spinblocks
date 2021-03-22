@@ -4,5 +4,5 @@
 
 namespace Systems
 {
-	void PatternSystem(entt::registry& registry, double currentFrameTime);
+	int PatternSystem(entt::registry& registry, unsigned int lineWidth, double currentFrameTime);
 }

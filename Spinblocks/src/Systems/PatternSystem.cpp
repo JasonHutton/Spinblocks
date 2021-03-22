@@ -6,7 +6,7 @@
 
 namespace Systems
 {
-	void PatternSystem(entt::registry& registry, double currentFrameTime)
+	int PatternSystem(entt::registry& registry, unsigned int lineWidth, double currentFrameTime)
 	{
 		// linePattern[parentEntity][y][x] = blockEntity (Note y,x ordering, not x,y.)
 		auto linePattern = unordered_map<entt::entity, std::unordered_map<glm::uint, std::unordered_map<glm::uint, entt::entity>>>();
@@ -38,7 +38,7 @@ namespace Systems
 				{
 					// We've got a full line here!
 					size_t sizeOfLine = linePattern[static_cast<entt::entity>(p)][y].size();
-					if (sizeOfLine == PlayAreaWidth)
+					if (sizeOfLine == lineWidth)
 					{
 						linesMatched++;
 						for (glm::uint x = 0; x < linePattern[static_cast<entt::entity>(p)][y].size(); x++)
@@ -50,5 +50,7 @@ namespace Systems
 				}
 			}
 		}
+
+		return linesMatched;
 	}
 }

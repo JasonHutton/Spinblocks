@@ -536,3 +536,167 @@ TEST(ObstructionTest, Step2NorthObstructedByBlock) {
 		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x == endCoord.Get().x);
 	}
 }
+
+TEST(PatternTest, Pattern0LinesFound) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	int linesFound = Systems::PatternSystem(registry, 3, 0);
+
+	EXPECT_TRUE(linesFound == 0);
+}
+
+TEST(PatternTest, Pattern1LineFound) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	int linesFound = Systems::PatternSystem(registry, 3, 0);
+
+	EXPECT_TRUE(linesFound == 1);
+}
+
+TEST(PatternTest, Pattern2LinesFound) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	int linesFound = Systems::PatternSystem(registry, 3, 0);
+
+	EXPECT_TRUE(linesFound == 2);
+}
+
+TEST(PatternTest, Pattern3LinesFound) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(4, 4), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 2)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	int linesFound = Systems::PatternSystem(registry, 4, 0);
+
+	EXPECT_TRUE(linesFound == 3);
+}
+
+TEST(PatternTest, Pattern4LinesFound) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(4, 4), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 3)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	int linesFound = Systems::PatternSystem(registry, 4, 0);
+
+	EXPECT_TRUE(linesFound == 4);
+}

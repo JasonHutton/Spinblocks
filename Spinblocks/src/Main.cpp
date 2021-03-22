@@ -423,7 +423,7 @@ void update(entt::registry& registry, double currentFrameTime)
 	Systems::FallingSystem(registry, currentFrameTime);
 	Systems::MovementSystem(registry, currentFrameTime);
 	Systems::StateChangeSystem(registry, currentFrameTime);
-	Systems::PatternSystem(registry, currentFrameTime);
+	Systems::PatternSystem(registry, PlayAreaWidth, currentFrameTime);
 	Systems::EliminateSystem(registry, currentFrameTime);
 
 	/*auto containerView = registry.view<Components::Container, Components::Scale>();
