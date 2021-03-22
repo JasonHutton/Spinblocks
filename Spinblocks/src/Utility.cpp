@@ -484,7 +484,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 }
 
 // We'll want to spawn whole tetrominoes later, not just blocks.
-void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate)
+void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -514,7 +514,10 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
 			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
 			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
-			registry.emplace<Components::Controllable>(piece1, entity);
+			if (isControllable)
+			{
+				registry.emplace<Components::Controllable>(piece1, entity);
+			}
 			registry.emplace<Components::Block>(piece1, entity);
 
 			// Temporary for testing. Switch directly to the falling state.

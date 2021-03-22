@@ -44,5 +44,5 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const Components::Coordinate& coordinate, const moveDirection_t& direction);
 entt::entity GetActiveControllable(entt::registry& registry);
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity);
-void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate);
+void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable = true);
 void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse);
