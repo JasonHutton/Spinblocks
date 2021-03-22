@@ -37,7 +37,7 @@ namespace Systems
 				for (glm::uint y = 0; y < linePattern[static_cast<entt::entity>(p)].size(); y++)
 				{
 					// We've got a full line here!
-					int sizeOfLine = linePattern[static_cast<entt::entity>(p)][y].size();
+					size_t sizeOfLine = linePattern[static_cast<entt::entity>(p)][y].size();
 					if (sizeOfLine == PlayAreaWidth)
 					{
 						linesMatched++;
