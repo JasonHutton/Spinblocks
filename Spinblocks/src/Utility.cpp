@@ -536,8 +536,8 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 	auto destinationCoordView = registry.view<Components::Cell, Components::Coordinate>();
 	for (auto originEnt : originCoordView)
 	{
-		auto& originCoord = originCoordView.get<Components::Coordinate>(originEnt);
-		auto& originCell = originCoordView.get<Components::Cell>(originEnt);
+		const auto originCoord = originCoordView.get<Components::Coordinate>(originEnt);
+		const auto originCell = originCoordView.get<Components::Cell>(originEnt);
 
 		if (originCoord.Get() != origin.Get())
 			continue;
@@ -550,8 +550,8 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 			if (originEnt == destinationEnt)
 				continue;
 
-			auto& destinationCoord = destinationCoordView.get<Components::Coordinate>(destinationEnt);
-			auto& destinationCell = destinationCoordView.get<Components::Cell>(destinationEnt);
+			const auto destinationCoord = destinationCoordView.get<Components::Coordinate>(destinationEnt);
+			const auto destinationCell = destinationCoordView.get<Components::Cell>(destinationEnt);
 
 			if (destinationCoord.Get() != destination.Get())
 				continue;
