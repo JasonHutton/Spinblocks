@@ -34,8 +34,8 @@ namespace Components
 
 		const glm::vec2 GetCellPosition(const glm::vec3& parentPosition, const glm::uvec2& coordinates) const
 		{
-			int x = 0;
-			int y = 0;
+			float x = 0;
+			float y = 0;
 
 			x = -(m_gridDimensions.x / 2 * m_cellDimensions.x);
 			x += coordinates.x * m_cellDimensions.x;
