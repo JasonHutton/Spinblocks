@@ -418,9 +418,9 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 	// We could also just store the vector coordinate. Either way.
 	Components::Position parentPosition = registry.get<Components::Position>(parentEntity);
 
-	for (int i = 0; i < container2.GetGridDimensions().x; i++)
+	for (unsigned int i = 0; i < container2.GetGridDimensions().x; i++)
 	{
-		for (int k = 0; k < container2.GetGridDimensions().y; k++)
+		for (unsigned int k = 0; k < container2.GetGridDimensions().y; k++)
 		{
 			std::string tagName = "Grid";
 			tagName += std::to_string(i);
