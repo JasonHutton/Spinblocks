@@ -670,6 +670,8 @@ glm::ivec2 GetConnectionLine(const glm::uvec2& dimensions, const moveDirection_t
 	case moveDirection_t::WEST:
 		return glm::ivec2(0, -1);
 	}
+
+	throw std::runtime_error("GetConnectionLine(): This should never be reached. Direction not handled.");
 }
 
 glm::ivec2 CombineLineCoordinates(const glm::ivec2& line, const glm::uvec2& coords)
