@@ -366,3 +366,173 @@ TEST(GridTest, Grid3x3) {
 		}
 	}
 }
+
+TEST(ObstructionTest, Step1EastClear) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+	
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+	
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+		
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 1 == endCoord.Get().x);
+	}
+}
+
+TEST(ObstructionTest, Step1SouthObstructedByNull) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get() == endCoord.Get()); // Move was not allowed, same spot.
+	}
+}
+
+TEST(ObstructionTest, Step2EastClear) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 2 == endCoord.Get().x);
+	}
+}
+
+TEST(ObstructionTest, Step3EastObstructedByNull) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 3);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 2 == endCoord.Get().x); // Move did NOT go 3, only went 2 because it was obstructed.
+	}
+}
+
+TEST(ObstructionTest, Step1NorthObstructedByBlock) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::NORTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x == endCoord.Get().x);
+	}
+}
+
+TEST(ObstructionTest, Step2NorthObstructedByBlock) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 2)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::NORTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x == endCoord.Get().x);
+	}
+}
