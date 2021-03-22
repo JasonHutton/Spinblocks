@@ -700,3 +700,399 @@ TEST(PatternTest, Pattern4LinesFound) {
 
 	EXPECT_TRUE(linesFound == 4);
 }
+
+TEST(CellLinkTest, Step1SouthFromOutClear) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+	
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+	
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 1)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 1));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+
+TEST(CellLinkTest, Step1SouthFromInClear) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), matrix);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromOutClear) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 1)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 1));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), matrix);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromInClear) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)));
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), matrix);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+
+TEST(CellLinkTest, Step1SouthFromOutObstructed) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 1)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 1));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
+	}
+}
+
+TEST(CellLinkTest, Step1SouthFromInObstructed) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromOutObstructed1) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 1)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 1));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromOutObstructed2) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 1)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 1));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromInObstructed1) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), buffer);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+
+TEST(CellLinkTest, Step2SouthFromInObstructed2) {
+	entt::registry registry;
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto buffer = registry.create();
+	registry.emplace<Components::Position>(buffer, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(buffer);
+	registry.emplace<Components::Container2>(buffer, glm::uvec2(3, 2), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(buffer, GetTagFromContainerType(containerType_t::BUFFER));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, buffer);
+
+	LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)), Components::Coordinate(buffer, glm::uvec2(1, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
+	LinkCoordinates(registry, Components::Coordinate(buffer, glm::uvec2(1, 0)), Components::Coordinate(matrix, glm::uvec2(1, 1)), moveDirection_t::SOUTH, moveDirection_t::SOUTH);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(buffer, glm::uvec2(1, 0)));
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate, Components::Controllable>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_EQ(beginCoord.GetParent(), buffer);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(1, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 2);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_EQ(endCoord.GetParent(), matrix);
+		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
+	}
+}
