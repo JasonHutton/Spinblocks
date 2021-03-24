@@ -493,7 +493,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom);
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
-			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()));
+			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
 		}
 	}
 }
