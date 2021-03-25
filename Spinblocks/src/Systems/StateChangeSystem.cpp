@@ -12,13 +12,14 @@ namespace Systems
 			auto& block = blockView.get<Components::Block>(entity);
 			auto& moveable = registry.get<Components::Moveable>(entity);
 			auto& coordinate = registry.get<Components::Coordinate>(entity);
+			auto& obstructable = registry.get<Components::Obstructable>(entity);
 
-			if (block.IsEnabled() && moveable.IsEnabled())
+			if (block.IsEnabled() && moveable.IsEnabled() && coordinate.IsEnabled() && obstructable.IsEnabled())
 			{
 				switch (moveable.GetMovementState())
 				{
 				case Components::movementStates_t::FALL:
-					if (block.GetIsFallingObstructed() && currentFrameTime >= moveable.GetLastObstructedTime() + lockdownDelay)
+					if (obstructable.GetIsObstructed() && currentFrameTime >= moveable.GetLastObstructedTime() + lockdownDelay)
 					{
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);
@@ -29,11 +30,11 @@ namespace Systems
 					break;
 				case Components::movementStates_t::DEBUG_MOVE_UP:
 					lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
-					block.SetIsFallingObstructed(false);
+					obstructable.SetIsObstructed(false);
 					moveable.SetMovementState(Components::movementStates_t::FALL); // Reset to falling state for the next tick.
 					break;
 				case Components::movementStates_t::SOFT_DROP:
-					if (block.GetIsFallingObstructed())
+					if (obstructable.GetIsObstructed())
 					{
 						// This never gets called, probably due to the fall state being set places instead, and the obstructed flag being set from the fall state. Not necessarily a problem.
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);

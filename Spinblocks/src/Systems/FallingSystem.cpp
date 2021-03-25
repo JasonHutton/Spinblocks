@@ -10,11 +10,11 @@ namespace Systems
 		{
 			lastFallUpdate = currentFrameTime;
 
-			auto moveableViewx = registry.view<Components::Moveable, Components::Coordinate>();
-			for (auto entity : moveableViewx)
+			auto moveableView = registry.view<Components::Moveable, Components::Coordinate>();
+			for (auto entity : moveableView)
 			{
-				auto& moveable = moveableViewx.get<Components::Moveable>(entity);
-				auto& coordinate = moveableViewx.get<Components::Coordinate>(entity);
+				auto& moveable = moveableView.get<Components::Moveable>(entity);
+				auto& coordinate = moveableView.get<Components::Coordinate>(entity);
 
 				if (moveable.IsEnabled() && coordinate.IsEnabled())
 				{
@@ -36,11 +36,14 @@ namespace Systems
 							}
 							else
 							{
-								if (registry.has<Components::Block>(entity))
+								if (registry.has<Components::Obstructable>(entity))
 								{
-									auto& block = registry.get<Components::Block>(entity);
-									block.SetIsFallingObstructed(true);
-									moveable.SetLastObstructedTime(currentFrameTime);
+									auto& obstructable = registry.get<Components::Obstructable>(entity);
+									if (registry.has<Components::Block>(entity))
+									{
+										obstructable.SetIsObstructed(true);
+										moveable.SetLastObstructedTime(currentFrameTime);
+									}
 								}
 							}
 						}

@@ -25,3 +25,4 @@
 #include "Components/Hittable.h"
 #include "Components/Marker.h"
 #include "Components/CellLink.h"
+#include "Components/Obstructable.h"
