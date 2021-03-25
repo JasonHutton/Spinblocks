@@ -42,7 +42,7 @@ namespace Systems
 									if (registry.has<Components::Block>(entity))
 									{
 										obstructable.SetIsObstructed(true);
-										moveable.SetLastObstructedTime(currentFrameTime);
+										obstructable.SetLastObstructedTime(currentFrameTime);
 									}
 								}
 							}

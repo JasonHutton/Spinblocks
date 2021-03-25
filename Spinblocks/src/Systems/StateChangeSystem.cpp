@@ -19,7 +19,7 @@ namespace Systems
 				switch (moveable.GetMovementState())
 				{
 				case Components::movementStates_t::FALL:
-					if (obstructable.GetIsObstructed() && currentFrameTime >= moveable.GetLastObstructedTime() + lockdownDelay)
+					if (obstructable.GetIsObstructed() && currentFrameTime >= obstructable.GetLastObstructedTime() + lockdownDelay)
 					{
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);

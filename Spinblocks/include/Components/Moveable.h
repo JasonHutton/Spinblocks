@@ -22,7 +22,6 @@ namespace Components
 		Coordinate m_currentCoordinate;
 
 		movementStates_t m_movementState{ movementStates_t::UNMOVING };
-		double m_lastObstructedTime = 0.0;
 
 	public:
 		Moveable(const Coordinate& currentCoordinate, const Coordinate& desiredCoordiante) : m_currentCoordinate(currentCoordinate), m_desiredCoordinate(desiredCoordiante)
@@ -57,16 +56,6 @@ namespace Components
 		void SetMovementState(const movementStates_t& movementState)
 		{
 			m_movementState = movementState;
-		}
-
-		double GetLastObstructedTime() const
-		{
-			return m_lastObstructedTime;
-		}
-
-		void SetLastObstructedTime(double lastObstructedTime)
-		{
-			m_lastObstructedTime = lastObstructedTime;
 		}
 	};
 }
