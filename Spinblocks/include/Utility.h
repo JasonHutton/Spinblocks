@@ -4,31 +4,6 @@
 #include <entt/entity/registry.hpp>
 #include "Components/Includes.h"
 
-enum class movePiece_t
-{
-	MOVE_LEFT,
-	MOVE_RIGHT,
-	MOVE_UP,
-	SOFT_DROP,
-	HARD_DROP
-};
-
-enum class moveDirection_t
-{
-	NORTH,
-	SOUTH,
-	EAST,
-	WEST
-};
-
-// Ensure GetTagFromContainerType() and this enum are in sync
-enum class containerType_t
-{
-	PLAY_AREA = 0,
-	MATRIX,
-	BUFFER,
-	BAG_AREA
-};
 // Ensure containerType_t and this function are in sync
 const std::string GetTagFromContainerType(const containerType_t& t);
 
