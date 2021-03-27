@@ -226,5 +226,8 @@
     <ClInclude Include="include\Components\Tetrominos\Tetromino.h">
       <Filter>Header Files\Components\Tetrominos</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\ITetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

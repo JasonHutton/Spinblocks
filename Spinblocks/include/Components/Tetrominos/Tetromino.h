@@ -15,9 +15,28 @@ namespace Components
 		tetrominoType_t m_tetrominoType;
 
 		std::vector<entt::entity> m_blocks;
-		std::vector<Components::Coordinate> m_rotationPoints;
+		std::vector<glm::uvec2> m_blockPattern;
+		std::vector<glm::uvec2> m_rotationPoints;
+
+	public:
+		// Width of the defining pattern of the Tetromino
+		static const int PatternWidth = 3;
+		// Height of the defining pattern of the Tetromino
+		static const int PatternHeight = 3;
 
 		// virtual method to determine pattern based on table and rotation adn etc
+	protected:
+		/*
+		* Virtual method to define the pattern of blocks that compose this Tetromino
+		* This pattern should always be defined from a North facing.
+		* Origin should be considered to be lower-left.
+		*/
+		virtual void DefineBlockPattern() = 0;
+		/*
+		* Rotation Points use the same origin as block patterns.
+		* The first rotation point is the starting center of the Tetromino
+		*/
+		virtual void DefineRotationPoints() = 0;
 
 	public:
 		Tetromino(const tetrominoType_t& tetrominoType) : m_tetrominoType(tetrominoType)
@@ -45,6 +64,11 @@ namespace Components
 		{
 			// What we actually want to do here is signal all the Blocks that are part of this Tetromino.
 			// TODO FIXME
+		}
+
+		glm::vec2 GetOffsetPosition(int blockIndex)
+		{
+			return m_blockPattern[blockIndex] - m_rotationPoints[0];
 		}
 	};
 }

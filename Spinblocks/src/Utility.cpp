@@ -579,30 +579,41 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 
 void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
 {
-	int tetrominoGridSize;
-	switch (tetrominoType)
-	{
-	case tetrominoType_t::O:
-	case tetrominoType_t::I:
-		tetrominoGridSize = 4;
-		break;
-	default:
-		tetrominoGridSize = 3;
-	}
-
 	const auto tetromino = registry.create();
 	registry.emplace<Components::Coordinate>(tetromino, spawnCoordinate.GetParent(), spawnCoordinate.Get());
-	registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * tetrominoGridSize, cellHeight * tetrominoGridSize));
+	
 	registry.emplace<Components::Position>(tetromino);
 	registry.emplace<Components::DerivePositionFromCoordinates>(tetromino, entt::null, glm::uvec2(cellWidth / 2, cellHeight / 2));
-	registry.emplace<Components::Container2>(tetromino, glm::uvec2(tetrominoGridSize, tetrominoGridSize), glm::uvec2(cellWidth, cellHeight));
+
 	//registry.emplace<Components::Tag>(tetromino, GetTagFromContainerType(containerType_t::BUFFER));
 	switch (tetrominoType)
 	{
 	case tetrominoType_t::I:
+		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::ITetromino::PatternWidth, cellHeight * Components::ITetromino::PatternHeight));
+		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::PatternWidth, Components::ITetromino::PatternHeight), glm::uvec2(cellWidth, cellHeight));
+		registry.emplace<Components::ITetromino>(tetromino);
+		break;
+	case tetrominoType_t::O:
+	{
+		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::OTetromino::PatternWidth, cellHeight * Components::OTetromino::PatternHeight));
+		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::PatternWidth, Components::OTetromino::PatternHeight), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::OTetromino>(tetromino);
+
+		Components::OTetromino oTetromino = registry.get<Components::OTetromino>(tetromino);
+
+		for (int i = 0; i < 4; i++)
+		{
+			SpawnBlock(registry, containerTag,
+				Components::Coordinate(spawnCoordinate.GetParent(),
+					glm::uvec2(spawnCoordinate.Get().x - oTetromino.GetOffsetPosition(i).x,
+						spawnCoordinate.Get().y - oTetromino.GetOffsetPosition(i).y)),
+				false);
+		}
+
+	}
 		break;
 	default:
+		assert(false);
 		break;
 	}
 	if (isControllable)
