@@ -216,6 +216,8 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Scale.h" />
     <ClInclude Include="include\Components\ScaleToCellDimensions.h" />
     <ClInclude Include="include\Components\Tag.h" />
+    <ClInclude Include="include\Components\Tetrominos\OTetromino.h" />
+    <ClInclude Include="include\Components\Tetrominos\Tetromino.h" />
     <ClInclude Include="include\GameTime.h" />
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\Input\ContextControl.h" />

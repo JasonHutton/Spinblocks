@@ -34,6 +34,9 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{dbe7db25-2c45-4b72-beed-19dac1e1299a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components\Tetrominos">
+      <UniqueIdentifier>{6830e11c-7b73-4146-8771-cf0159786d47}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -216,6 +219,12 @@
     </ClInclude>
     <ClInclude Include="include\Components\Obstructable.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\OTetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\Tetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

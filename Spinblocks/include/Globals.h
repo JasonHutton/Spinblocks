@@ -32,3 +32,14 @@ enum class moveDirection_t
 	EAST,
 	WEST
 };
+
+enum class tetrominoType_t
+{
+	T,
+	J,
+	Z,
+	O,
+	L,
+	S,
+	I
+};

@@ -576,3 +576,92 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 		}
 	}
 }
+
+void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
+{
+	int tetrominoGridSize;
+	switch (tetrominoType)
+	{
+	case tetrominoType_t::O:
+	case tetrominoType_t::I:
+		tetrominoGridSize = 4;
+		break;
+	default:
+		tetrominoGridSize = 3;
+	}
+
+	const auto tetromino = registry.create();
+	registry.emplace<Components::Coordinate>(tetromino, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+	registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * tetrominoGridSize, cellHeight * tetrominoGridSize));
+	registry.emplace<Components::Position>(tetromino);
+	registry.emplace<Components::DerivePositionFromCoordinates>(tetromino, entt::null, glm::uvec2(cellWidth / 2, cellHeight / 2));
+	registry.emplace<Components::Container2>(tetromino, glm::uvec2(tetrominoGridSize, tetrominoGridSize), glm::uvec2(cellWidth, cellHeight));
+	//registry.emplace<Components::Tag>(tetromino, GetTagFromContainerType(containerType_t::BUFFER));
+	switch (tetrominoType)
+	{
+	case tetrominoType_t::I:
+		registry.emplace<Components::OTetromino>(tetromino);
+		break;
+	default:
+		break;
+	}
+	if (isControllable)
+	{
+		registry.emplace<Components::Controllable>(tetromino, spawnCoordinate.GetParent());
+	}
+	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/lightblue.obj"));
+	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
+
+
+
+
+
+
+
+
+
+	/*
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+		if (!tag.IsEnabled() || containerTag != tag.Get())
+			continue;
+
+		if (container2.IsEnabled() && tag.IsEnabled())
+		{
+			// Remove all existing controllable blocks.
+			// We probably want this more where one locks down, not here, but for now this is fine.
+			auto blockView = registry.view<Components::Block, Components::Controllable>();
+			for (auto block : blockView)
+			{
+				registry.remove_if_exists<Components::Controllable>(block);
+			}
+			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Position parentPosition = registry.get<Components::Position>(entity);
+
+			const auto piece1 = registry.create();
+			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+			registry.emplace<Components::Position>(piece1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
+			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/lightblue.obj"));
+			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+			if (isControllable)
+			{
+				registry.emplace<Components::Controllable>(piece1, entity);
+			}
+			registry.emplace<Components::Block>(piece1, entity);
+
+			// Temporary for testing. Switch directly to the falling state.
+			if (registry.has<Components::Moveable>(piece1))
+			{
+				auto& moveable = registry.get<Components::Moveable>(piece1);
+				moveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+	*/
+}

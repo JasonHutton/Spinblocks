@@ -272,7 +272,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
+				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
+				//SpawnTetromino(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
+				SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::O);
 
 				break;
 			}

@@ -3,6 +3,7 @@
 #include <string>
 #include <entt/entity/registry.hpp>
 #include "Components/Includes.h"
+#include "Systems/SystemShared.h"
 
 // Ensure containerType_t and this function are in sync
 const std::string GetTagFromContainerType(const containerType_t& t);
@@ -21,3 +22,4 @@ entt::entity GetActiveControllable(entt::registry& registry);
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity);
 void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable = true);
 void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse);
+void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable = true);

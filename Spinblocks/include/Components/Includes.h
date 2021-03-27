@@ -26,3 +26,5 @@
 #include "Components/Marker.h"
 #include "Components/CellLink.h"
 #include "Components/Obstructable.h"
+#include "Components/Tetrominos/Tetromino.h"
+#include "Components/Tetrominos/OTetromino.h"

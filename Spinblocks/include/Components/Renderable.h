@@ -12,6 +12,7 @@ namespace Components
 		RL_CONTAINER,
 		RL_CELL,
 		RL_MARKER,
+		RL_TETROMINO,
 		RL_BLOCK,
 		RL_MAX
 	};
