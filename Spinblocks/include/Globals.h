@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 inline struct displayData_t
 {
 	int x{ 800 };

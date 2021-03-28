@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "Components/Includes.h"
 #include <entt/entity/registry.hpp>
+#include <string>
 
 enum class moveDirection_t;
 
@@ -23,6 +24,8 @@ namespace Components
 		static const int PatternWidth = 3;
 		// Height of the defining pattern of the Tetromino
 		static const int PatternHeight = 3;
+	//public:
+		//static const std::string BlockModelPath;
 
 		// virtual method to determine pattern based on table and rotation adn etc
 	protected:

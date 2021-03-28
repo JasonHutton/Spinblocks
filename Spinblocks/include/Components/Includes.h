@@ -29,3 +29,5 @@
 #include "Components/Tetrominos/Tetromino.h"
 #include "Components/Tetrominos/OTetromino.h"
 #include "Components/Tetrominos//ITetromino.h"
+
+#include "Components/Follower.h"

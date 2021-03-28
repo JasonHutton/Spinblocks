@@ -531,6 +531,45 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
+void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
+		if (!tag.IsEnabled() || containerTag != tag.Get())
+			continue;
+
+		if (container2.IsEnabled() && tag.IsEnabled())
+		{
+			// Remove all existing controllable blocks.
+			// We probably want this more where one locks down, not here, but for now this is fine.
+			auto blockView = registry.view<Components::Block, Components::Controllable>();
+			for (auto block : blockView)
+			{
+				registry.remove_if_exists<Components::Controllable>(block);
+			}
+			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Position parentPosition = registry.get<Components::Position>(entity);
+
+			const auto piece1 = registry.create();
+			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+			registry.emplace<Components::Position>(piece1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
+			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
+			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+
+			registry.emplace<Components::Block>(piece1, entity);
+			registry.emplace<Components::Obstructable>(piece1, entity);
+			//registry.emplace<Components::Follower>(piece1, followedEntity);
+
+		}
+	}
+}
+
 void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse)
 {
 	auto originCoordView = registry.view<Components::Cell, Components::Coordinate>();
@@ -608,6 +647,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 					glm::uvec2(spawnCoordinate.Get().x - oTetromino.GetOffsetPosition(i).x,
 						spawnCoordinate.Get().y - oTetromino.GetOffsetPosition(i).y)),
 				false);
+			SpawnFollowerBlock(registry, containerTag, spawnCoordinate, tetromino);
 		}
 
 	}
