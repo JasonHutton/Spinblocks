@@ -275,6 +275,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
 				//SpawnTetromino(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
 				SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::O);
+				//SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::I);
 
 				break;
 			}

@@ -16,8 +16,8 @@ namespace Components
 		tetrominoType_t m_tetrominoType;
 
 		std::vector<entt::entity> m_blocks;
-		std::vector<glm::uvec2> m_blockPattern;
-		std::vector<glm::uvec2> m_rotationPoints;
+		std::vector<glm::vec2> m_blockPattern;
+		std::vector<glm::vec2> m_rotationPoints;
 
 	public:
 		// Width of the defining pattern of the Tetromino
@@ -78,9 +78,19 @@ namespace Components
 			// TODO FIXME
 		}
 
-		glm::vec2 GetOffsetPosition(int blockIndex)
+		glm::vec2 GetBlockOffsetCoordinates(int blockIndex, int rotationIndex = 0)
 		{
-			return m_blockPattern[blockIndex] - m_rotationPoints[0];
+			return m_blockPattern[blockIndex] - m_rotationPoints[rotationIndex];
+		}
+
+		glm::vec2 GetRotationPoints(int blockIndex)
+		{
+			return m_rotationPoints[blockIndex];
+		}
+
+		glm::vec2 GetBlockPattern(int blockIndex)
+		{
+			return m_blockPattern[blockIndex];
 		}
 	};
 }

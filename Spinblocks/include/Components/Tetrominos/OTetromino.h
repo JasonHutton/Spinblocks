@@ -9,19 +9,19 @@ namespace Components
 	protected:
 		void DefineBlockPattern() override
 		{
-			m_blockPattern.push_back(glm::uvec2(1, 1));
-			m_blockPattern.push_back(glm::uvec2(2, 1));
-			m_blockPattern.push_back(glm::uvec2(1, 2));
-			m_blockPattern.push_back(glm::uvec2(2, 2));
+			m_blockPattern.push_back(glm::vec2(1, 1));
+			m_blockPattern.push_back(glm::vec2(2, 1));
+			m_blockPattern.push_back(glm::vec2(1, 2));
+			m_blockPattern.push_back(glm::vec2(2, 2));
 		}
 
 		void DefineRotationPoints() override
 		{
-			m_rotationPoints.push_back(glm::uvec2(1, 1));
-			m_rotationPoints.push_back(glm::uvec2(1, 1));
-			m_rotationPoints.push_back(glm::uvec2(1, 1));
-			m_rotationPoints.push_back(glm::uvec2(1, 1));
-			m_rotationPoints.push_back(glm::uvec2(1, 1));
+			m_rotationPoints.push_back(glm::vec2(1, 1));
+			m_rotationPoints.push_back(glm::vec2(1, 1));
+			m_rotationPoints.push_back(glm::vec2(1, 1));
+			m_rotationPoints.push_back(glm::vec2(1, 1));
+			m_rotationPoints.push_back(glm::vec2(1, 1));
 		}
 	public:
 		static const std::string GetBlockModelPath()
