@@ -23,6 +23,11 @@ namespace Components
 			m_rotationPoints.push_back(glm::uvec2(1, 1));
 			m_rotationPoints.push_back(glm::uvec2(1, 1));
 		}
+	public:
+		static const std::string GetBlockModelPath()
+		{
+			return "./data/block/yellow.obj";
+		}
 
 	public:
 		OTetromino() :Tetromino(tetrominoType_t::O)

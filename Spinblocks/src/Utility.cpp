@@ -531,7 +531,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
-void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity)
+void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -558,7 +558,7 @@ void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTa
 			registry.emplace<Components::Position>(piece1);
 			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
 			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
+			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model(blockModelPath));
 			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
 			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
 
@@ -628,26 +628,28 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	switch (tetrominoType)
 	{
 	case tetrominoType_t::I:
-		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::ITetromino::PatternWidth, cellHeight * Components::ITetromino::PatternHeight));
-		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::PatternWidth, Components::ITetromino::PatternHeight), glm::uvec2(cellWidth, cellHeight));
+	{
+		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::ITetromino::GetPatternWidth(), cellHeight * Components::ITetromino::GetPatternHeight()));
+		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::GetPatternWidth(), Components::ITetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::ITetromino>(tetromino);
+	}
 		break;
 	case tetrominoType_t::O:
 	{
-		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::OTetromino::PatternWidth, cellHeight * Components::OTetromino::PatternHeight));
-		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::PatternWidth, Components::OTetromino::PatternHeight), glm::uvec2(cellWidth, cellHeight));
+		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::OTetromino::GetPatternWidth(), cellHeight * Components::OTetromino::GetPatternHeight()));
+		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::GetPatternWidth(), Components::OTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::OTetromino>(tetromino);
 
 		Components::OTetromino oTetromino = registry.get<Components::OTetromino>(tetromino);
 
 		for (int i = 0; i < 4; i++)
 		{
-			SpawnBlock(registry, containerTag,
+			/*SpawnBlock(registry, containerTag,
 				Components::Coordinate(spawnCoordinate.GetParent(),
 					glm::uvec2(spawnCoordinate.Get().x - oTetromino.GetOffsetPosition(i).x,
 						spawnCoordinate.Get().y - oTetromino.GetOffsetPosition(i).y)),
-				false);
-			SpawnFollowerBlock(registry, containerTag, spawnCoordinate, tetromino);
+				false);*/
+			SpawnFollowerBlock(registry, containerTag, spawnCoordinate, tetromino, Components::OTetromino::GetBlockModelPath());
 		}
 
 	}

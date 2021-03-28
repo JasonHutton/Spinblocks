@@ -8,9 +8,20 @@ namespace Components
 	{
 	public:
 		// Width of the defining pattern of the Tetromino
-		static const int PatternWidth = 4;
+		static const int GetPatternWidth()
+		{
+			return 4;
+		}
 		// Height of the defining pattern of the Tetromino
-		static const int PatternHeight = 4;
+		static const int GetPatternHeight()
+		{
+			return 4;
+		}
+	public:
+		static const std::string GetBlockModelPath()
+		{
+			return "./data/block/lightblue.obj";
+		}
 
 	protected:
 		void DefineBlockPattern() override

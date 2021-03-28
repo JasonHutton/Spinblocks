@@ -37,9 +37,6 @@
     <Filter Include="Header Files\Components\Tetrominos">
       <UniqueIdentifier>{6830e11c-7b73-4146-8771-cf0159786d47}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Components\Tetrominos">
-      <UniqueIdentifier>{d9b87e6b-93de-43fe-905e-c8cf524ef43d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
