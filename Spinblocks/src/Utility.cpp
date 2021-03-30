@@ -555,7 +555,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
-const entt::entity& SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
+entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -667,14 +667,14 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::GetPatternWidth(), Components::ITetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::ITetromino>(tetromino);
 
-		Components::ITetromino iTetromino = registry.get<Components::ITetromino>(tetromino);
+		auto& iTetromino = registry.get<Components::ITetromino>(tetromino);
 
 		for (int i = 0; i < 4; i++)
 		{
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
 				(glm::vec2)spawnCoordinate.Get() + iTetromino.GetBlockOffsetCoordinates(i));
 
-			const entt::entity& blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
+			entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
 			iTetromino.AddBlock(blockEnt);
 		}
 	}
@@ -685,14 +685,14 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::GetPatternWidth(), Components::OTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::OTetromino>(tetromino);
 
-		Components::OTetromino oTetromino = registry.get<Components::OTetromino>(tetromino);
+		auto& oTetromino = registry.get<Components::OTetromino>(tetromino);
 
 		for (int i = 0; i < 4; i++)
 		{
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
 				(glm::vec2)spawnCoordinate.Get() + oTetromino.GetBlockOffsetCoordinates(i));
 
-			const entt::entity& blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
+			entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
 			oTetromino.AddBlock(blockEnt);
 		}
 

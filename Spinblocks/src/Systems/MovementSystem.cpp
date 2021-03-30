@@ -29,7 +29,19 @@ namespace Systems
 				auto& leader = registry.get<Components::OTetromino>(follower.Get()); // FIXME TODO tetromino type issue.
 				auto& leaderMoveable = registry.get<Components::Moveable>(follower.Get());
 
-				moveable.SetDesiredCoordinate(leaderMoveable.GetDesiredCoordinate());
+				int i;
+				for (i = 0; i < 4; i++)
+				{
+					if (leader.GetBlock(i) == entity)
+					{
+						break;
+					}
+				}
+
+				auto offsetCoordinate = Components::Coordinate(leaderMoveable.GetDesiredCoordinate().GetParent(),
+					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader.GetBlockOffsetCoordinates(i));
+
+				moveable.SetDesiredCoordinate(offsetCoordinate);
 				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
 				{
 					// Need to detect if a move is allowed before permitting it.
