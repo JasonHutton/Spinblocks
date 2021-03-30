@@ -133,6 +133,50 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 	}
 }
 
+void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
+{
+	/*
+	auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+	for (auto entity : controllableView)
+	{
+		auto& controllable = controllableView.get<Components::Controllable>(entity);
+		auto& moveable = controllableView.get<Components::Moveable>(entity);
+
+		try
+		{
+			switch (movePiece)
+			{
+			case movePiece_t::MOVE_LEFT:
+				moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::WEST, 1)));
+				break;
+			case movePiece_t::MOVE_RIGHT:
+				moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::EAST, 1)));
+				break;
+			case movePiece_t::MOVE_UP:
+				moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::NORTH, 1)));
+				moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
+				break;
+			case movePiece_t::SOFT_DROP:
+				moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, 1)));
+				moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
+				break;
+			case movePiece_t::HARD_DROP:
+			{
+				moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, PlayAreaHeight + BufferAreaHeight)));
+				moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		catch (std::runtime_error ex)
+		{
+			cerr << ex.what() << endl;
+		}
+	}*/
+}
+
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
 // As we'll only really have one piece moving at a time, probably fine. Change later if not.
 void MovePiece(entt::registry& registry, const movePiece_t& movePiece)

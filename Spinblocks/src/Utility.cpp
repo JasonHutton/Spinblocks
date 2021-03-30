@@ -55,7 +55,14 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 	throw std::runtime_error("Unable to find tag of container entity!");
 }
 
-bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity, const bool& disableObstruction)
+bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
+{
+	return registry.any</*Components::Tetromino, */
+		Components::OTetromino, 
+		Components::ITetromino>(ent);
+}
+
+bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
 		return false;
@@ -72,24 +79,41 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity, con
 	if (!cell.IsEnabled() || !cellCoordinate.IsEnabled())
 		return false;
 
+	if (IsEntityTetromino(registry, blockEnt))
+		return true; // This needs better logic. All blocks in a tetrominor should be queried, before allowing a move.
+
 	// Don't check for obstructions. Sooooo, we're able to move into here regardless without further checks.
 	if (disableObstruction)
 		return true;
 
 	auto blockView = registry.view<Components::Block, Components::Coordinate>();
-	for (auto blockEntity : blockView)
+	for (auto obstructingBlockEntity : blockView)
 	{
-		auto& block = registry.get<Components::Block>(blockEntity);
-		auto& blockCoordinate = registry.get<Components::Coordinate>(blockEntity);
+		auto& obstructingBlock = registry.get<Components::Block>(obstructingBlockEntity);
+		auto& obstructingBlockCoordinate = registry.get<Components::Coordinate>(obstructingBlockEntity);
 
-		if (block.IsEnabled() && blockCoordinate.IsEnabled())
+		if (obstructingBlock.IsEnabled() && obstructingBlockCoordinate.IsEnabled())
 		{
-			auto& container2 = registry.get<Components::Container2>(block.Get());
+			auto& container2 = registry.get<Components::Container2>(obstructingBlock.Get());
 
-			if (blockCoordinate == cellCoordinate)
+			if (obstructingBlockCoordinate == cellCoordinate)
 			{
-				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
-				return false;
+				if (registry.has<Components::Follower>(obstructingBlockEntity) && registry.has<Components::Follower>(blockEnt))
+				{
+					auto& follower = registry.get<Components::Follower>(blockEnt);
+					auto& obstructedFollower = registry.get<Components::Follower>(obstructingBlockEntity);
+
+					if (follower.Get() != obstructedFollower.Get())
+					{
+						// We're not following the same entity. Obstruct one another.
+						return false;
+					}
+				}
+				else
+				{
+					// At least one of the blocks are are not following, resolve obstruction as normal.
+					return false;
+				}
 			}
 		}
 	}
@@ -267,7 +291,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 		switch (direction)
 		{
 		case moveDirection_t::NORTH:
-			if (CanOccupyCell(registry, tempCell.GetNorth(), disableObstruction))
+			if (CanOccupyCell(registry, blockEnt, tempCell.GetNorth(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetNorth();
 			}
@@ -281,7 +305,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
 
 						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
+						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
 						{
 							newCellEnt = cellLink.GetDestination();
 
@@ -297,7 +321,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 			}
 			break;
 		case moveDirection_t::SOUTH:
-			if (CanOccupyCell(registry, tempCell.GetSouth(), disableObstruction))
+			if (CanOccupyCell(registry, blockEnt, tempCell.GetSouth(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetSouth();
 			}
@@ -311,7 +335,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
 
 						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
+						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
 						{
 							newCellEnt = cellLink.GetDestination();
 
@@ -327,7 +351,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 			}
 			break;
 		case moveDirection_t::EAST:
-			if (CanOccupyCell(registry, tempCell.GetEast(), disableObstruction))
+			if (CanOccupyCell(registry, blockEnt, tempCell.GetEast(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetEast();
 			}
@@ -341,7 +365,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
 
 						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
+						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
 						{
 							newCellEnt = cellLink.GetDestination();
 
@@ -357,7 +381,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 			}
 			break;
 		case moveDirection_t::WEST:
-			if (CanOccupyCell(registry, tempCell.GetWest(), disableObstruction))
+			if (CanOccupyCell(registry, blockEnt, tempCell.GetWest(), disableObstruction))
 			{
 				newCellEnt = tempCell.GetWest();
 			}
@@ -371,7 +395,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
 
 						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, cellLink.GetDestination(), disableObstruction))
+						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
 						{
 							newCellEnt = cellLink.GetDestination();
 
@@ -531,7 +555,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 	}
 }
 
-void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
+const entt::entity& SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -564,10 +588,20 @@ void SpawnFollowerBlock(entt::registry& registry, const std::string& containerTa
 
 			registry.emplace<Components::Block>(piece1, entity);
 			registry.emplace<Components::Obstructable>(piece1, entity);
-			//registry.emplace<Components::Follower>(piece1, followedEntity);
+			registry.emplace<Components::Follower>(piece1, followedEntity);
 
+			// Temporary for testing. Switch directly to the falling state.
+			if (registry.has<Components::Moveable>(piece1))
+			{
+				auto& moveable = registry.get<Components::Moveable>(piece1);
+				moveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+
+			return piece1;
 		}
 	}
+
+	return entt::null;
 }
 
 void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse)
@@ -640,7 +674,8 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
 				(glm::vec2)spawnCoordinate.Get() + iTetromino.GetBlockOffsetCoordinates(i));
 
-			SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
+			const entt::entity& blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
+			iTetromino.AddBlock(blockEnt);
 		}
 	}
 		break;
@@ -657,7 +692,8 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
 				(glm::vec2)spawnCoordinate.Get() + oTetromino.GetBlockOffsetCoordinates(i));
 
-			SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
+			const entt::entity& blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
+			oTetromino.AddBlock(blockEnt);
 		}
 
 	}
@@ -673,8 +709,12 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/lightblue.obj"));
 	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
 
-
-
+	// Temporary for testing. Switch directly to the falling state.
+	if (registry.has<Components::Moveable>(tetromino))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tetromino);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
+	}
 
 
 

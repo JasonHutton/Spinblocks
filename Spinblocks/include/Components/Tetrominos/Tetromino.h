@@ -78,6 +78,16 @@ namespace Components
 			// TODO FIXME
 		}
 
+		void AddBlock(entt::entity block)
+		{
+			m_blocks.push_back(block);
+		}
+
+		const entt::entity& GetBlock(int blockIndex) const
+		{
+			return m_blocks[blockIndex];
+		}
+
 		glm::vec2 GetBlockOffsetCoordinates(int blockIndex, int rotationIndex = 0)
 		{
 			return m_blockPattern[blockIndex] - m_rotationPoints[rotationIndex];

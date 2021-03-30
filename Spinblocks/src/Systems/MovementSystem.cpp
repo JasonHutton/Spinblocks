@@ -1,11 +1,45 @@
 #include "Systems/MovementSystem.h"
 #include "Utility.h"
+#include <set>
 
 namespace Systems
 {
 	void MovementSystem(entt::registry& registry, double currentFrameTime)
 	{
-		auto moveableView = registry.view<Components::Moveable, Components::Coordinate>();
+		std::set<entt::entity> leaderEntities;
+		auto followerView = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
+		for (auto entity : followerView)
+		{
+			auto& moveable = followerView.get<Components::Moveable>(entity);
+			auto& coordinate = followerView.get<Components::Coordinate>(entity);
+			auto& follower = followerView.get<Components::Follower>(entity);
+
+			leaderEntities.insert(follower.Get());
+		}
+
+		auto followerView2 = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
+		for (auto entity : followerView2)
+		{
+			auto& moveable = followerView2.get<Components::Moveable>(entity);
+			auto& coordinate = followerView2.get<Components::Coordinate>(entity);
+			auto& follower = followerView2.get<Components::Follower>(entity);
+
+			if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
+			{
+				auto& leader = registry.get<Components::OTetromino>(follower.Get()); // FIXME TODO tetromino type issue.
+				auto& leaderMoveable = registry.get<Components::Moveable>(follower.Get());
+
+				moveable.SetDesiredCoordinate(leaderMoveable.GetDesiredCoordinate());
+				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+				{
+					// Need to detect if a move is allowed before permitting it.
+					coordinate = moveable.GetDesiredCoordinate();
+					moveable.SetCurrentCoordinate(coordinate);
+				}
+			}
+		}
+
+		auto moveableView = registry.view<Components::Moveable, Components::Coordinate>(entt::exclude<Components::Follower>);
 		for (auto entity : moveableView)
 		{
 			auto& moveable = moveableView.get<Components::Moveable>(entity);

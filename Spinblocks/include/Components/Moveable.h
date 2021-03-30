@@ -8,6 +8,7 @@ namespace Components
 	enum class movementStates_t
 	{
 		UNMOVING,
+		FOLLOWING,
 		FALL,
 		DEBUG_MOVE_UP,
 		SOFT_DROP,
