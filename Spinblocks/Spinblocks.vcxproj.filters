@@ -217,5 +217,8 @@
     <ClInclude Include="include\Components\Obstructable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Obstructs.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -26,3 +26,4 @@
 #include "Components/Marker.h"
 #include "Components/CellLink.h"
 #include "Components/Obstructable.h"
+#include "Components/Obstructs.h"

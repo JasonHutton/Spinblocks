@@ -520,6 +520,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			}
 			registry.emplace<Components::Block>(piece1, entity);
 			registry.emplace<Components::Obstructable>(piece1, entity);
+			registry.emplace<Components::Obstructs>(piece1);
 
 			// Temporary for testing. Switch directly to the falling state.
 			if (registry.has<Components::Moveable>(piece1))
