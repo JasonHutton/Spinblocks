@@ -56,6 +56,8 @@ namespace Components
 			return (lhs.GetParent() != rhs.GetParent()) || !glm::all(glm::equal(lhs.m_coordinate, rhs.m_coordinate));
 		}
 	public:
+		// This isn't suitable for using as a comparison, as with set.insert(), as it doesn't fully compare things. Need to doublecheck if that can be corrected without breaking things.
+		// GLM does have a less than comparison function...
 		friend bool operator<(const Coordinate& lhs, const Coordinate& rhs)
 		{
 			if (lhs.GetParent() < rhs.GetParent())
