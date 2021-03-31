@@ -13,6 +13,7 @@ namespace Systems
 			auto& moveable = registry.get<Components::Moveable>(entity);
 			auto& coordinate = registry.get<Components::Coordinate>(entity);
 			auto& obstructable = registry.get<Components::Obstructable>(entity);
+			auto& obstructs = registry.get<Components::Obstructs>(entity);
 
 			if (block.IsEnabled() && moveable.IsEnabled() && coordinate.IsEnabled() && obstructable.IsEnabled())
 			{

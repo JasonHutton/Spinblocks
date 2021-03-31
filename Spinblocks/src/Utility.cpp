@@ -544,6 +544,7 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 			}
 			registry.emplace<Components::Block>(piece1, entity);
 			registry.emplace<Components::Obstructable>(piece1, entity);
+			registry.emplace<Components::Obstructs>(piece1);
 
 			// Temporary for testing. Switch directly to the falling state.
 			if (registry.has<Components::Moveable>(piece1))
@@ -588,6 +589,7 @@ entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& con
 
 			registry.emplace<Components::Block>(piece1, entity);
 			registry.emplace<Components::Obstructable>(piece1, entity);
+			registry.emplace<Components::Obstructs>(piece1);
 			registry.emplace<Components::Follower>(piece1, followedEntity);
 
 			// Temporary for testing. Switch directly to the falling state.

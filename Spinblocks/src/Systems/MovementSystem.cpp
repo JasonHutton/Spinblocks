@@ -83,7 +83,7 @@ namespace Systems
 						if (registry.has<Components::Obstructable>(entity))
 						{
 							auto& obstructable = registry.get<Components::Obstructable>(entity);
-							if (registry.has<Components::Block>(entity))
+							if (registry.has<Components::Obstructs>(entity))
 							{
 								obstructable.SetIsObstructed(true);
 							}
