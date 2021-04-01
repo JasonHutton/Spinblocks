@@ -28,4 +28,4 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable = true);
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent);
 Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity);
-bool IsAnyBlockInTetrominoObstructed(entt::registry& registry, entt::entity ent);
+bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity, const entt::entity& cellEntity, const bool& disableObstruction);
