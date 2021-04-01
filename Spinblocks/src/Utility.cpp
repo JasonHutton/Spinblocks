@@ -267,7 +267,7 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 			entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 			if (cellLinkEnt != entt::null)
 			{
-				auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+				const auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
 
 				// Only move into the linked cell destination, if we can occupy it.
 				if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
@@ -277,7 +277,7 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 					if (registry.has<Components::Controllable>(blockEnt))
 					{
 						auto& controllable = registry.get<Components::Controllable>(blockEnt);
-						auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+						const auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
 						controllable.Set(cellLinkDestination.GetParent());
 					}
 				}
@@ -298,8 +298,8 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 */
 entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance, const bool& disableObstruction)
 {
-	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
-	auto& moveable = registry.get<Components::Moveable>(blockEnt);
+	auto coordinate = registry.get<Components::Coordinate>(blockEnt); // We do NOT want a reference here, we want a copy.
+	//auto& moveable = registry.get<Components::Moveable>(blockEnt);
 
 	entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
 	if (cellEnt == entt::null)
@@ -312,7 +312,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 		// We're moving a bunch in this function. Update our current coordiantes while doing so.
 		if (i > 0 && registry.has<Components::Coordinate>(newCellEnt))
 		{
-			auto& newCoordinate = registry.get<Components::Coordinate>(newCellEnt);
+			const auto& newCoordinate = registry.get<Components::Coordinate>(newCellEnt);
 			coordinate.Set(newCoordinate.Get());
 			coordinate.SetParent(newCoordinate.GetParent());
 		}
@@ -320,7 +320,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 		entt::entity tempCellEnt = newCellEnt;
 		if (!registry.has<Components::Cell>(tempCellEnt))
 			continue;
-		Components::Cell& tempCell = registry.get<Components::Cell>(tempCellEnt);
+		const auto& tempCell = registry.get<Components::Cell>(tempCellEnt);
 
 		newCellEnt = MoveBlockInDirection2(registry, blockEnt, direction, coordinate, newCellEnt, tempCell, disableObstruction);
 	}
