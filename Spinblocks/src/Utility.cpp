@@ -62,6 +62,23 @@ bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 		Components::ITetromino>(ent);
 }
 
+Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity)
+{
+	if (entity == entt::null)
+		return NULL;
+
+	if (!IsEntityTetromino(registry, entity))
+		return NULL;
+
+	if (registry.has<Components::OTetromino>(entity))
+		return &registry.get<Components::OTetromino>(entity);
+
+	if (registry.has<Components::ITetromino>(entity))
+		return &registry.get<Components::ITetromino>(entity);
+
+	return NULL;
+}
+
 bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
