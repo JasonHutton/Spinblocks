@@ -57,6 +57,9 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 {
+	if (ent == entt::null)
+		return false;
+
 	return registry.any</*Components::Tetromino, */
 		Components::OTetromino, 
 		Components::ITetromino>(ent);
@@ -79,6 +82,76 @@ Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::en
 	return NULL;
 }
 
+// Take a closer look at this and CanOccupyCell tomorrow....
+bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity)
+{
+	if (entity == entt::null)
+		return false;
+
+	if (!IsEntityTetromino(registry, entity))
+		return false;
+
+	Components::Tetromino* tetromino = GetTetrominoFromEntity(registry, entity);
+	auto& tmoveable = registry.get<Components::Moveable>(entity);
+	
+	//tetromino->
+
+	//bool bFoundAtLeastOneObstruction = false;
+	for (int i = 0; i < 4; i++)
+	{
+		auto offsetCoordinate = Components::Coordinate(tmoveable.GetDesiredCoordinate().GetParent(),
+			(glm::vec2)tmoveable.GetDesiredCoordinate().Get() + tetromino->GetBlockOffsetCoordinates(i));
+
+
+
+		//auto& block = registry.get<Components::Block>(tetromino->GetBlock(i));
+		auto& moveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+		auto& coordinate = registry.get<Components::Coordinate>(tetromino->GetBlock(i));
+		//auto& follower = registry.get<Components::Follower>(tetromino->GetBlock(i));
+
+		entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
+
+		if (!CanOccupyCell(registry, tetromino->GetBlock(i), cellEnt))
+			return false;
+	}
+
+	return true;
+	/*
+	auto followerView = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
+	for (auto entity : followerView)
+	{
+		auto& moveable = followerView.get<Components::Moveable>(entity);
+		auto& coordinate = followerView.get<Components::Coordinate>(entity);
+		auto& follower = followerView.get<Components::Follower>(entity);
+
+		if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
+		{
+			auto& leader = registry.get<Components::OTetromino>(follower.Get()); // FIXME TODO tetromino type issue.
+			auto& leaderMoveable = registry.get<Components::Moveable>(follower.Get());
+
+			int i;
+			for (i = 0; i < 4; i++)
+			{
+				if (leader.GetBlock(i) == entity)
+				{
+					break;
+				}
+			}
+
+			auto offsetCoordinate = Components::Coordinate(leaderMoveable.GetDesiredCoordinate().GetParent(),
+				(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader.GetBlockOffsetCoordinates(i));
+
+			moveable.SetDesiredCoordinate(offsetCoordinate);
+			if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+			{
+				// Need to detect if a move is allowed before permitting it.
+				coordinate = moveable.GetDesiredCoordinate();
+				moveable.SetCurrentCoordinate(coordinate);
+			}
+		}
+	}*/
+}
+
 bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
@@ -97,7 +170,10 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 		return false;
 
 	if (IsEntityTetromino(registry, blockEnt))
-		return true; // This needs better logic. All blocks in a tetrominor should be queried, before allowing a move.
+	{
+		return IsAnyBlockInTetrominoObstructingSelf(registry, blockEnt);
+		//return true; // This needs better logic. All blocks in a tetrominor should be queried, before allowing a move.
+	}
 
 	// Don't check for obstructions. Sooooo, we're able to move into here regardless without further checks.
 	if (disableObstruction)

@@ -17,12 +17,52 @@ namespace Systems
 			leaderEntities.insert(follower.Get());
 		}
 
-		auto followerView2 = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
+		/*for (auto leaderEnt : leaderEntities)
+		{
+			std::vector<Components::Coordinate> coordinates;
+			auto& oTetromino = registry.get<Components::OTetromino>(leaderEnt);
+			bool bFoundAtLeastOne = false;
+
+			for (int i = 0; i < 4; i++)
+			{
+				entt::entity blockEnt = oTetromino.GetBlock(i);
+				auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
+				
+				// We're doing this manually instead of using a set.insert because of some possible issues with coordinate's less than comparison. TODO FIXME
+				for (Components::Coordinate coord : coordinates)
+				{
+					if (coord == coordinate)
+						bFoundAtLeastOne = true;
+
+					coordinates.push_back(coordinate);
+				}
+			}
+
+			if (bFoundAtLeastOne)
+			{
+				int q = 0;
+				q++;
+			}
+		}*/
+
+		/*auto followerView2 = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
 		for (auto entity : followerView2)
 		{
 			auto& moveable = followerView2.get<Components::Moveable>(entity);
 			auto& coordinate = followerView2.get<Components::Coordinate>(entity);
 			auto& follower = followerView2.get<Components::Follower>(entity);
+
+			if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
+			{
+			}
+		}*/
+
+		auto followerView3 = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
+		for (auto entity : followerView3)
+		{
+			auto& moveable = followerView3.get<Components::Moveable>(entity);
+			auto& coordinate = followerView3.get<Components::Coordinate>(entity);
+			auto& follower = followerView3.get<Components::Follower>(entity);
 
 			if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
 			{
