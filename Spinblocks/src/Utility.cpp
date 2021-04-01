@@ -254,6 +254,40 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 	throw std::runtime_error("Unable to find Block at coordinates!");
 }
 
+entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const Components::Coordinate& coordinate, entt::entity newCellEnt, const Components::Cell& tempCell, const bool& disableObstruction)
+{
+	if (CanOccupyCell(registry, blockEnt, tempCell.GetDirection(direction), disableObstruction))
+	{
+		newCellEnt = tempCell.GetDirection(direction);
+	}
+	else
+	{
+		if (tempCell.GetDirection(direction) == entt::null)
+		{
+			entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
+			if (cellLinkEnt != entt::null)
+			{
+				auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
+
+				// Only move into the linked cell destination, if we can occupy it.
+				if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
+				{
+					newCellEnt = cellLink.GetDestination();
+
+					if (registry.has<Components::Controllable>(blockEnt))
+					{
+						auto& controllable = registry.get<Components::Controllable>(blockEnt);
+						auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
+						controllable.Set(cellLinkDestination.GetParent());
+					}
+				}
+			}
+		}
+	}
+
+	return newCellEnt;
+}
+
 /*
 * A Block will always have the following components in the same entity: (Probably want some way to enforce that somewhere, but whatever for now.)
 * There can be other components, these are just relevant to this function.
@@ -288,131 +322,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 			continue;
 		Components::Cell& tempCell = registry.get<Components::Cell>(tempCellEnt);
 
-		switch (direction)
-		{
-		case moveDirection_t::NORTH:
-			if (CanOccupyCell(registry, blockEnt, tempCell.GetNorth(), disableObstruction))
-			{
-				newCellEnt = tempCell.GetNorth();
-			}
-			else
-			{
-				if (tempCell.GetNorth() == entt::null)
-				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
-					if (cellLinkEnt != entt::null)
-					{
-						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-
-						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
-						{
-							newCellEnt = cellLink.GetDestination();
-
-							if (registry.has<Components::Controllable>(blockEnt))
-							{
-								auto& controllable = registry.get<Components::Controllable>(blockEnt);
-								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-								controllable.Set(cellLinkDestination.GetParent());
-							}
-						}
-					}
-				}
-			}
-			break;
-		case moveDirection_t::SOUTH:
-			if (CanOccupyCell(registry, blockEnt, tempCell.GetSouth(), disableObstruction))
-			{
-				newCellEnt = tempCell.GetSouth();
-			}
-			else
-			{
-				if (tempCell.GetSouth() == entt::null)
-				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
-					if (cellLinkEnt != entt::null)
-					{
-						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-
-						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
-						{
-							newCellEnt = cellLink.GetDestination();
-
-							if (registry.has<Components::Controllable>(blockEnt))
-							{
-								auto& controllable = registry.get<Components::Controllable>(blockEnt);
-								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-								controllable.Set(cellLinkDestination.GetParent());
-							}
-						}
-					}
-				}
-			}
-			break;
-		case moveDirection_t::EAST:
-			if (CanOccupyCell(registry, blockEnt, tempCell.GetEast(), disableObstruction))
-			{
-				newCellEnt = tempCell.GetEast();
-			}
-			else
-			{
-				if (tempCell.GetEast() == entt::null)
-				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
-					if (cellLinkEnt != entt::null)
-					{
-						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-
-						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
-						{
-							newCellEnt = cellLink.GetDestination();
-
-							if (registry.has<Components::Controllable>(blockEnt))
-							{
-								auto& controllable = registry.get<Components::Controllable>(blockEnt);
-								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-								controllable.Set(cellLinkDestination.GetParent());
-							}
-						}
-					}
-				}
-			}
-			break;
-		case moveDirection_t::WEST:
-			if (CanOccupyCell(registry, blockEnt, tempCell.GetWest(), disableObstruction))
-			{
-				newCellEnt = tempCell.GetWest();
-			}
-			else
-			{
-				if (tempCell.GetWest() == entt::null)
-				{
-					entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
-					if (cellLinkEnt != entt::null)
-					{
-						auto& cellLink = registry.get<Components::CellLink>(cellLinkEnt);
-
-						// Only move into the linked cell destination, if we can occupy it.
-						if (CanOccupyCell(registry, blockEnt, cellLink.GetDestination(), disableObstruction))
-						{
-							newCellEnt = cellLink.GetDestination();
-
-							if (registry.has<Components::Controllable>(blockEnt))
-							{
-								auto& controllable = registry.get<Components::Controllable>(blockEnt);
-								auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
-								controllable.Set(cellLinkDestination.GetParent());
-							}
-						}
-					}
-				}
-			}
-			break;
-		default:
-			break;
-		}
+		newCellEnt = MoveBlockInDirection2(registry, blockEnt, direction, coordinate, newCellEnt, tempCell, disableObstruction);
 	}
 
 	return newCellEnt;

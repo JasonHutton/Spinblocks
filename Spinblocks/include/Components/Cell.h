@@ -57,5 +57,22 @@ namespace Components
 		{
 			return m_parent;
 		}
+
+		entt::entity GetDirection(const moveDirection_t& direction) const
+		{
+			switch (direction)
+			{
+			case moveDirection_t::NORTH:
+				return GetNorth();
+			case moveDirection_t::EAST:
+				return GetEast();
+			case moveDirection_t::SOUTH:
+				return GetSouth();
+			case moveDirection_t::WEST:
+				return GetWest();
+			default:
+				assert(false);
+			}
+		}
 	};
 }
