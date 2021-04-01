@@ -2,7 +2,7 @@
 
 #include "Globals.h"
 
-#include "Component.h"
+#include "Components/Component.h"
 #include "Components/Renderable.h"
 #include "Components/Position.h"
 #include "Components/Scale.h"
@@ -27,7 +27,7 @@
 #include "Components/CellLink.h"
 #include "Components/Obstructable.h"
 #include "Components/Obstructs.h"
-#include "Components/Obstructable.h"
+
 #include "Components/Tetrominos/Tetromino.h"
 #include "Components/Tetrominos/OTetromino.h"
 #include "Components/Tetrominos//ITetromino.h"

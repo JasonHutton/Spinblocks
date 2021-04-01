@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "Components/Component.h"
 #include "Components/ReferenceEntity.h"
 #include <entt/entity/registry.hpp>
 

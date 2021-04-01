@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Globals.h"
-#include "Components/Includes.h"
 #include <entt/entity/registry.hpp>
+#include "Components/Component.h"
 #include <string>
+#include <vector>
+#include "glm/vec2.hpp"
 
 enum class moveDirection_t;
+enum class tetrominoType_t;
 
 namespace Components
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Component.h"
+#include "Components/Component.h"
 #include "GridCell.h"
 #include "glm/vec2.hpp"
 #include <entt/entity/registry.hpp>
