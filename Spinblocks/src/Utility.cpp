@@ -55,7 +55,7 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 	throw std::runtime_error("Unable to find tag of container entity!");
 }
 
-bool CanOccupyCell(entt::registry& registry, const entt::entity& cellEntity, const bool& disableObstruction)
+bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
 		return false;
@@ -274,8 +274,8 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 */
 entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const unsigned int& distance, const bool& disableObstruction)
 {
-	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
-	auto& moveable = registry.get<Components::Moveable>(blockEnt);
+	auto coordinate = registry.get<Components::Coordinate>(blockEnt); // We do NOT want a reference here, we want a copy.
+	//auto& moveable = registry.get<Components::Moveable>(blockEnt);
 
 	entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
 	if (cellEnt == entt::null)
