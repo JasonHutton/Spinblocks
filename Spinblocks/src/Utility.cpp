@@ -355,8 +355,10 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 	}
 	else
 	{
+		// If we can't occupy the cell, because the cell doesn't connect to another cell in this direction...
 		if (tempCell.GetDirection(direction) == entt::null)
 		{
+			// Get a cell link and see if it lets us continue moving in this direction.
 			entt::entity cellLinkEnt = GetCellLinkAtCoordinates(registry, coordinate, direction);
 			if (cellLinkEnt != entt::null)
 			{
@@ -369,6 +371,7 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 
 					if (registry.has<Components::Controllable>(blockEnt))
 					{
+						// Update where we're controlling. We probably want to do this a different way, not in this function. TODO FIXME
 						auto& controllable = registry.get<Components::Controllable>(blockEnt);
 						const auto& cellLinkDestination = registry.get<Components::Cell>(cellLink.GetDestination());
 						controllable.Set(cellLinkDestination.GetParent());
