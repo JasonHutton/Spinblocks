@@ -467,7 +467,7 @@ void update(entt::registry& registry, double currentFrameTime)
 		}
 	}
 
-	//Systems::FallingSystem(registry, currentFrameTime);
+	Systems::FallingSystem(registry, currentFrameTime);
 	Systems::MovementSystem(registry, currentFrameTime);
 	Systems::StateChangeSystem(registry, currentFrameTime);
 	Systems::PatternSystem(registry, PlayAreaWidth, currentFrameTime);
