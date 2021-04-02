@@ -749,14 +749,6 @@ int main()
 	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 
-	const auto northBuffer = registry.create();
-	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
-	registry.emplace<Components::Scale>(northBuffer, glm::uvec2(cellWidth * 10, cellHeight * 20));
-	registry.emplace<Components::Position>(northBuffer);
-	registry.emplace<Components::DerivePositionFromParent>(northBuffer, playArea, glm::uvec2(0, cellHeight * 20));
-	registry.emplace<Components::Container2>(northBuffer, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
-	registry.emplace<Components::Tag>(northBuffer, GetTagFromContainerType(containerType_t::BUFFER));
-
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
@@ -765,10 +757,6 @@ int main()
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 
 	BuildGrid(registry, matrix);
-	BuildGrid(registry, northBuffer);
-
-	ConnectGrids2(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
-
 	BuildGrid(registry, bagArea);
 
 	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
