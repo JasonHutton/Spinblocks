@@ -731,19 +731,6 @@ int main()
 	const auto camera = registry.create();
 	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
-	/*
-	const auto model = registry.create();
-	//registry.emplace<GameObjectComponent>(glm::vec3(0.0f, 0.0f, 0.0f)); // TODO
-	registry.emplace<Components::Renderable>(model, Model("./data/box/cube.obj"));
-	registry.emplace<Components::Position>(model, glm::vec3(50.0f, 50.0f, 0.0f));
-	registry.emplace<Components::Scale>(model, glm::vec3(100.0f, 100.0f, 1.0f));
-	registry.emplace<Components::GameObject>(model);*/
-	/*
-	const auto model2 = registry.create();
-	registry.emplace<Components::Renderable>(model2, Model("./data/box/cube.obj"));
-	registry.emplace<Components::Position>(model2, glm::vec3(300.0f, 200.0f, 0.0f));
-	registry.emplace<Components::Scale>(model2, glm::vec3(50.0f, 50.0f, 1.0f));
-	registry.emplace<Components::GameObject>(model2);*/
 
 	const auto playArea = registry.create();
 	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
@@ -780,40 +767,12 @@ int main()
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, northBuffer);
 
-
-	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 19)), northBuffer, moveDirection_t::NORTH);
-	//PlaceEdgeMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), matrix, moveDirection_t::SOUTH);
-
 	ConnectGrids2(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
 
-	//LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
-	//LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
-
-	/*SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 17)));
-	auto debugView = registry.view<Components::Block, Components::Moveable>();
-	for (auto& entity : debugView)
-	{
-		auto& block = debugView.get<Components::Block>(entity);
-		auto& moveable = debugView.get<Components::Moveable>(entity);
-		moveable.SetMovementState(Components::movementStates_t::UNMOVING);
-	}*/
-
-	//ConnectGrids(registry, matrix, moveDirection_t::NORTH, northBuffer, moveDirection_t::SOUTH);
-	//DisconnectGrids(registry, matrix, northBuffer);
 	BuildGrid(registry, bagArea);
-
-	/*PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 2", Components::Coordinate(matrix, glm::uvec2(9, 0)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 3", Components::Coordinate(matrix, glm::uvec2(0, 19)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Bounds 4", Components::Coordinate(matrix, glm::uvec2(9, 19)));*/
 
 	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 
-
-	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 1", Components::Coordinate(northBuffer, glm::uvec2(3, 0)));
-	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BUFFER), "Spawn Marker 2", Components::Coordinate(northBuffer, glm::uvec2(4, 0)));
-
-	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Piece1 Marker", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
 	Components::Position parentPosition = registry.get<Components::Position>(playArea);
