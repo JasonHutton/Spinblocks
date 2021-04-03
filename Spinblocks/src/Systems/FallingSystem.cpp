@@ -10,7 +10,7 @@ namespace Systems
 		{
 			lastFallUpdate = currentFrameTime;
 
-			auto moveableView = registry.view<Components::Moveable, Components::Coordinate>();
+			auto moveableView = registry.view<Components::Moveable, Components::Coordinate>(entt::exclude<Components::Follower>);
 			for (auto entity : moveableView)
 			{
 				auto& moveable = moveableView.get<Components::Moveable>(entity);
@@ -39,10 +39,19 @@ namespace Systems
 								if (registry.has<Components::Obstructable>(entity))
 								{
 									auto& obstructable = registry.get<Components::Obstructable>(entity);
+									//auto& block = GetBlockAtCoordinates(registry, tagOfContainerEntity, GetCoordinateOfEntity(registry, desiredCell));
+
 									if (registry.has<Components::Obstructs>(entity))
 									{
 										obstructable.SetIsObstructed(true);
 										obstructable.SetLastObstructedTime(currentFrameTime);
+									}
+
+									if (IsEntityTetromino(registry, entity))
+									{
+										auto* tetromino = GetTetrominoFromEntity(registry, entity);
+										tetromino->SetAllBlocksObstructed(registry, true);
+										tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
 									}
 								}
 							}
