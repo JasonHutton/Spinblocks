@@ -66,20 +66,23 @@ namespace Systems
 
 			if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
 			{
-				auto& leader = registry.get<Components::OTetromino>(follower.Get()); // FIXME TODO tetromino type issue.
+				if (!IsEntityTetromino(registry, follower.Get()))
+					continue;
+
+				auto* leader = GetTetrominoFromEntity(registry, follower.Get());
 				auto& leaderMoveable = registry.get<Components::Moveable>(follower.Get());
 
 				int i;
 				for (i = 0; i < 4; i++)
 				{
-					if (leader.GetBlock(i) == entity)
+					if (leader->GetBlock(i) == entity)
 					{
 						break;
 					}
 				}
 
 				auto offsetCoordinate = Components::Coordinate(leaderMoveable.GetDesiredCoordinate().GetParent(),
-					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader.GetBlockOffsetCoordinates(i));
+					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader->GetBlockOffsetCoordinates(i));
 
 				moveable.SetDesiredCoordinate(offsetCoordinate);
 				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
