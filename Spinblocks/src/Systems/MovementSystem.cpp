@@ -123,9 +123,17 @@ namespace Systems
 						if (registry.has<Components::Obstructable>(entity))
 						{
 							auto& obstructable = registry.get<Components::Obstructable>(entity);
+
 							if (registry.has<Components::Obstructs>(entity))
 							{
 								obstructable.SetIsObstructed(true);
+							}
+
+							if (IsEntityTetromino(registry, entity))
+							{
+								auto* tetromino = GetTetrominoFromEntity(registry, entity);
+								tetromino->SetAllBlocksObstructed(registry, true);
+								tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
 							}
 						}
 					}
