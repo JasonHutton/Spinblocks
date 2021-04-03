@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include <entt/entity/registry.hpp>
 #include "Components/Component.h"
+#include "Components/Obstructable.h"
+#include "Components/Moveable.h"
 #include <string>
 #include <vector>
 #include "glm/vec2.hpp"
@@ -68,17 +70,90 @@ namespace Components
 			return m_tetrominoType;
 		}
 
-		bool GetIsFallingObstructed() const
+		bool GetAreAllBlocksObstructed(entt::registry& registry) const
 		{
-			// What we actually want to do here is query all the Blocks that are part of this Tetromino.
-			// TODO FIXME
-			return false;
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				{
+					auto obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					if (!obstructable.GetIsObstructed())
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
 		}
 
-		void SetIsFallingObstructed(bool isFallingObstructed)
+		void SetAllBlocksObstructed(entt::registry& registry, bool isObstructed)
 		{
-			// What we actually want to do here is signal all the Blocks that are part of this Tetromino.
-			// TODO FIXME
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				{
+					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					obstructable.SetIsObstructed(isObstructed);
+					int q = 0;
+					q++;
+				}
+			}
+		}
+
+		double GetAllBlocksLastObstructedTime(entt::registry& registry) const
+		{
+			double lastObstructedTime = 0.0;
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				{
+					auto obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					if (obstructable.GetLastObstructedTime() > lastObstructedTime)
+						lastObstructedTime = obstructable.GetLastObstructedTime();
+				}
+			}
+
+			return lastObstructedTime;
+		}
+
+		void SetAllBlocksLastObstructedTime(entt::registry& registry, double lastObstructedTime)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				{
+					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					obstructable.SetLastObstructedTime(lastObstructedTime);
+				}
+			}
+		}
+
+		void SetAllBlocksMovementState(entt::registry& registry, Components::movementStates_t movementState)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Moveable>(GetBlock(i)))
+				{
+					auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
+					moveable.SetMovementState(movementState);
+				}
+			}
+		}
+
+		bool GetAreAllBlocksLocked(entt::registry& registry) const
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.has<Components::Moveable>(GetBlock(i)))
+				{
+					auto moveable = registry.get<Components::Moveable>(GetBlock(i));
+					if (moveable.GetMovementState() != Components::movementStates_t::LOCKED)
+						return false;
+				}
+			}
+
+			return true;
 		}
 
 		void AddBlock(entt::entity block)
