@@ -698,6 +698,13 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 
 void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
 {
+	auto controllableView = registry.view<Components::Controllable>();
+	for (auto controllable : controllableView)
+	{
+		registry.remove_if_exists<Components::Controllable>(controllable);
+	}
+
+
 	const auto tetromino = registry.create();
 	registry.emplace<Components::Coordinate>(tetromino, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 	
