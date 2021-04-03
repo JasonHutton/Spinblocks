@@ -373,7 +373,7 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 			if (!tag.IsEnabled() || containerTag != tag.Get())
 				continue;
 
-			auto& blockCoordinate = registry.get<Components::Coordinate>(block.Get());
+			auto& blockCoordinate = registry.get<Components::Coordinate>(entity);
 			if (blockCoordinate == coordinate)
 			{
 				// We're short circuiting here on the first match. We probably want to check for container first. (eg: When we've got multiple reference containers in use.)
@@ -754,6 +754,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	}
 	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/lightblue.obj"));
 	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
+	registry.emplace<Components::Obstructable>(tetromino, spawnCoordinate.GetParent());
 
 	// Temporary for testing. Switch directly to the falling state.
 	if (registry.has<Components::Moveable>(tetromino))
