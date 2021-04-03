@@ -27,6 +27,12 @@ enum class movePiece_t
 	HARD_DROP
 };
 
+enum class rotatePiece_t
+{
+	ROTATE_CLOCKWISE,
+	ROTATE_COUNTERCLOCKWISE
+};
+
 enum class moveDirection_t
 {
 	NORTH,

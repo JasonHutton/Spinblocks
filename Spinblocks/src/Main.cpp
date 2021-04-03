@@ -177,6 +177,11 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 	}*/
 }
 
+void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
+{
+
+}
+
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
 // As we'll only really have one piece moving at a time, probably fine. Change later if not.
 void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
@@ -428,6 +433,22 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 
 				MovePiece(registry, movePiece_t::HARD_DROP);
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				RotatePiece(registry, rotatePiece_t::ROTATE_COUNTERCLOCKWISE);
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_ROTATE_CLOCKWISE:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_NONE:
