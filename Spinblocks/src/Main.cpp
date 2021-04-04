@@ -179,7 +179,8 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 
 void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 {
-	auto* tetromino = GetTetrominoFromEntity(registry, GetActiveControllable(registry));
+	entt::entity tetrominoEntity = GetActiveControllable(registry);
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
 
 	moveDirection_t desiredOrientation;
 
@@ -202,6 +203,10 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 	{
 		cerr << ex.what() << endl;
 	}
+
+	//RotateTetromino(registry, tetrominoEntity, )
+
+	//tetromino->GetBlockPattern()
 }
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
