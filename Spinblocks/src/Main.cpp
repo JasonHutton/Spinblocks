@@ -180,6 +180,9 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 {
 	entt::entity tetrominoEntity = GetActiveControllable(registry);
+	if (tetrominoEntity == entt::null)
+		return;
+
 	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
 
 	moveDirection_t desiredOrientation;
@@ -204,9 +207,26 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		cerr << ex.what() << endl;
 	}
 
-	//RotateTetromino(registry, tetrominoEntity, )
+	bool atLeastOneBlockObstructed = false;
+	for (int i = 0; i < 4; i++)
+	{
+		auto& blockEnt = tetromino->GetBlock(i);
+		auto& blockCoord = registry.get<Components::Coordinate>(blockEnt);
 
-	//tetromino->GetBlockPattern()
+		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
+			(glm::vec2)blockCoord.Get() + 
+			tetromino->GetBlockOffsetCoordinates(tetromino->GetDesiredOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+
+		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
+		if (!CanOccupyCell(registry, blockEnt, cellEnt))
+			atLeastOneBlockObstructed = true;
+	}
+
+	if (!atLeastOneBlockObstructed)
+	{ // Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
+		tetromino->SetDesiredOrientation(desiredOrientation);
+		tetromino->SetCurrentOrientation(tetromino->GetDesiredOrientation());
+	}
 }
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.

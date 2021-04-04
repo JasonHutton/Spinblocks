@@ -102,7 +102,7 @@ bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity
 	for (int i = 0; i < 4; i++)
 	{
 		auto offsetCoordinate = Components::Coordinate(cellCoord.GetParent(),
-			(glm::vec2)cellCoord.Get() + tetromino->GetBlockOffsetCoordinates(i));
+			(glm::vec2)cellCoord.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
 
 
 
@@ -472,7 +472,7 @@ entt::entity GetActiveControllable(entt::registry& registry)
 
 		if (controllable.IsEnabled())
 		{
-			return controllable.Get();
+			return entity;
 		}
 	}
 
@@ -725,7 +725,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 		for (int i = 0; i < 4; i++)
 		{
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-				(glm::vec2)spawnCoordinate.Get() + iTetromino.GetBlockOffsetCoordinates(i));
+				(glm::vec2)spawnCoordinate.Get() + iTetromino.GetBlockOffsetCoordinates(iTetromino.GetCurrentOrientation(), i));
 
 			entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
 			iTetromino.AddBlock(blockEnt);
@@ -743,7 +743,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 		for (int i = 0; i < 4; i++)
 		{
 			auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-				(glm::vec2)spawnCoordinate.Get() + oTetromino.GetBlockOffsetCoordinates(i));
+				(glm::vec2)spawnCoordinate.Get() + oTetromino.GetBlockOffsetCoordinates(oTetromino.GetCurrentOrientation(), i));
 
 			entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
 			oTetromino.AddBlock(blockEnt);

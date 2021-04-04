@@ -7,6 +7,9 @@
 #include "Components/Moveable.h"
 #include <string>
 #include <vector>
+#include <map>
+#include <utility>
+#include <tuple>
 #include "glm/vec2.hpp"
 
 enum class moveDirection_t;
@@ -22,8 +25,29 @@ namespace Components
 		tetrominoType_t m_tetrominoType;
 
 		std::vector<entt::entity> m_blocks;
-		std::vector<glm::vec2> m_blockPattern;
 		std::vector<glm::vec2> m_rotationPoints;
+
+		/*
+		Map's Key is in a Tuple:
+		Key0: rotationPointIndex (int)
+		Key1: currentOrientation (moveDirection_t)
+		Key2: rotationDirection (rotationDirection_t) Often NONE
+		Map's Value is a Pair:
+		Pair.first: blockPattern (vector<glm::vec2>)
+		Pair.second: Key Tuple. (Identical types and orders to those composing the Key.)
+		When retrieving this, if Pair.first is empty, query it again, using Pair.second as a key.
+		*/
+		std::map<std::tuple<int, moveDirection_t, rotationDirection_t>, std::pair<std::vector<glm::vec2>, std::tuple<int, moveDirection_t, rotationDirection_t>>> m_blockPatterns;
+	public:
+		void AddBlockPattern(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::vector<glm::vec2> blockPattern)
+		{
+			m_blockPatterns.emplace(std::make_tuple(rotationPointIndex, orientation, rotationDirection), std::make_pair(blockPattern, std::tuple<int, moveDirection_t, rotationDirection_t>()));
+		}
+
+		void AddBlockPattern(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::tuple<int, moveDirection_t, rotationDirection_t> alternativeIndex)
+		{
+			m_blockPatterns.emplace(std::make_tuple(rotationPointIndex, orientation, rotationDirection), std::make_pair(std::vector<glm::vec2>(), alternativeIndex));
+		}
 
 	public:
 		// Width of the defining pattern of the Tetromino
@@ -180,22 +204,19 @@ namespace Components
 			return m_blocks[blockIndex];
 		}
 
-		glm::vec2 GetBlockOffsetCoordinates(int blockIndex, int rotationIndex = 0)
+		// void AddBlock2(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::vector<glm::vec2> blockPattern)
+		glm::vec2 GetBlockOffsetCoordinates(moveDirection_t orientation, int blockIndex, int rotationPointIndex = 0, rotationDirection_t rotationDirection = rotationDirection_t::NONE)
 		{
-			return m_blockPattern[blockIndex] - m_rotationPoints[rotationIndex];
+			auto& patternPair = m_blockPatterns[std::make_tuple(rotationPointIndex, orientation, rotationDirection)];
+			if (patternPair.first.empty())
+			{
+				patternPair = m_blockPatterns[std::make_tuple(std::get<0>(patternPair.second), std::get<1>(patternPair.second), std::get<2>(patternPair.second))];
+			}
+
+			return patternPair.first[blockIndex] - m_rotationPoints[rotationPointIndex];
 		}
 
-		glm::vec2 GetRotationPoints(int blockIndex)
-		{
-			return m_rotationPoints[blockIndex];
-		}
-
-		glm::vec2 GetBlockPattern(int blockIndex)
-		{
-			return m_blockPattern[blockIndex];
-		}
-
-		const moveDirection_t& GetNewOrientation(const rotationDirection_t& rotationDirection, const moveDirection_t& currentOrientation) const
+		const moveDirection_t GetNewOrientation(const rotationDirection_t& rotationDirection, const moveDirection_t& currentOrientation) const
 		{
 			if (rotationDirection == rotationDirection_t::CLOCKWISE)
 			{

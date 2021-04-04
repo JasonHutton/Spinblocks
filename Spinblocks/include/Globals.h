@@ -29,14 +29,15 @@ enum class movePiece_t
 
 enum class rotatePiece_t
 {
-	ROTATE_CLOCKWISE,
-	ROTATE_COUNTERCLOCKWISE
+	ROTATE_COUNTERCLOCKWISE,
+	ROTATE_CLOCKWISE
 };
 
 enum class rotationDirection_t
 {
-	CLOCKWISE,
-	COUNTERCLOCKWISE
+	COUNTERCLOCKWISE,
+	NONE,
+	CLOCKWISE
 };
 
 enum class moveDirection_t

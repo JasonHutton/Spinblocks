@@ -82,7 +82,7 @@ namespace Systems
 				}
 
 				auto offsetCoordinate = Components::Coordinate(leaderMoveable.GetDesiredCoordinate().GetParent(),
-					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader->GetBlockOffsetCoordinates(i));
+					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader->GetBlockOffsetCoordinates(leader->GetCurrentOrientation(), i));
 
 				moveable.SetDesiredCoordinate(offsetCoordinate);
 				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
