@@ -33,6 +33,12 @@ enum class rotatePiece_t
 	ROTATE_COUNTERCLOCKWISE
 };
 
+enum class rotationDirection_t
+{
+	CLOCKWISE,
+	COUNTERCLOCKWISE
+};
+
 enum class moveDirection_t
 {
 	NORTH,
