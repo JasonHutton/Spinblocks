@@ -92,7 +92,7 @@ namespace Components
 			{
 				if (registry.has<Components::Obstructable>(GetBlock(i)))
 				{
-					auto obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					if (!obstructable.GetIsObstructed())
 					{
 						return false;
@@ -111,8 +111,6 @@ namespace Components
 				{
 					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					obstructable.SetIsObstructed(isObstructed);
-					int q = 0;
-					q++;
 				}
 			}
 		}
@@ -124,7 +122,7 @@ namespace Components
 			{
 				if (registry.has<Components::Obstructable>(GetBlock(i)))
 				{
-					auto obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					if (obstructable.GetLastObstructedTime() > lastObstructedTime)
 						lastObstructedTime = obstructable.GetLastObstructedTime();
 				}
@@ -163,7 +161,7 @@ namespace Components
 			{
 				if (registry.has<Components::Moveable>(GetBlock(i)))
 				{
-					auto moveable = registry.get<Components::Moveable>(GetBlock(i));
+					const auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
 					if (moveable.GetMovementState() != Components::movementStates_t::LOCKED)
 						return false;
 				}
