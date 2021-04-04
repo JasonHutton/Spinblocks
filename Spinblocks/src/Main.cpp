@@ -179,7 +179,29 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 
 void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 {
+	auto* tetromino = GetTetrominoFromEntity(registry, GetActiveControllable(registry));
 
+	moveDirection_t desiredOrientation;
+
+	try
+	{
+		switch (rotatePiece)
+		{
+		case rotatePiece_t::ROTATE_CLOCKWISE:
+			desiredOrientation = tetromino->GetNewOrientation(rotationDirection_t::CLOCKWISE, tetromino->GetCurrentOrientation());
+			break;
+		case rotatePiece_t::ROTATE_COUNTERCLOCKWISE:
+			desiredOrientation = tetromino->GetNewOrientation(rotationDirection_t::COUNTERCLOCKWISE, tetromino->GetCurrentOrientation());
+			break;
+		default:
+			desiredOrientation = tetromino->GetCurrentOrientation();
+			break;
+		}
+	}
+	catch (std::runtime_error ex)
+	{
+		cerr << ex.what() << endl;
+	}
 }
 
 // Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
