@@ -17,7 +17,8 @@ namespace Components
 	class Tetromino : public Component
 	{
 	protected:
-		moveDirection_t m_orientation{ moveDirection_t::NORTH };
+		moveDirection_t m_currentOrientation{ moveDirection_t::NORTH };
+		moveDirection_t m_desiredOrientation{ moveDirection_t::NORTH };
 		tetrominoType_t m_tetrominoType;
 
 		std::vector<entt::entity> m_blocks;
@@ -60,9 +61,24 @@ namespace Components
 		{
 		}
 
-		const moveDirection_t& GetOrientation() const
+		const moveDirection_t& GetCurrentOrientation() const
 		{
-			return m_orientation;
+			return m_currentOrientation;
+		}
+
+		const moveDirection_t& GetDesiredOrientation() const
+		{
+			return m_desiredOrientation;
+		}
+
+		void SetCurrentOrientation(const moveDirection_t& moveDirection)
+		{
+			m_currentOrientation = moveDirection;
+		}
+
+		void SetDesiredOrientation(const moveDirection_t& moveDirection)
+		{
+			m_desiredOrientation = moveDirection;
 		}
 
 		const tetrominoType_t& GetType() const
@@ -179,6 +195,44 @@ namespace Components
 		glm::vec2 GetBlockPattern(int blockIndex)
 		{
 			return m_blockPattern[blockIndex];
+		}
+
+		const moveDirection_t& GetNewOrientation(const rotationDirection_t& rotationDirection, const moveDirection_t& currentOrientation) const
+		{
+			if (rotationDirection == rotationDirection_t::CLOCKWISE)
+			{
+				switch (currentOrientation)
+				{
+				case moveDirection_t::NORTH:
+					return moveDirection_t::EAST;
+				case moveDirection_t::EAST:
+					return moveDirection_t::SOUTH;
+				case moveDirection_t::SOUTH:
+					return moveDirection_t::WEST;
+				case moveDirection_t::WEST:
+					return moveDirection_t::NORTH;
+				default:
+					assert(false);
+				}
+			}
+			else if (rotationDirection == rotationDirection_t::COUNTERCLOCKWISE)
+			{
+				switch (currentOrientation)
+				{
+				case moveDirection_t::NORTH:
+					return moveDirection_t::WEST;
+				case moveDirection_t::WEST:
+					return moveDirection_t::SOUTH;
+				case moveDirection_t::SOUTH:
+					return moveDirection_t::EAST;
+				case moveDirection_t::EAST:
+					return moveDirection_t::NORTH;
+				default:
+					assert(false);
+				}
+			}
+
+			assert(false);
 		}
 	};
 }
