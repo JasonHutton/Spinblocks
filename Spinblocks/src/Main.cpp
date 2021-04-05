@@ -184,6 +184,7 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		return;
 
 	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
+	auto tetrominoCoord = registry.get<Components::Coordinate>(tetrominoEntity);
 
 	moveDirection_t desiredOrientation;
 
@@ -215,7 +216,7 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 
 		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
 			(glm::vec2)blockCoord.Get() + 
-			tetromino->GetBlockOffsetCoordinates(tetromino->GetDesiredOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
 
 		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
 		if (!CanOccupyCell(registry, blockEnt, cellEnt))
