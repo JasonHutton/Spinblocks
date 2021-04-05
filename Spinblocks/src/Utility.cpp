@@ -709,13 +709,13 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	registry.emplace<Components::Coordinate>(tetromino, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 	
 	registry.emplace<Components::Position>(tetromino);
-	registry.emplace<Components::DerivePositionFromCoordinates>(tetromino, entt::null, glm::uvec2(cellWidth / 2, cellHeight / 2));
 
 	//registry.emplace<Components::Tag>(tetromino, GetTagFromContainerType(containerType_t::BUFFER));
 	switch (tetrominoType)
 	{
 	case tetrominoType_t::I:
 	{
+		registry.emplace<Components::DerivePositionFromCoordinates>(tetromino, entt::null, glm::vec2(cellWidth / 2, -(static_cast<int>(cellHeight) / 2)));
 		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::ITetromino::GetPatternWidth(), cellHeight * Components::ITetromino::GetPatternHeight()));
 		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::GetPatternWidth(), Components::ITetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::ITetromino>(tetromino);
@@ -734,6 +734,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 		break;
 	case tetrominoType_t::O:
 	{
+		registry.emplace<Components::DerivePositionFromCoordinates>(tetromino);
 		registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::OTetromino::GetPatternWidth(), cellHeight * Components::OTetromino::GetPatternHeight()));
 		registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::GetPatternWidth(), Components::OTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 		registry.emplace<Components::OTetromino>(tetromino);
@@ -759,7 +760,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	{
 		registry.emplace<Components::Controllable>(tetromino, spawnCoordinate.GetParent());
 	}
-	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/lightblue.obj"));
+	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
 	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
 	registry.emplace<Components::Obstructable>(tetromino, spawnCoordinate.GetParent());
 
