@@ -13,8 +13,36 @@ namespace Systems
 			auto& moveable = followerView.get<Components::Moveable>(entity);
 			auto& coordinate = followerView.get<Components::Coordinate>(entity);
 			auto& follower = followerView.get<Components::Follower>(entity);
+			
 
 			leaderEntities.insert(follower.Get());
+		}
+
+		auto followMarkerView = registry.view<Components::Marker, Components::Coordinate, Components::Follower>();
+		for (auto entity : followMarkerView)
+		{
+			auto& coordinate = followMarkerView.get<Components::Coordinate>(entity);
+			auto& follower = followMarkerView.get<Components::Follower>(entity);
+
+			if (registry.has<Components::Tag>(entity))
+			{
+				auto& tag = registry.get<Components::Tag>(entity);
+
+				if (tag.Get() == "O Tetromino Marker" || tag.Get() == "I Tetromino Marker")
+				{
+					
+					if (registry.valid(follower.Get()))
+					{
+						auto& followed = registry.get<Components::Coordinate>(follower.Get());
+						coordinate.Set(followed.Get());
+						coordinate.SetParent(followed.GetParent());
+					}
+					else
+					{
+						registry.destroy(entity);
+					}
+				}
+			}
 		}
 
 		/*for (auto leaderEnt : leaderEntities)

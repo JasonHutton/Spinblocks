@@ -552,7 +552,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 }
 
 // We'll want to spawn whole tetrominoes later, not just blocks.
-void SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable)
+entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -596,8 +596,12 @@ void SpawnBlock(entt::registry& registry, const std::string& containerTag, const
 				auto& moveable = registry.get<Components::Moveable>(piece1);
 				moveable.SetMovementState(Components::movementStates_t::FALL);
 			}
+
+			return piece1;
 		}
 	}
+
+	return entt::null;
 }
 
 entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
@@ -691,12 +695,12 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 				auto& container = registry.get<Components::Container2>(originCoord.GetParent());
 				registry.emplace<Components::Scale>(marker1, container.GetCellDimensions3());
 			}
-			registry.emplace<Components::Renderable>(marker1, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
+			registry.emplace<Components::Renderable>(marker1, Components::renderLayer_t::RL_MARKER_UNDER, Model("./data/block/green.obj"));
 		}
 	}
 }
 
-void SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
+entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
 {
 	auto controllableView = registry.view<Components::Controllable>();
 	for (auto controllable : controllableView)
@@ -773,7 +777,7 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 
 
 
-
+	return tetromino;
 
 
 	/*

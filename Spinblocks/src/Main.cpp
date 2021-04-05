@@ -96,14 +96,14 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 			registry.emplace<Components::Position>(marker);
 			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
 			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/green.obj"));
+			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER_UNDER, Model("./data/block/green.obj"));
 		}
 	}
 }
 
 //void PlaceEdgeMarker2(entt::registry& registry, const std::string& originTag, const Components::Coordinate& originCoordinate, entt::entity destinationTagadjacentEntity, const moveDirection_t& dir)
 
-void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate)
+void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER, const entt::entity followedEnt = entt::null)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
@@ -127,8 +127,12 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 			registry.emplace<Components::Position>(marker);
 			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
 			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(marker, Components::renderLayer_t::RL_MARKER, Model("./data/block/red.obj"));
+			registry.emplace<Components::Renderable>(marker, layer, Model("./data/block/red.obj"));
 			registry.emplace<Components::Tag>(marker, markerTag);
+			if (followedEnt != entt::null)
+			{
+				registry.emplace<Components::Follower>(marker, followedEnt);
+			}
 		}
 	}
 }
@@ -361,7 +365,8 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					break;
 
 				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BAG_AREA)), glm::uvec2(0, 15)));
-				SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 18)), tetrominoType_t::I);
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 18)), tetrominoType_t::I);
+				PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "I Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 18)), Components::renderLayer_t::RL_MARKER_OVER, tet);
 
 				break;
 			}
@@ -372,9 +377,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
 				//SpawnTetromino(registry, GetTagFromContainerType(containerType_t::BUFFER), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BUFFER)), glm::uvec2(4, 2)));
-				SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::O);
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::O);
 				//SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), tetrominoType_t::I);
-
+				PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "O Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 17)), Components::renderLayer_t::RL_MARKER_OVER, tet);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_DEBUG_MOVE_UP:
