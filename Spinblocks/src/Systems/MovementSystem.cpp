@@ -111,8 +111,8 @@ namespace Systems
 					if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
 					{
 						// Need to detect if a move is allowed before permitting it.
-						coordinate = moveable.GetDesiredCoordinate();
-						moveable.SetCurrentCoordinate(coordinate);
+						const auto& desiredCoordinate = moveable.GetDesiredCoordinate();
+						moveable.SetCurrentCoordinate(desiredCoordinate);
 					}
 					break;
 				}
@@ -121,15 +121,19 @@ namespace Systems
 					if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
 					{
 						// Need to detect if a move is allowed before permitting it.
-						coordinate = moveable.GetDesiredCoordinate();
-						moveable.SetCurrentCoordinate(coordinate);
+						//const auto& desiredCoordinate = moveable.GetDesiredCoordinate();
+						const auto& desiredCoordinate = moveable.GetDesiredCoordinate();
+						//moveable.SetCurrentCoordinate(coordinate);
+						
+						bool wasObstructed = false;
 						if (registry.has<Components::Obstructable>(entity))
 						{
 							auto& obstructable = registry.get<Components::Obstructable>(entity);
 
-							if (registry.has<Components::Obstructs>(entity))
+							if (AreCoordinatesObstructed(registry, desiredCoordinate, entity))
 							{
 								obstructable.SetIsObstructed(true);
+								wasObstructed = true;
 							}
 
 							if (IsEntityTetromino(registry, entity))
@@ -137,7 +141,13 @@ namespace Systems
 								auto* tetromino = GetTetrominoFromEntity(registry, entity);
 								tetromino->SetAllBlocksObstructed(registry, true);
 								tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
+								wasObstructed = true;
 							}
+						}
+
+						if (!wasObstructed)
+						{
+							moveable.SetCurrentCoordinate(desiredCoordinate);
 						}
 					}
 					break;
@@ -145,6 +155,12 @@ namespace Systems
 				default:
 					break;
 				}
+			}
+
+			// Actually update the entity's coordiante.
+			if (coordinate != moveable.GetCurrentCoordinate())
+			{
+				coordinate = moveable.GetCurrentCoordinate();
 			}
 		}
 	}

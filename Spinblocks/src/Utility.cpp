@@ -216,23 +216,26 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 	// Don't check for obstructions. Sooooo, we're able to move into here regardless without further checks.
 	if (disableObstruction)
 		return true;
-
-	auto blockView = registry.view<Components::Block, Components::Coordinate>();
-	for (auto obstructingBlockEntity : blockView)
+	/*
+	auto obstructsView = registry.view<Components::Obstructs, Components::Coordinate>();
+	for (auto obstructsEntity : obstructsView)
 	{
-		auto& obstructingBlock = registry.get<Components::Block>(obstructingBlockEntity);
-		auto& obstructingBlockCoordinate = registry.get<Components::Coordinate>(obstructingBlockEntity);
+		auto& obstructs = registry.get<Components::Obstructs>(obstructsEntity);
+		auto& obstructsCoordinate = registry.get<Components::Coordinate>(obstructsEntity);
+		*/
+		if (AreCoordinatesObstructed(registry, cellCoordinate, blockEnt))
+			return false;
 
-		if (obstructingBlock.IsEnabled() && obstructingBlockCoordinate.IsEnabled())
+		/*if (obstructs.IsEnabled() && obstructsCoordinate.IsEnabled())
 		{
-			auto& container2 = registry.get<Components::Container2>(obstructingBlock.Get());
+			auto& container2 = registry.get<Components::Container2>(obstructsCoordinate.GetParent());
 
-			if (obstructingBlockCoordinate == cellCoordinate)
+			if (obstructsCoordinate == cellCoordinate)
 			{
-				if (registry.has<Components::Follower>(obstructingBlockEntity) && registry.has<Components::Follower>(blockEnt))
+				if (registry.has<Components::Follower>(obstructsEntity) && registry.has<Components::Follower>(blockEnt))
 				{
 					auto& follower = registry.get<Components::Follower>(blockEnt);
-					auto& obstructedFollower = registry.get<Components::Follower>(obstructingBlockEntity);
+					auto& obstructedFollower = registry.get<Components::Follower>(obstructsEntity);
 
 					if (follower.Get() != obstructedFollower.Get())
 					{
@@ -246,8 +249,8 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 					return false;
 				}
 			}
-		}
-	}
+		}*/
+	//}
 
 	return true;
 }
@@ -383,6 +386,48 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 	}
 
 	throw std::runtime_error("Unable to find Block at coordinates!");
+}
+
+bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity blockEnt)
+{
+	auto block = registry.get<Components::Block>(blockEnt);
+	bool isObstructed = false;
+
+	auto obsructsView = registry.view<Components::Obstructs, Components::Coordinate>();
+	for (auto entity : obsructsView)
+	{
+		auto& obstructs = obsructsView.get<Components::Obstructs>(entity);
+		auto& obstructsCoordinate = obsructsView.get<Components::Coordinate>(entity);
+
+		if (blockEnt == entity)
+			continue;
+
+		if (obstructs.IsEnabled())
+		{
+			auto& container2 = registry.get<Components::Container2>(coordinate.GetParent());
+
+			if (obstructsCoordinate == coordinate)
+			{
+				isObstructed = true;
+				if (blockEnt != entt::null && block.IsEnabled())
+				{
+					if (registry.has<Components::Follower>(entity) && registry.has<Components::Follower>(blockEnt))
+					{
+						auto& blockFollower = registry.get<Components::Follower>(blockEnt);
+						auto& obstructsFollower = registry.get<Components::Follower>(entity);
+
+						if (blockFollower.Get() == obstructsFollower.Get())
+						{
+							// Both obstructing objects are following the same leader. Do not obstruct one another.
+							isObstructed = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return isObstructed;
 }
 
 entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity& blockEnt, const moveDirection_t& direction, const Components::Coordinate& coordinate, entt::entity newCellEnt, const Components::Cell& tempCell, const bool& disableObstruction)
