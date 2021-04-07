@@ -33,3 +33,4 @@
 #include "Components/Tetrominos//ITetromino.h"
 
 #include "Components/Follower.h"
+#include "Components/Wall.h"
