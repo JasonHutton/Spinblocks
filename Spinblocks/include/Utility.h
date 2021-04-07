@@ -29,3 +29,4 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent);
 Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity);
 bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity, const entt::entity& cellEntity, const bool& disableObstruction);
+bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity);

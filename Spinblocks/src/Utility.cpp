@@ -820,3 +820,43 @@ void SpawnTetromino(entt::registry& registry, const std::string& containerTag, c
 	}
 	*/
 }
+
+// See if the coordinates specified will obstruct the probe entity. (The probe entity might not be checking for obstructions, or similar.)
+bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity)
+{
+	if (!registry.has<Components::Obstructable>(probeEntity))
+		return false;
+
+	const auto& probeObstructable = registry.get<Components::Obstructable>(probeEntity);
+	if (!probeObstructable.IsEnabled())
+		return false;
+
+	// Go through all the obstructing entities with these coordinates. Any positive match will obstruct.
+	auto coordinateView = registry.view<Components::Coordinate, Components::Obstructs>();
+	for (auto entity : coordinateView)
+	{
+		const auto& obstructs = coordinateView.get<Components::Obstructs>(entity);
+		const auto& obstructsCoordinate = coordinateView.get<Components::Coordinate>(entity);
+
+		// We only care about matching coordinates.
+		if (obstructsCoordinate != coordinate)
+			continue;
+
+		if (!obstructsCoordinate.IsEnabled() || !obstructs.IsEnabled())
+			continue;
+
+		if (registry.has<Components::Follower>(entity) && registry.has<Components::Follower>(probeEntity))
+		{
+			const auto& probeFollower = registry.get<Components::Follower>(probeEntity);
+			const auto& obstructsFollower = registry.get<Components::Follower>(entity);
+
+			if (probeFollower.Get() == obstructsFollower.Get())
+			{
+				// Both obstructing objects are following the same leader. Do not obstruct one another.
+				continue;
+			}
+		}
+	}
+
+	return true;
+}
