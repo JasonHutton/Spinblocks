@@ -911,12 +911,12 @@ int main()
 	BuildGrid(registry, bagArea);
 
 	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
+	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 2)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 3)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 4)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 5)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 5)));*/
 
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
