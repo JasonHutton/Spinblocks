@@ -137,6 +137,35 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 	}
 }
 
+void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate)
+{
+	auto containerView = registry.view<Components::Container2>();
+	for (auto containerEnt : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(containerEnt);
+
+		if (container2.IsEnabled())
+		{
+			if (containerEnt != coordinate.GetParent())
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto wall = registry.create();
+			registry.emplace<Components::Wall>(wall);
+			registry.emplace<Components::Coordinate>(wall, coordinate.GetParent(), coordinate.Get());
+			registry.emplace<Components::Position>(wall);
+			registry.emplace<Components::DerivePositionFromCoordinates>(wall);
+			registry.emplace<Components::Scale>(wall, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(wall, Components::renderLayer_t::RL_MARKER, Model("./data/block/red.obj"));
+			registry.emplace<Components::Obstructs>(wall);
+		}
+	}
+}
+
 void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 {
 	/*
@@ -881,7 +910,8 @@ int main()
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
 
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
+	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(9, 0)));
 
 	/*
 	Components::Container2 container2 = registry.get<Components::Container2>(playArea);

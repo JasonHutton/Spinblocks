@@ -210,6 +210,7 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 
 	if (IsEntityTetromino(registry, blockEnt))
 	{
+		// Might want this conditional on disableObsruction
 		return IsAnyBlockInTetrominoObstructingSelf(registry, blockEnt, cellEntity, disableObstruction);
 	}
 
@@ -217,37 +218,8 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 	if (disableObstruction)
 		return true;
 
-	auto blockView = registry.view<Components::Block, Components::Coordinate>();
-	for (auto obstructingBlockEntity : blockView)
-	{
-		auto& obstructingBlock = registry.get<Components::Block>(obstructingBlockEntity);
-		auto& obstructingBlockCoordinate = registry.get<Components::Coordinate>(obstructingBlockEntity);
-
-		if (obstructingBlock.IsEnabled() && obstructingBlockCoordinate.IsEnabled())
-		{
-			auto& container2 = registry.get<Components::Container2>(obstructingBlock.Get());
-
-			if (obstructingBlockCoordinate == cellCoordinate)
-			{
-				if (registry.has<Components::Follower>(obstructingBlockEntity) && registry.has<Components::Follower>(blockEnt))
-				{
-					auto& follower = registry.get<Components::Follower>(blockEnt);
-					auto& obstructedFollower = registry.get<Components::Follower>(obstructingBlockEntity);
-
-					if (follower.Get() != obstructedFollower.Get())
-					{
-						// We're not following the same entity. Obstruct one another.
-						return false;
-					}
-				}
-				else
-				{
-					// At least one of the blocks are are not following, resolve obstruction as normal.
-					return false;
-				}
-			}
-		}
-	}
+	if (AreCoordinatesObstructed(registry, cellCoordinate, blockEnt))
+		return false;
 
 	return true;
 }
@@ -824,4 +796,54 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 		}
 	}
 	*/
+}
+
+// See if the coordinates specified will obstruct the probe entity. (The probe entity might not be checking for obstructions, or similar.)
+bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity)
+{
+	if (probeEntity == entt::null)
+		return false;
+
+	if (!registry.has<Components::Obstructable>(probeEntity))
+		return false;
+
+	const auto& probeObstructable = registry.get<Components::Obstructable>(probeEntity);
+	if (!probeObstructable.IsEnabled())
+		return false;
+
+	// Go through all the obstructing entities with these coordinates. Any positive match will obstruct.
+	auto coordinateView = registry.view<Components::Coordinate, Components::Obstructs>();
+	for (auto entity : coordinateView)
+	{
+		const auto& obstructs = coordinateView.get<Components::Obstructs>(entity);
+		const auto& obstructsCoordinate = coordinateView.get<Components::Coordinate>(entity);
+
+		// Don't self-obstruct
+		if(entity == probeEntity)
+			continue;
+
+		// We only care about matching coordinates.
+		if (obstructsCoordinate != coordinate)
+			continue;
+
+		if (!obstructsCoordinate.IsEnabled() || !obstructs.IsEnabled())
+			continue;
+
+		if (registry.has<Components::Follower>(entity) && registry.has<Components::Follower>(probeEntity))
+		{
+			const auto& probeFollower = registry.get<Components::Follower>(probeEntity);
+			const auto& obstructsFollower = registry.get<Components::Follower>(entity);
+
+			if (probeFollower.Get() != obstructsFollower.Get())
+			{ // Followers are not the same. Obstruct.
+				return true;
+			}
+		}
+		else
+		{ // One or both are not followers. Obstruct.
+			return true;
+		}
+	}
+
+	return false;
 }
