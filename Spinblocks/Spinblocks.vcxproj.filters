@@ -244,5 +244,14 @@
     <ClInclude Include="include\Components\Tetrominos\LTetromino.h">
       <Filter>Header Files\Components\Tetrominos</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\JTetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\STetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\ZTetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

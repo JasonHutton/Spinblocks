@@ -64,7 +64,10 @@ bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 		Components::OTetromino, 
 		Components::ITetromino,
 		Components::TTetromino,
-		Components::LTetromino>(ent);
+		Components::LTetromino,
+		Components::JTetromino,
+		Components::STetromino,
+		Components::ZTetromino>(ent);
 }
 
 Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity)
@@ -86,6 +89,15 @@ Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::en
 
 	if (registry.has<Components::LTetromino>(entity))
 		return &registry.get<Components::LTetromino>(entity);
+
+	if (registry.has<Components::JTetromino>(entity))
+		return &registry.get<Components::JTetromino>(entity);
+
+	if (registry.has<Components::STetromino>(entity))
+		return &registry.get<Components::STetromino>(entity);
+
+	if (registry.has<Components::ZTetromino>(entity))
+		return &registry.get<Components::ZTetromino>(entity);
 
 	return NULL;
 }
