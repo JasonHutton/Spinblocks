@@ -736,7 +736,7 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	{
 		registry.emplace<Components::Controllable>(tetromino, spawnCoordinate.GetParent());
 	}
-	registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
+	//registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
 	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
 	registry.emplace<Components::Obstructable>(tetromino, spawnCoordinate.GetParent());
 
