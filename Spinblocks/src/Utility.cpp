@@ -847,3 +847,39 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 
 	return false;
 }
+
+glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::entity entity)
+{
+	if (entity == entt::null)
+		throw std::runtime_error("Entity is null!");
+
+	if (!IsEntityTetromino(registry, entity))
+		throw std::runtime_error("Entity is not a tetromino!");
+
+	auto* tetromino = GetTetrominoFromEntity(registry, entity);
+
+	return GetTetrominoSpawnCoordinates(tetromino->GetType());
+}
+
+glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type)
+{
+	switch (type)
+	{
+	case tetrominoType_t::T:
+	case tetrominoType_t::L:
+	case tetrominoType_t::J:
+	case tetrominoType_t::S:
+	case tetrominoType_t::Z:
+		return glm::uvec2(4, 17);
+		break;
+	case tetrominoType_t::I:
+		return glm::uvec2(4, 18);
+	case tetrominoType_t::O:
+		return glm::uvec2(4, 17);
+		break;
+	default:
+		throw std::runtime_error("Invalid tetrominoType_t!");
+	}
+
+	assert(false);
+}
