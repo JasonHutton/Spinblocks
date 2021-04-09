@@ -60,7 +60,7 @@ bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 	if (ent == entt::null)
 		return false;
 
-	return registry.any</*Components::Tetromino, */
+	return registry.any_of</*Components::Tetromino, */
 		Components::OTetromino, 
 		Components::ITetromino,
 		Components::TTetromino,
@@ -78,25 +78,25 @@ Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::en
 	if (!IsEntityTetromino(registry, entity))
 		return NULL;
 
-	if (registry.has<Components::OTetromino>(entity))
+	if (registry.all_of<Components::OTetromino>(entity))
 		return &registry.get<Components::OTetromino>(entity);
 
-	if (registry.has<Components::ITetromino>(entity))
+	if (registry.all_of<Components::ITetromino>(entity))
 		return &registry.get<Components::ITetromino>(entity);
 
-	if (registry.has<Components::TTetromino>(entity))
+	if (registry.all_of<Components::TTetromino>(entity))
 		return &registry.get<Components::TTetromino>(entity);
 
-	if (registry.has<Components::LTetromino>(entity))
+	if (registry.all_of<Components::LTetromino>(entity))
 		return &registry.get<Components::LTetromino>(entity);
 
-	if (registry.has<Components::JTetromino>(entity))
+	if (registry.all_of<Components::JTetromino>(entity))
 		return &registry.get<Components::JTetromino>(entity);
 
-	if (registry.has<Components::STetromino>(entity))
+	if (registry.all_of<Components::STetromino>(entity))
 		return &registry.get<Components::STetromino>(entity);
 
-	if (registry.has<Components::ZTetromino>(entity))
+	if (registry.all_of<Components::ZTetromino>(entity))
 		return &registry.get<Components::ZTetromino>(entity);
 
 	return NULL;
@@ -155,7 +155,7 @@ bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity
 	for (unsigned int i = 0; i < distance; i++)
 	{
 		// We're moving a bunch in this function. Update our current coordiantes while doing so.
-		if (i > 0 && registry.has<Components::Coordinate>(newCellEnt))
+		if (i > 0 && registry.all_of<Components::Coordinate>(newCellEnt))
 		{
 			const auto& newCoordinate = registry.get<Components::Coordinate>(newCellEnt);
 			coordinate.Set(newCoordinate.Get());
@@ -163,7 +163,7 @@ bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity
 		}
 
 		entt::entity tempCellEnt = newCellEnt;
-		if (!registry.has<Components::Cell>(tempCellEnt))
+		if (!registry.all_of<Components::Cell>(tempCellEnt))
 			continue;
 		const auto& tempCell = registry.get<Components::Cell>(tempCellEnt);
 
@@ -216,10 +216,10 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 	if (cellEntity == entt::null)
 		return false;
 
-	if (!registry.has<Components::Cell>(cellEntity))
+	if (!registry.all_of<Components::Cell>(cellEntity))
 		return false;
 
-	if (!registry.has<Components::Coordinate>(cellEntity))
+	if (!registry.all_of<Components::Coordinate>(cellEntity))
 		return false;
 
 	auto& cell = registry.get<Components::Cell>(cellEntity);
@@ -249,7 +249,7 @@ const Components::Coordinate& GetCoordinateOfEntity(entt::registry& registry, co
 	if (entity == entt::null)
 		throw std::runtime_error("Entity is NULL!");
 
-	if (!registry.has<Components::Coordinate>(entity))
+	if (!registry.all_of<Components::Coordinate>(entity))
 		throw std::runtime_error("Entity does not have component!");
 
 	return registry.get<Components::Coordinate>(entity);
@@ -260,7 +260,7 @@ const Components::Cell& GetCellOfEntity(entt::registry& registry, const entt::en
 	if (entity == entt::null)
 		throw std::runtime_error("Entity is NULL!");
 
-	if (!registry.has<Components::Cell>(entity))
+	if (!registry.all_of<Components::Cell>(entity))
 		throw std::runtime_error("Entity does not have component!");
 
 	return registry.get<Components::Cell>(entity);
@@ -303,9 +303,9 @@ entt::entity GetCellAtCoordinates2(entt::registry& registry, const Components::C
 
 		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
 		{
-			if (!registry.has<Components::Container2>(cell.GetParent()))
+			if (!registry.all_of<Components::Container2>(cell.GetParent()))
 				continue;
-			if (!registry.has<Components::Tag>(cell.GetParent()))
+			if (!registry.all_of<Components::Tag>(cell.GetParent()))
 				continue;
 
 			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
@@ -334,7 +334,7 @@ entt::entity GetCellLinkAtCoordinates(entt::registry& registry, const Components
 
 		if (cellCoordinate.IsEnabled() && cellLink.IsEnabled())
 		{
-			if (registry.has<Components::Cell>(cellLink.GetSource()))
+			if (registry.all_of<Components::Cell>(cellLink.GetSource()))
 			{
 				auto& cell = registry.get<Components::Cell>(cellLink.GetSource());
 				if (cell.IsEnabled())
@@ -399,7 +399,7 @@ entt::entity MoveBlockInDirection2(entt::registry& registry, const entt::entity&
 				{
 					newCellEnt = cellLink.GetDestination();
 
-					if (registry.has<Components::Controllable>(blockEnt))
+					if (registry.all_of<Components::Controllable>(blockEnt))
 					{
 						// Update where we're controlling. We probably want to do this a different way, not in this function. TODO FIXME
 						auto& controllable = registry.get<Components::Controllable>(blockEnt);
@@ -436,7 +436,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 	for (unsigned int i = 0; i < distance; i++)
 	{
 		// We're moving a bunch in this function. Update our current coordiantes while doing so.
-		if (i > 0 && registry.has<Components::Coordinate>(newCellEnt))
+		if (i > 0 && registry.all_of<Components::Coordinate>(newCellEnt))
 		{
 			const auto& newCoordinate = registry.get<Components::Coordinate>(newCellEnt);
 			coordinate.Set(newCoordinate.Get());
@@ -444,7 +444,7 @@ entt::entity MoveBlockInDirection(entt::registry& registry, const entt::entity& 
 		}
 
 		entt::entity tempCellEnt = newCellEnt;
-		if (!registry.has<Components::Cell>(tempCellEnt))
+		if (!registry.all_of<Components::Cell>(tempCellEnt))
 			continue;
 		const auto& tempCell = registry.get<Components::Cell>(tempCellEnt);
 
@@ -583,7 +583,7 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 			registry.emplace<Components::Obstructs>(piece1);
 
 			// Temporary for testing. Switch directly to the falling state.
-			if (registry.has<Components::Moveable>(piece1))
+			if (registry.all_of<Components::Moveable>(piece1))
 			{
 				auto& moveable = registry.get<Components::Moveable>(piece1);
 				moveable.SetMovementState(Components::movementStates_t::FALL);
@@ -633,7 +633,7 @@ entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& con
 			registry.emplace<Components::Follower>(piece1, followedEntity);
 
 			// Temporary for testing. Switch directly to the falling state.
-			if (registry.has<Components::Moveable>(piece1))
+			if (registry.all_of<Components::Moveable>(piece1))
 			{
 				auto& moveable = registry.get<Components::Moveable>(piece1);
 				moveable.SetMovementState(Components::movementStates_t::FOLLOWING);
@@ -682,7 +682,7 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 			registry.emplace<Components::Position>(marker1);
 			registry.emplace<Components::DerivePositionFromCoordinates>(marker1);// , originCoord.GetParent());
 
-			if (registry.has<Components::Container2>(originCell.GetParent()))
+			if (registry.all_of<Components::Container2>(originCell.GetParent()))
 			{
 				auto& container = registry.get<Components::Container2>(originCoord.GetParent());
 				registry.emplace<Components::Scale>(marker1, container.GetCellDimensions3());
@@ -767,7 +767,7 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	registry.emplace<Components::Obstructable>(tetrominoEnt, spawnCoordinate.GetParent());
 
 	// Temporary for testing. Switch directly to the falling state.
-	if (registry.has<Components::Moveable>(tetrominoEnt))
+	if (registry.all_of<Components::Moveable>(tetrominoEnt))
 	{
 		auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
 		moveable.SetMovementState(Components::movementStates_t::FALL);
@@ -782,7 +782,7 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 	if (probeEntity == entt::null)
 		return false;
 
-	if (!registry.has<Components::Obstructable>(probeEntity))
+	if (!registry.all_of<Components::Obstructable>(probeEntity))
 		return false;
 
 	const auto& probeObstructable = registry.get<Components::Obstructable>(probeEntity);
@@ -807,7 +807,7 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 		if (!obstructsCoordinate.IsEnabled() || !obstructs.IsEnabled())
 			continue;
 
-		if (registry.has<Components::Follower>(entity) && registry.has<Components::Follower>(probeEntity))
+		if (registry.all_of<Components::Follower>(entity) && registry.all_of<Components::Follower>(probeEntity))
 		{
 			const auto& probeFollower = registry.get<Components::Follower>(probeEntity);
 			const auto& obstructsFollower = registry.get<Components::Follower>(entity);

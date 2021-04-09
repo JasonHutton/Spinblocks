@@ -36,12 +36,12 @@ namespace Systems
 							}
 							else
 							{
-								if (registry.has<Components::Obstructable>(entity))
+								if (registry.all_of<Components::Obstructable>(entity))
 								{
 									auto& obstructable = registry.get<Components::Obstructable>(entity);
 									//auto& block = GetBlockAtCoordinates(registry, tagOfContainerEntity, GetCoordinateOfEntity(registry, desiredCell));
 
-									if (registry.has<Components::Obstructs>(entity))
+									if (registry.all_of<Components::Obstructs>(entity))
 									{
 										obstructable.SetIsObstructed(true);
 										obstructable.SetLastObstructedTime(currentFrameTime);

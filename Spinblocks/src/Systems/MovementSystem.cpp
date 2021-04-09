@@ -24,7 +24,7 @@ namespace Systems
 			auto& coordinate = followMarkerView.get<Components::Coordinate>(entity);
 			auto& follower = followMarkerView.get<Components::Follower>(entity);
 
-			if (registry.has<Components::Tag>(entity))
+			if (registry.all_of<Components::Tag>(entity))
 			{
 				auto& tag = registry.get<Components::Tag>(entity);
 
@@ -151,11 +151,11 @@ namespace Systems
 						// Need to detect if a move is allowed before permitting it.
 						coordinate = moveable.GetDesiredCoordinate();
 						moveable.SetCurrentCoordinate(coordinate);
-						if (registry.has<Components::Obstructable>(entity))
+						if (registry.all_of<Components::Obstructable>(entity))
 						{
 							auto& obstructable = registry.get<Components::Obstructable>(entity);
 
-							if (registry.has<Components::Obstructs>(entity))
+							if (registry.all_of<Components::Obstructs>(entity))
 							{
 								obstructable.SetIsObstructed(true);
 							}

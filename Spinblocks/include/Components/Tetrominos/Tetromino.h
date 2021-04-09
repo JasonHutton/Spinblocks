@@ -107,7 +107,7 @@ namespace Components
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
 				{
 					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					if (!obstructable.GetIsObstructed())
@@ -124,7 +124,7 @@ namespace Components
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
 				{
 					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					obstructable.SetIsObstructed(isObstructed);
@@ -137,7 +137,7 @@ namespace Components
 			double lastObstructedTime = 0.0;
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
 				{
 					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					if (obstructable.GetLastObstructedTime() > lastObstructedTime)
@@ -152,7 +152,7 @@ namespace Components
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Obstructable>(GetBlock(i)))
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
 				{
 					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					obstructable.SetLastObstructedTime(lastObstructedTime);
@@ -164,7 +164,7 @@ namespace Components
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Moveable>(GetBlock(i)))
+				if (registry.all_of<Components::Moveable>(GetBlock(i)))
 				{
 					auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
 					moveable.SetMovementState(movementState);
@@ -176,7 +176,7 @@ namespace Components
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (registry.has<Components::Moveable>(GetBlock(i)))
+				if (registry.all_of<Components::Moveable>(GetBlock(i)))
 				{
 					const auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
 					if (moveable.GetMovementState() != Components::movementStates_t::LOCKED)
