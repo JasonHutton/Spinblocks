@@ -238,5 +238,11 @@
     <ClInclude Include="include\Components\Wall.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\TTetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\Tetrominos\LTetromino.h">
+      <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

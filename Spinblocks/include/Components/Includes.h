@@ -30,7 +30,9 @@
 
 #include "Components/Tetrominos/Tetromino.h"
 #include "Components/Tetrominos/OTetromino.h"
-#include "Components/Tetrominos//ITetromino.h"
+#include "Components/Tetrominos/ITetromino.h"
+#include "Components/Tetrominos/TTetromino.h"
+#include "Components/Tetrominos/LTetromino.h"
 
 #include "Components/Follower.h"
 #include "Components/Wall.h"
