@@ -6,6 +6,23 @@ namespace Components
 {
 	class OTetromino : public Tetromino
 	{
+	public:
+		// Width of the defining pattern of the Tetromino
+		const int GetPatternWidth() override
+		{
+			return 3;
+		}
+		// Height of the defining pattern of the Tetromino
+		const int GetPatternHeight() override
+		{
+			return 3;
+		}
+	public:
+		const std::string GetBlockModelPath() override
+		{
+			return "./data/block/yellow.obj";
+		}
+
 	protected:
 		void DefineBlockPattern() override
 		{
@@ -33,11 +50,6 @@ namespace Components
 			m_rotationPoints.push_back(glm::vec2(1, 1));
 			m_rotationPoints.push_back(glm::vec2(1, 1));
 			m_rotationPoints.push_back(glm::vec2(1, 1));
-		}
-	public:
-		static const std::string GetBlockModelPath()
-		{
-			return "./data/block/yellow.obj";
 		}
 
 	public:

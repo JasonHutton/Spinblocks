@@ -700,160 +700,80 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 		registry.remove_if_exists<Components::Controllable>(controllable);
 	}
 
+	const auto tetrominoEnt = registry.create();
 
-	const auto tetromino = registry.create();
-	registry.emplace<Components::Coordinate>(tetromino, spawnCoordinate.GetParent(), spawnCoordinate.Get());
-	
-	registry.emplace<Components::Position>(tetromino);
+	registry.emplace<Components::Coordinate>(tetrominoEnt, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+	registry.emplace<Components::Position>(tetrominoEnt);
 
-	//registry.emplace<Components::Tag>(tetromino, GetTagFromContainerType(containerType_t::BUFFER));
 	switch (tetrominoType)
 	{
-		case tetrominoType_t::I:
-		{
-			registry.emplace<Components::DerivePositionFromCoordinates>(tetromino, entt::null, glm::vec2(cellWidth / 2, -(static_cast<int>(cellHeight) / 2)));
-			registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::ITetromino::GetPatternWidth(), cellHeight * Components::ITetromino::GetPatternHeight()));
-			registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::ITetromino::GetPatternWidth(), Components::ITetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
-			registry.emplace<Components::ITetromino>(tetromino);
-
-			auto& iTetromino = registry.get<Components::ITetromino>(tetromino);
-
-			for (int i = 0; i < 4; i++)
-			{
-				auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-					(glm::vec2)spawnCoordinate.Get() + iTetromino.GetBlockOffsetCoordinates(iTetromino.GetCurrentOrientation(), i));
-
-				entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, iTetromino.GetBlockModelPath());
-				iTetromino.AddBlock(blockEnt);
-			}
-		}
+	case tetrominoType_t::O:
+		registry.emplace<Components::OTetromino>(tetrominoEnt);
+	case tetrominoType_t::I:
+		registry.emplace<Components::ITetromino>(tetrominoEnt);
 		break;
-		case tetrominoType_t::O:
-		{
-			registry.emplace<Components::DerivePositionFromCoordinates>(tetromino);
-			registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::OTetromino::GetPatternWidth(), cellHeight * Components::OTetromino::GetPatternHeight()));
-			registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::OTetromino::GetPatternWidth(), Components::OTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
-			registry.emplace<Components::OTetromino>(tetromino);
-
-			auto& oTetromino = registry.get<Components::OTetromino>(tetromino);
-
-			for (int i = 0; i < 4; i++)
-			{
-				auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-					(glm::vec2)spawnCoordinate.Get() + oTetromino.GetBlockOffsetCoordinates(oTetromino.GetCurrentOrientation(), i));
-
-				entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, oTetromino.GetBlockModelPath());
-				oTetromino.AddBlock(blockEnt);
-			}
-
-		}
+	case tetrominoType_t::T:
+		registry.emplace<Components::TTetromino>(tetrominoEnt);
 		break;
-		case tetrominoType_t::T:
-		{
-			registry.emplace<Components::DerivePositionFromCoordinates>(tetromino);
-			registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::TTetromino::GetPatternWidth(), cellHeight * Components::TTetromino::GetPatternHeight()));
-			registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::TTetromino::GetPatternWidth(), Components::TTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
-			registry.emplace<Components::TTetromino>(tetromino);
-
-			auto& tTetromino = registry.get<Components::TTetromino>(tetromino);
-
-			for (int i = 0; i < 4; i++)
-			{
-				auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-					(glm::vec2)spawnCoordinate.Get() + tTetromino.GetBlockOffsetCoordinates(tTetromino.GetCurrentOrientation(), i));
-
-				entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, tTetromino.GetBlockModelPath());
-				tTetromino.AddBlock(blockEnt);
-			}
-		}
+	case tetrominoType_t::L:
+		registry.emplace<Components::LTetromino>(tetrominoEnt);
 		break;
-		case tetrominoType_t::L:
-		{
-			registry.emplace<Components::DerivePositionFromCoordinates>(tetromino);
-			registry.emplace<Components::Scale>(tetromino, glm::uvec2(cellWidth * Components::LTetromino::GetPatternWidth(), cellHeight * Components::LTetromino::GetPatternHeight()));
-			registry.emplace<Components::Container2>(tetromino, glm::uvec2(Components::LTetromino::GetPatternWidth(), Components::LTetromino::GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
-			registry.emplace<Components::LTetromino>(tetromino);
-
-			auto& lTetromino = registry.get<Components::LTetromino>(tetromino);
-
-			for (int i = 0; i < 4; i++)
-			{
-				auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
-					(glm::vec2)spawnCoordinate.Get() + lTetromino.GetBlockOffsetCoordinates(lTetromino.GetCurrentOrientation(), i));
-
-				entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetromino, lTetromino.GetBlockModelPath());
-				lTetromino.AddBlock(blockEnt);
-			}
-		}
+	case tetrominoType_t::J:
+		registry.emplace<Components::JTetromino>(tetrominoEnt);
+		break;
+	case tetrominoType_t::S:
+		registry.emplace<Components::STetromino>(tetrominoEnt);
+		break;
+	case tetrominoType_t::Z:
+		registry.emplace<Components::ZTetromino>(tetrominoEnt);
 		break;
 	default:
 		assert(false);
+	}
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEnt);
+	
+	switch (tetromino->GetType())
+	{
+	case tetrominoType_t::I:
+		registry.emplace<Components::DerivePositionFromCoordinates>(tetrominoEnt, entt::null, glm::vec2(cellWidth / 2, -(static_cast<int>(cellHeight) / 2)));
+		break;
+	default:
+		registry.emplace<Components::DerivePositionFromCoordinates>(tetrominoEnt);
 		break;
 	}
+
+	registry.emplace<Components::Scale>(tetrominoEnt, glm::uvec2(cellWidth * tetromino->GetPatternWidth(), cellHeight * tetromino->GetPatternHeight()));
+	registry.emplace<Components::Container2>(tetrominoEnt, glm::uvec2(tetromino->GetPatternWidth(), tetromino->GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
+
+	for (int i = 0; i < 4; i++)
+	{
+		auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
+			(glm::vec2)spawnCoordinate.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
+
+		entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetrominoEnt, tetromino->GetBlockModelPath());
+		tetromino->AddBlock(blockEnt);
+	}
+
+	int width = tetromino->GetPatternWidth();
+	string modelpath = tetromino->GetBlockModelPath();
+
 	if (isControllable)
 	{
-		registry.emplace<Components::Controllable>(tetromino, spawnCoordinate.GetParent());
+		registry.emplace<Components::Controllable>(tetrominoEnt, spawnCoordinate.GetParent());
 	}
-	//registry.emplace<Components::Renderable>(tetromino, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
-	registry.emplace<Components::Moveable>(tetromino, registry.get<Components::Coordinate>(tetromino), registry.get<Components::Coordinate>(tetromino));
-	registry.emplace<Components::Obstructable>(tetromino, spawnCoordinate.GetParent());
+	registry.emplace<Components::Renderable>(tetrominoEnt, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
+	registry.emplace<Components::Moveable>(tetrominoEnt, registry.get<Components::Coordinate>(tetrominoEnt), registry.get<Components::Coordinate>(tetrominoEnt));
+	registry.emplace<Components::Obstructable>(tetrominoEnt, spawnCoordinate.GetParent());
 
 	// Temporary for testing. Switch directly to the falling state.
-	if (registry.has<Components::Moveable>(tetromino))
+	if (registry.has<Components::Moveable>(tetrominoEnt))
 	{
-		auto& moveable = registry.get<Components::Moveable>(tetromino);
+		auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
 		moveable.SetMovementState(Components::movementStates_t::FALL);
 	}
 
-
-
-	return tetromino;
-
-
-	/*
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
-	for (auto entity : containerView)
-	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
-		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
-		if (!tag.IsEnabled() || containerTag != tag.Get())
-			continue;
-
-		if (container2.IsEnabled() && tag.IsEnabled())
-		{
-			// Remove all existing controllable blocks.
-			// We probably want this more where one locks down, not here, but for now this is fine.
-			auto blockView = registry.view<Components::Block, Components::Controllable>();
-			for (auto block : blockView)
-			{
-				registry.remove_if_exists<Components::Controllable>(block);
-			}
-			Components::Container2 container2 = registry.get<Components::Container2>(entity);
-			Components::Position parentPosition = registry.get<Components::Position>(entity);
-
-			const auto piece1 = registry.create();
-			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
-			registry.emplace<Components::Position>(piece1);
-			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
-			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/lightblue.obj"));
-			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
-			//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
-			if (isControllable)
-			{
-				registry.emplace<Components::Controllable>(piece1, entity);
-			}
-			registry.emplace<Components::Block>(piece1, entity);
-
-			// Temporary for testing. Switch directly to the falling state.
-			if (registry.has<Components::Moveable>(piece1))
-			{
-				auto& moveable = registry.get<Components::Moveable>(piece1);
-				moveable.SetMovementState(Components::movementStates_t::FALL);
-			}
-		}
-	}
-	*/
+	return tetrominoEnt;
 }
 
 // See if the coordinates specified will obstruct the probe entity. (The probe entity might not be checking for obstructions, or similar.)

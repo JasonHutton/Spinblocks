@@ -51,20 +51,13 @@ namespace Components
 
 	public:
 		// Width of the defining pattern of the Tetromino
-		static const int GetPatternWidth()
-		{
-			return 3;
-		}
+		virtual const int GetPatternWidth() = 0;
+
 		// Height of the defining pattern of the Tetromino
-		static const int GetPatternHeight()
-		{
-			return 3;
-		}
+		virtual const int GetPatternHeight() = 0;
+
 	public:
-		static const std::string GetBlockModelPath()
-		{
-			return "./data/block/grey.obj";
-		}
+		virtual const std::string GetBlockModelPath() = 0;
 
 		// virtual method to determine pattern based on table and rotation adn etc
 	protected:
