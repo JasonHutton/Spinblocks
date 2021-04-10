@@ -461,6 +461,20 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 				break;
 			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_COUNTERCLOCKWISE:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				break;
+			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_CLOCKWISE:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				break;
+			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
 				if (keyState.second.prevKeyDown == true)
