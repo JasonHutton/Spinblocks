@@ -31,20 +31,23 @@ namespace Systems
 		if (linePattern.size() > 0)
 		{
 			// Ensure we're checking within the same parent container
-			for (entt::id_type p = 0; p < linePattern.size(); p++)
+			for (auto& parent : linePattern)
 			{
 				// Check how many blocks are in each row with at least one
-				for (glm::uint y = 0; y < linePattern[static_cast<entt::entity>(p)].size(); y++)
+				for (auto& row : linePattern.at(parent.first))
 				{
-					// We've got a full line here!
-					size_t sizeOfLine = linePattern[static_cast<entt::entity>(p)][y].size();
+					// Check if we've got a full line here...
+					size_t sizeOfLine = linePattern.at(parent.first).at(row.first).size();
 					if (sizeOfLine == lineWidth)
 					{
 						linesMatched++;
-						for (glm::uint x = 0; x < linePattern[static_cast<entt::entity>(p)][y].size(); x++)
+
+						// We're not actually interested in the column here, we want the entity id.
+						for (auto& col : linePattern.at(parent.first).at(row.first))
 						{
-							entt::entity blockEntity = linePattern[static_cast<entt::entity>(p)][y][x];
-							registry.emplace<Components::Hittable>(blockEntity);
+							const entt::entity& ent = col.second;
+
+							registry.emplace<Components::Hittable>(ent);
 						}
 					}
 				}
