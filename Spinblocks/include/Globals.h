@@ -9,6 +9,14 @@ inline struct displayData_t
 	std::string title{ "Spinblocks" };
 } displayData;
 
+enum class gameState_t
+{
+	INIT,
+	MENU,
+	PLAY,
+	GAME_OVER
+};
+
 // Ensure GetTagFromContainerType() and this enum are in sync
 enum class containerType_t
 {

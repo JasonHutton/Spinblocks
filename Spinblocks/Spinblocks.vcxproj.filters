@@ -81,6 +81,9 @@
     <ClCompile Include="src\Systems\EliminateSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\assimp-vc142-mt.dll">
@@ -252,6 +255,9 @@
     </ClInclude>
     <ClInclude Include="include\Components\Tetrominos\ZTetromino.h">
       <Filter>Header Files\Components\Tetrominos</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameState.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

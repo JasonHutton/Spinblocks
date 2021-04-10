@@ -41,6 +41,8 @@
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
 
+#include "GameState.h"
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -393,8 +395,19 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::S)), tetrominoType_t::S);
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::I)), tetrominoType_t::I);
 				//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "I Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::I)), Components::renderLayer_t::RL_MARKER_OVER, tet);
+				if (IsAnyBlockInTetrominoObstructed(registry, tet))
+				{
+					cout << "Obstructed on spawn! Game Over!" << endl;
+
+					auto controllableView = registry.view<Components::Controllable>();
+					for (auto controllable : controllableView)
+					{
+						registry.remove_if_exists<Components::Controllable>(controllable);
+					}
+					GameState::SetState(gameState_t::GAME_OVER);
+				}
 
 				break;
 			}
@@ -403,8 +416,20 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::Z)), tetrominoType_t::Z);
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), tetrominoType_t::O);
 				//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "O Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), Components::renderLayer_t::RL_MARKER_OVER, tet);
+				if(IsAnyBlockInTetrominoObstructed(registry, tet))
+				{
+					cout << "Obstructed on spawn! Game Over!" << endl;
+
+					auto controllableView = registry.view<Components::Controllable>();
+					for (auto controllable : controllableView)
+					{
+						registry.remove_if_exists<Components::Controllable>(controllable);
+					}
+					GameState::SetState(gameState_t::GAME_OVER);
+				}
+				
 
 				break;
 			}
@@ -829,6 +854,114 @@ void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lh
 	}
 }
 
+void InitGame(entt::registry& registry)
+{
+	GameInput::setVerticalAxis(0);
+	GameInput::setHorizontalAxis(0);
+
+	const auto camera = registry.create();
+	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+
+	const auto bagArea = registry.create();
+	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
+	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
+	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
+
+	BuildGrid(registry, matrix);
+	BuildGrid(registry, bagArea);
+
+	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
+	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 2)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 3)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 4)));
+	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 5)));*/
+
+	/*
+	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
+	Components::Position parentPosition = registry.get<Components::Position>(playArea);
+
+	const auto piece1 = registry.create();
+	registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
+	registry.emplace<Components::Position>(piece1);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece1, playArea);
+	registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
+
+
+	const auto piece2 = registry.create();
+	registry.emplace<Components::Coordinate>(piece2, glm::uvec2(1, 0));
+	registry.emplace<Components::Position>(piece2);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece2, playArea);
+	registry.emplace<Components::Scale>(piece2, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece2, Model("./data/block/lightblue.obj"));
+
+	const auto piece3 = registry.create();
+	registry.emplace<Components::Coordinate>(piece3, glm::uvec2(2, 0));
+	registry.emplace<Components::Position>(piece3);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece3, playArea);
+	registry.emplace<Components::Scale>(piece3, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece3, Model("./data/block/purple.obj"));
+
+	const auto piece4 = registry.create();
+	registry.emplace<Components::Coordinate>(piece4, glm::uvec2(3, 0));
+	registry.emplace<Components::Position>(piece4);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece4, playArea);
+	registry.emplace<Components::Scale>(piece4, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece4, Model("./data/block/orange.obj"));
+
+	const auto piece5 = registry.create();
+	registry.emplace<Components::Coordinate>(piece5, glm::uvec2(4, 0));
+	registry.emplace<Components::Position>(piece5);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece5, playArea);
+	registry.emplace<Components::Scale>(piece5, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece5, Model("./data/block/darkblue.obj"));
+
+	const auto piece6 = registry.create();
+	registry.emplace<Components::Coordinate>(piece6, glm::uvec2(5, 0));
+	registry.emplace<Components::Position>(piece6);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece6, playArea);
+	registry.emplace<Components::Scale>(piece6, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece6, Model("./data/block/green.obj"));
+
+	const auto piece7 = registry.create();
+	registry.emplace<Components::Coordinate>(piece7, glm::uvec2(6, 0));
+	registry.emplace<Components::Position>(piece7);
+	registry.emplace<Components::DerivePositionFromCoordinates>(piece7, playArea);
+	registry.emplace<Components::Scale>(piece7, container2.GetCellDimensions3());
+	registry.emplace<Components::Renderable>(piece7, Model("./data/block/red.obj"));
+	*/
+}
+
+void TeardownGame(entt::registry& registry)
+{
+	/*registry.each([&](auto entity) {
+		registry.destroy(entity);
+		});*/
+	registry.clear();
+}
+
 int main()
 {
 	if (!glfwInit())
@@ -870,106 +1003,9 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	//stbi_set_flip_vertically_on_load(true);
 
-	GameInput::setVerticalAxis(0);
-	GameInput::setHorizontalAxis(0);
+	GameState::SetState(gameState_t::INIT);
 
-	// Begin ECS
 	entt::registry registry;
-
-	const auto camera = registry.create();
-	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
-	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
-
-	const auto playArea = registry.create();
-	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
-	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
-	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
-	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
-	//registry.emplace<Components::Scale>(playArea);
-	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
-
-	const auto matrix = registry.create();
-	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
-	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
-	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
-	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
-
-	const auto bagArea = registry.create();
-	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
-	registry.emplace<Components::Scale>(bagArea, glm::vec2(25*4, 25*16));
-	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
-	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
-
-	BuildGrid(registry, matrix);
-	BuildGrid(registry, bagArea);
-
-	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
-	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 2)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 3)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 4)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 5)));*/
-
-	/*
-	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
-	Components::Position parentPosition = registry.get<Components::Position>(playArea);
-
-	const auto piece1 = registry.create();
-	registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
-	registry.emplace<Components::Position>(piece1);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece1, playArea);
-	registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
-
-	
-	const auto piece2 = registry.create();
-	registry.emplace<Components::Coordinate>(piece2, glm::uvec2(1, 0));
-	registry.emplace<Components::Position>(piece2);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece2, playArea);
-	registry.emplace<Components::Scale>(piece2, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece2, Model("./data/block/lightblue.obj"));
-	
-	const auto piece3 = registry.create();
-	registry.emplace<Components::Coordinate>(piece3, glm::uvec2(2, 0));
-	registry.emplace<Components::Position>(piece3);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece3, playArea);
-	registry.emplace<Components::Scale>(piece3, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece3, Model("./data/block/purple.obj"));
-
-	const auto piece4 = registry.create();
-	registry.emplace<Components::Coordinate>(piece4, glm::uvec2(3, 0));
-	registry.emplace<Components::Position>(piece4);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece4, playArea);
-	registry.emplace<Components::Scale>(piece4, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece4, Model("./data/block/orange.obj"));
-
-	const auto piece5 = registry.create();
-	registry.emplace<Components::Coordinate>(piece5, glm::uvec2(4, 0));
-	registry.emplace<Components::Position>(piece5);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece5, playArea);
-	registry.emplace<Components::Scale>(piece5, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece5, Model("./data/block/darkblue.obj"));
-
-	const auto piece6 = registry.create();
-	registry.emplace<Components::Coordinate>(piece6, glm::uvec2(5, 0));
-	registry.emplace<Components::Position>(piece6);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece6, playArea);
-	registry.emplace<Components::Scale>(piece6, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece6, Model("./data/block/green.obj"));
-
-	const auto piece7 = registry.create();
-	registry.emplace<Components::Coordinate>(piece7, glm::uvec2(6, 0));
-	registry.emplace<Components::Position>(piece7);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece7, playArea);
-	registry.emplace<Components::Scale>(piece7, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece7, Model("./data/block/red.obj"));
-	*/
-	// End ECS
 
 	glfwSwapInterval(1);
 	//glEnable(GL_DEPTH_TEST);
@@ -989,17 +1025,31 @@ int main()
 		GameTime::lastFrameTime = currentFrameTime;
 		GameTime::accumulator += deltaTime;
 
+		if (GameState::GetState() == gameState_t::INIT)
+		{
+			InitGame(registry);
+
+			GameState::SetState(gameState_t::MENU); // Placeholder.
+			GameState::SetState(gameState_t::PLAY);
+		}
+
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		processinput(window, registry, currentFrameTime);
-		
+		if (GameState::GetState() == gameState_t::PLAY)
+		{
+			processinput(window, registry, currentFrameTime);
+		}
+
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{
-			// Update game logic for ECS
-			preupdate(registry, currentFrameTime);
-			update(registry, currentFrameTime);
-			postupdate(registry, currentFrameTime);
+			if (GameState::GetState() == gameState_t::PLAY)
+			{
+				// Update game logic for ECS
+				preupdate(registry, currentFrameTime);
+				update(registry, currentFrameTime);
+				postupdate(registry, currentFrameTime);
+			}
 
 			GameTime::accumulator -= GameTime::fixedDeltaTime;
 		}
@@ -1007,6 +1057,12 @@ int main()
 		prerender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 		render(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 		postrender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
+
+		if (GameState::GetState() == gameState_t::GAME_OVER)
+		{
+			TeardownGame(registry);
+			GameState::SetState(gameState_t::INIT);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents(); // Windows needs to do things with the window too!

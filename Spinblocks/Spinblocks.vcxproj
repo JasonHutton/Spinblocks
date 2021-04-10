@@ -172,6 +172,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Components\Coordinate.cpp" />
+    <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Input\ContextControl.cpp" />
     <ClCompile Include="src\Input\GameInput.cpp" />
@@ -227,6 +228,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Tetrominos\TTetromino.h" />
     <ClInclude Include="include\Components\Tetrominos\ZTetromino.h" />
     <ClInclude Include="include\Components\Wall.h" />
+    <ClInclude Include="include\GameState.h" />
     <ClInclude Include="include\GameTime.h" />
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\Input\ContextControl.h" />
