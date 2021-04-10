@@ -211,6 +211,28 @@ bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity
 	}*/
 }
 
+bool IsAnyBlockInTetrominoObstructed(entt::registry& registry, entt::entity entity)
+{
+	if (entity == entt::null)
+		return false;
+
+	if (!IsEntityTetromino(registry, entity))
+		return false;
+
+	auto& tetCoord = registry.get<Components::Coordinate>(entity);
+
+	Components::Tetromino* tetromino = GetTetrominoFromEntity(registry, entity);
+
+	for (int i = 0; i < 4; i++)
+	{
+		auto& coordinate = registry.get<Components::Coordinate>(tetromino->GetBlock(i));
+		if (AreCoordinatesObstructed(registry, coordinate, tetromino->GetBlock(i)))
+			return true;
+	}
+
+	return false;
+}
+
 bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction)
 {
 	if (cellEntity == entt::null)
