@@ -765,8 +765,8 @@ void render(entt::registry& registry, double normalizedTime)
 			{
 
 				glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+
 				modelMatrix = glm::translate(modelMatrix, position.Get());
-				modelMatrix = glm::scale(modelMatrix, scale.Get());
 				if (registry.all_of<Components::Orientation>(entity))
 				{
 					auto& orientation = registry.get<Components::Orientation>(entity);
@@ -775,6 +775,7 @@ void render(entt::registry& registry, double normalizedTime)
 						modelMatrix = glm::rotate(modelMatrix, orientation.Get(), orientation.GetAxis());
 					}
 				}
+				modelMatrix = glm::scale(modelMatrix, scale.Get());
 
 				shader->setMat4("model", modelMatrix);
 				render.Draw(*shader);
