@@ -668,6 +668,9 @@ void prerender(entt::registry& registry, double normalizedTime)
 
 		if (deriveOrientationFromParent.IsEnabled() && orientation.IsEnabled())
 		{
+			if(!registry.all_of<Components::Orientation>(deriveOrientationFromParent.Get()))
+				continue;
+
 			Components::Orientation parentOrientation = registry.get<Components::Orientation>(deriveOrientationFromParent.Get());
 
 			orientation.Set(parentOrientation.Get() + deriveOrientationFromParent.GetOffset());
@@ -948,16 +951,16 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
-	/*
+	
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));*/
+	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 
 	BuildGrid(registry, matrix);
-	//BuildGrid(registry, bagArea);
+	BuildGrid(registry, bagArea);
 	
 	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
