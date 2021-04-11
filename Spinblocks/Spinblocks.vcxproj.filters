@@ -262,5 +262,8 @@
     <ClInclude Include="include\Components\Rotateable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Orientation.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

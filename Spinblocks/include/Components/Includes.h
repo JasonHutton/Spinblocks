@@ -40,3 +40,4 @@
 #include "Components/Follower.h"
 #include "Components/Wall.h"
 #include "Components/Rotateable.h"
+#include "Components/Orientation.h"

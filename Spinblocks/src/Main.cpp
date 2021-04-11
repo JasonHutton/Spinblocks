@@ -466,12 +466,38 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				//auto playAreaView = registry.view<Components::Container2, Components::Rotateable>();
+				auto playAreaView = registry.view<Components::Tag, Components::Orientation>();
+				for (auto entity : playAreaView)
+				{
+					auto& tag = playAreaView.get<Components::Tag>(entity);
+					auto& orientation = playAreaView.get<Components::Orientation>(entity);
+
+					if (tag.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
+					{
+						orientation.Set(orientation.Get() + 0.1f);
+					}
+				}
+
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_CLOCKWISE:
 			{
 				if (keyState.second.prevKeyDown == true)
 					break;
+
+				//auto playAreaView = registry.view<Components::Container2, Components::Rotateable>();
+				auto playAreaView = registry.view<Components::Tag, Components::Orientation>();
+				for (auto entity : playAreaView)
+				{
+					auto& tag = playAreaView.get<Components::Tag>(entity);
+					auto& orientation = playAreaView.get<Components::Orientation>(entity);
+
+					if (tag.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
+					{
+						orientation.Set(orientation.Get() - 0.1f);
+					}
+				}
 
 				break;
 			}
@@ -741,6 +767,14 @@ void render(entt::registry& registry, double normalizedTime)
 				glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
 				modelMatrix = glm::translate(modelMatrix, position.Get());
 				modelMatrix = glm::scale(modelMatrix, scale.Get());
+				if (registry.all_of<Components::Orientation>(entity))
+				{
+					auto& orientation = registry.get<Components::Orientation>(entity);
+					if (orientation.IsEnabled())
+					{
+						modelMatrix = glm::rotate(modelMatrix, orientation.Get(), orientation.GetAxis());
+					}
+				}
 
 				shader->setMat4("model", modelMatrix);
 				render.Draw(*shader);
@@ -885,7 +919,10 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::Scale>(playArea);
 	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
+	/*
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
@@ -903,7 +940,7 @@ void InitGame(entt::registry& registry)
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
-
+	*/
 	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
