@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Components/Component.h"
-#include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
 namespace Components
@@ -13,7 +12,7 @@ namespace Components
 		glm::vec3 m_axis;
 
 	public:
-		Orientation(const float& orientation, const glm::vec3& axis) : m_orientation(orientation), m_axis(axis)
+		Orientation(const float& orientation = 0.0f, const glm::vec3& axis = glm::vec3(0.0f, 0.0f, 1.0f)) : m_orientation(orientation), m_axis(axis)
 		{
 		}
 

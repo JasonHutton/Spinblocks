@@ -660,6 +660,21 @@ void postupdate(entt::registry& registry, double currentFrameTime)
 
 void prerender(entt::registry& registry, double normalizedTime)
 {
+	auto orientationFromParentView = registry.view<Components::DeriveOrientationFromParent, Components::Orientation>();
+	for (auto entity : orientationFromParentView)
+	{
+		auto& deriveOrientationFromParent = orientationFromParentView.get<Components::DeriveOrientationFromParent>(entity);
+		auto& orientation = orientationFromParentView.get<Components::Orientation>(entity);
+
+		if (deriveOrientationFromParent.IsEnabled() && orientation.IsEnabled())
+		{
+			Components::Orientation parentOrientation = registry.get<Components::Orientation>(deriveOrientationFromParent.Get());
+
+			orientation.Set(parentOrientation.Get() + deriveOrientationFromParent.GetOffset());
+			orientation.SetAxis(parentOrientation.GetAxis() + deriveOrientationFromParent.GetAxisOffset());
+		}
+	}
+
 	auto scaleView = registry.view<Components::ScaleToCellDimensions, Components::Scale, Components::Cell>();
 	for (auto entity : scaleView)
 	{
@@ -923,7 +938,7 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
 	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	/*
+	
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
@@ -931,17 +946,19 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
 	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
-
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	/*
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
+	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));*/
 
 	BuildGrid(registry, matrix);
-	BuildGrid(registry, bagArea);
-	*/
+	//BuildGrid(registry, bagArea);
+	
 	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));

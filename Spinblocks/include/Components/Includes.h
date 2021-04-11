@@ -41,3 +41,4 @@
 #include "Components/Wall.h"
 #include "Components/Rotateable.h"
 #include "Components/Orientation.h"
+#include "Components/DeriveOrientationFromParent.h"
