@@ -731,10 +731,11 @@ void prerender(entt::registry& registry, double normalizedTime)
 			{
 				deriveCoordinatesFrom = coordinates.GetParent();
 			}
-			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom);
+			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
-			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
+			//position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
+			position.Set(container2.GetCellPosition3(glm::vec3(0.0, 0.0, 0.0), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
 
 			int z = 0;
 			z++;
