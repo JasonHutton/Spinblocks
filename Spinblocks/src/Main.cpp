@@ -714,6 +714,16 @@ void prerender(entt::registry& registry, double normalizedTime)
 		auto& position = derivedPositionView.get<Components::Position>(entity);
 		auto& coordinates = derivedPositionView.get<Components::Coordinate>(entity);
 
+		string blah = GetTagOfEntity(registry, entity);
+		if (blah.length() > 0 && 
+			(blah == (GetTagFromContainerType(containerType_t::BAG_AREA) + ":Grid:0-0") ||
+			blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:0-0") ||
+			blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:9-0")))
+		{
+			int q = 0;
+			q++;
+		}
+
 		if (derivePositionFromCoordinates.IsEnabled() && position.IsEnabled() && coordinates.IsEnabled())
 		{
 			entt::entity deriveCoordinatesFrom = derivePositionFromCoordinates.Get();
@@ -725,6 +735,9 @@ void prerender(entt::registry& registry, double normalizedTime)
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
 			position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
+
+			int z = 0;
+			z++;
 		}
 	}
 }
@@ -794,8 +807,22 @@ void render(entt::registry& registry, double normalizedTime)
 					int q = 0;
 					q++;
 				}
+
+				string blah = GetTagOfEntity(registry, entity);
+				if (blah.length() > 0 &&
+					(blah == (GetTagFromContainerType(containerType_t::BAG_AREA) + ":Grid:0-0") ||
+						blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:0-0") ||
+						blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:9-0")))
+				{
+					int q = 0;
+					q++;
+				}
 				
-				shader->setMat4("model", GetModelMatrixOfEntity(registry, entity, inheritScaling));
+				glm::mat4 matTemp = GetModelMatrixOfEntity(registry, entity, inheritScaling);
+				// Bag Area:Grid:0-0 = 1362.5,412.5
+				// Matrix:Grid:9-0 = 512.5,62.5
+				// Matrix:Grid:0-0 = 287.5,62.5
+				shader->setMat4("model", matTemp);
 				render.Draw(*shader);
 			}
 

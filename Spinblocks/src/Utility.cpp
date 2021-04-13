@@ -55,6 +55,20 @@ const std::string FindTagOfContainerEntity(entt::registry& registry, const entt:
 	throw std::runtime_error("Unable to find tag of container entity!");
 }
 
+const std::string GetTagOfEntity(entt::registry& registry, const entt::entity& entity)
+{
+	if (registry.all_of<Components::Tag>(entity))
+	{
+		auto& tag = registry.get<Components::Tag>(entity);
+		if (tag.IsEnabled())
+		{
+			return tag.Get();
+		}
+	}
+
+	return "";
+}
+
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 {
 	if (ent == entt::null)
@@ -504,7 +518,8 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 	{
 		for (unsigned int k = 0; k < container2.GetGridDimensions().y; k++)
 		{
-			std::string tagName = "Grid";
+			std::string tagName = GetTagOfEntity(registry, parentEntity);
+			tagName += ":Grid:";
 			tagName += std::to_string(i);
 			tagName += "-";
 			tagName += std::to_string(k);
@@ -526,7 +541,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			//Components::Container2 container2 = registry.get<Components::Container2>(cell.GetParent());
 			//scale.Set(container2.GetCellDimensions3());
 			registry.emplace<Components::Position>(cell);
-			registry.emplace<Components::DerivePositionFromCoordinates>(cell);// , parentEntity);
+			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
 			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
 			//registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 			registry.emplace<Components::Orientation>(cell);
@@ -932,7 +947,13 @@ glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, 
 	}
 
 	modelMatrix = glm::translate(modelMatrix, position.Get());
-	
+	// modelMatrix = 700,300
+	// position = 662.5,112.5
+	// new modelMatrix = 1362.5,412.5
+	// 700 + 662.5 = 1362.5
+	// 300 + 112.5 = 412.5
+	// Numbers from bag area, cell coordinates 0,0
+		
 	glm::mat4 rotationMatrix = glm::mat4(1.0f);
 
 	/*if (isSelfRotation) {
