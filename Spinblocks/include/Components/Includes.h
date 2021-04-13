@@ -42,3 +42,4 @@
 #include "Components/Rotateable.h"
 #include "Components/Orientation.h"
 #include "Components/DeriveOrientationFromParent.h"
+#include "Components/InheritScalingFromParent.h"

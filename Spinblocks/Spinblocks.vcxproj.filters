@@ -268,5 +268,8 @@
     <ClInclude Include="include\Components\DeriveOrientationFromParent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\InheritScalingFromParent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -33,3 +33,4 @@ bool IsAnyBlockInTetrominoObstructed(entt::registry& registry, entt::entity enti
 bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity);
 glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::entity entity);
 glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type);
+glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, const bool& inheritScaling, const bool& childCall = false);

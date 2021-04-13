@@ -678,7 +678,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 		}
 	}
 
-	auto scaleView = registry.view<Components::ScaleToCellDimensions, Components::Scale, Components::Cell>();
+	/*auto scaleView = registry.view<Components::ScaleToCellDimensions, Components::Scale, Components::Cell>();
 	for (auto entity : scaleView)
 	{
 		auto& scaleToCellDimensions = scaleView.get<Components::ScaleToCellDimensions>(entity);
@@ -690,7 +690,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 			Components::Container2 container2 = registry.get<Components::Container2>(cell.GetParent());
 			scale.Set(container2.GetCellDimensions3());
 		}
-	}
+	}*/
 
 	auto positionFromParentView = registry.view<Components::DerivePositionFromParent, Components::Position>();
 	for (auto entity : positionFromParentView)
@@ -767,16 +767,39 @@ void render(entt::registry& registry, double normalizedTime)
 		}
 	}
 
-	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Scale>();
+	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Orientation, Components::Scale>();
 	for (int i = Components::renderLayer_t::RL_MIN+1; i < Components::renderLayer_t::RL_MAX; i++)
 	{
 		for (auto entity : renderView)
 		{
 			auto& render = renderView.get<Components::Renderable>(entity);
+			auto& position = renderView.get<Components::Position>(entity);
+			auto& orientation = renderView.get<Components::Orientation>(entity);
+			auto& scale = renderView.get<Components::Scale>(entity);
+			
 			if (render.GetLayer() != i)
 				continue;
 
-			auto& position = renderView.get<Components::Position>(entity);
+			if (render.IsEnabled() && position.IsEnabled() && orientation.IsEnabled() && scale.IsEnabled())
+			{
+				bool inheritScaling = false;
+				if (registry.all_of<Components::InheritScalingFromParent>(entity))
+				{
+					auto& inheritScalingFromParent = registry.get<Components::InheritScalingFromParent>(entity);
+					inheritScaling = inheritScalingFromParent.Get();
+				}
+
+				if (registry.any_of<Components::Cell>(entity))
+				{
+					int q = 0;
+					q++;
+				}
+				
+				shader->setMat4("model", GetModelMatrixOfEntity(registry, entity, inheritScaling));
+				render.Draw(*shader);
+			}
+
+			/*auto& position = renderView.get<Components::Position>(entity);
 			auto& scale = renderView.get<Components::Scale>(entity);
 
 			if (render.IsEnabled() && position.IsEnabled())
@@ -797,7 +820,7 @@ void render(entt::registry& registry, double normalizedTime)
 
 				shader->setMat4("model", modelMatrix);
 				render.Draw(*shader);
-			}
+			}*/
 		}
 	}
 }
@@ -931,7 +954,7 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	//registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
 	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
 	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
@@ -940,17 +963,21 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
 	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
 	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
 
 	
 	const auto matrix = registry.create();
-	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
+	//registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
 	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
-	registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
 	
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
@@ -958,6 +985,9 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
+	registry.emplace<Components::Orientation>(bagArea);
+	//registry.emplace<Components::ReferenceEntity>(bagArea, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(bagArea, false);
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);

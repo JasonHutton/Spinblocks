@@ -513,11 +513,25 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Coordinate>(cell, parentEntity, glm::uvec2(i, k));
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
-			registry.emplace<Components::Scale>(cell);
+			//registry.emplace<Components::Scale>(cell);
+
+			/*registry.emplace<Components::Scale>(cell, 
+				glm::vec3(
+					container2.GetCellDimensions3().x * 0.01,
+					container2.GetCellDimensions3().y * 0.01,
+					container2.GetCellDimensions3().z * 0.01));*/
+
+			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
+
+			//Components::Container2 container2 = registry.get<Components::Container2>(cell.GetParent());
+			//scale.Set(container2.GetCellDimensions3());
 			registry.emplace<Components::Position>(cell);
-			registry.emplace<Components::DerivePositionFromCoordinates>(cell);// , parentEntity);
+			//registry.emplace<Components::DerivePositionFromCoordinates>(cell);// , parentEntity);
 			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
-			registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
+			//registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
+			registry.emplace<Components::Orientation>(cell);
+			registry.emplace<Components::ReferenceEntity>(cell, parentEntity);
+			registry.emplace<Components::InheritScalingFromParent>(cell, false);
 		}
 	}
 
@@ -882,4 +896,64 @@ glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type)
 	}
 
 	assert(false);
+}
+
+glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, const bool& inheritScaling, const bool& childCall)
+{
+	if (!registry.all_of<Components::Position, Components::Orientation, Components::Scale>(entity))
+		throw std::runtime_error("Missing a required component to get a model matrix!");
+
+	auto& position = registry.get<Components::Position>(entity);
+	auto& orientation = registry.get<Components::Orientation>(entity);
+	auto& scale = registry.get<Components::Scale>(entity);
+
+	entt::entity parentEnt = entt::null;
+	if (registry.all_of<Components::ReferenceEntity>(entity))
+	{
+		auto& parent = registry.get<Components::ReferenceEntity>(entity);
+		parentEnt = parent.Get();
+	}
+	bool shouldInheritScaling = false;
+	if (registry.all_of<Components::InheritScalingFromParent>(entity))
+	{
+		auto& inheritScalingFromParent = registry.get<Components::InheritScalingFromParent>(entity);
+		shouldInheritScaling = inheritScalingFromParent.Get();
+	}
+
+
+	glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
+
+	if(parentEnt != entt::null)
+	{
+		if (registry.all_of<Components::Position, Components::Orientation, Components::Scale>(parentEnt))
+		{
+			modelMatrix = GetModelMatrixOfEntity(registry, parentEnt, shouldInheritScaling, true);
+		}
+	}
+
+	modelMatrix = glm::translate(modelMatrix, position.Get());
+	
+	glm::mat4 rotationMatrix = glm::mat4(1.0f);
+
+	/*if (isSelfRotation) {
+		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));   //X
+		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));   //Y
+		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));   //Z
+	}
+	else {
+		rotationalMatrix = glm::eulerAngleZYX(rotation.z, rotation.y, rotation.x);
+	}*/
+
+	rotationMatrix = glm::rotate(rotationMatrix, orientation.Get(), orientation.GetAxis());
+
+	// Look at this, this might be redundant with GLM functions.
+	modelMatrix = modelMatrix * rotationMatrix;
+
+	if ((childCall && inheritScaling) || !childCall)
+	{
+		// scale
+		modelMatrix = glm::scale(modelMatrix, scale.Get());
+	}
+
+	return modelMatrix;
 }
