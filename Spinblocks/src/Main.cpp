@@ -212,6 +212,28 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 	}*/
 }
 
+void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection)
+{
+	auto playAreaView = registry.view<Components::Tag, Components::CardinalDirection, Components::Orientation>();
+	for (auto entity : playAreaView)
+	{
+		auto& tag = playAreaView.get<Components::Tag>(entity);
+		auto& cardinalDirection = playAreaView.get<Components::CardinalDirection>(entity);
+		auto& orientation = playAreaView.get<Components::Orientation>(entity);
+
+		if (tag.IsEnabled() && cardinalDirection.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
+		{
+			auto& playAreaCardinalDirection = registry.get<Components::CardinalDirection>(entity);
+
+			// Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
+			playAreaCardinalDirection.SetDesiredOrientation(playAreaCardinalDirection.GetNewOrientation(rotationDirection, playAreaCardinalDirection.GetCurrentOrientation()));
+			playAreaCardinalDirection.SetCurrentOrientation(playAreaCardinalDirection.GetDesiredOrientation());
+
+			orientation.Set(playAreaCardinalDirection.GetAngleInRadiansOfOrientation(playAreaCardinalDirection.GetCurrentOrientation()));
+		}
+	}
+}
+
 void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 {
 	entt::entity tetrominoEntity = GetActiveControllable(registry);
@@ -467,18 +489,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				//auto playAreaView = registry.view<Components::Container2, Components::Rotateable>();
-				auto playAreaView = registry.view<Components::Tag, Components::Orientation>();
-				for (auto entity : playAreaView)
-				{
-					auto& tag = playAreaView.get<Components::Tag>(entity);
-					auto& orientation = playAreaView.get<Components::Orientation>(entity);
-
-					if (tag.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
-					{
-						orientation.Set(orientation.Get() + 0.1f);
-					}
-				}
+				RotatePlayArea(registry, rotationDirection_t::COUNTERCLOCKWISE);
 
 				break;
 			}
@@ -487,18 +498,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				//auto playAreaView = registry.view<Components::Container2, Components::Rotateable>();
-				auto playAreaView = registry.view<Components::Tag, Components::Orientation>();
-				for (auto entity : playAreaView)
-				{
-					auto& tag = playAreaView.get<Components::Tag>(entity);
-					auto& orientation = playAreaView.get<Components::Orientation>(entity);
-
-					if (tag.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
-					{
-						orientation.Set(orientation.Get() - 0.1f);
-					}
-				}
+				RotatePlayArea(registry, rotationDirection_t::CLOCKWISE);
 
 				break;
 			}
@@ -612,7 +612,20 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 void preupdate(entt::registry& registry, double currentFrameTime)
 {
+	auto cardinalDirectionView = registry.view<Components::CardinalDirection, Components::Orientation>();
+	for (auto entity : cardinalDirectionView)
+	{
+		auto& cardinalDirection = cardinalDirectionView.get<Components::CardinalDirection>(entity);
+		auto& orientation = cardinalDirectionView.get<Components::Orientation>(entity);
 
+		if (cardinalDirection.IsEnabled() && orientation.IsEnabled())
+		{
+			if (cardinalDirection.GetCurrentOrientation() != cardinalDirection.GetDesiredOrientation())
+			{
+
+			}
+		}
+	}
 }
 
 void update(entt::registry& registry, double currentFrameTime)
@@ -939,6 +952,7 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
 	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
 
 	
 	const auto matrix = registry.create();

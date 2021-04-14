@@ -271,5 +271,8 @@
     <ClInclude Include="include\Components\InheritScalingFromParent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\CardinalDirection.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

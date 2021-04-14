@@ -12,6 +12,7 @@
 #include <tuple>
 #include "glm/vec2.hpp"
 
+enum class rotationDirection_t;
 enum class moveDirection_t;
 enum class tetrominoType_t;
 

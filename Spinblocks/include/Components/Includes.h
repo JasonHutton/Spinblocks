@@ -43,3 +43,5 @@
 #include "Components/Orientation.h"
 #include "Components/DeriveOrientationFromParent.h"
 #include "Components/InheritScalingFromParent.h"
+
+#include "Components/CardinalDirection.h"
