@@ -528,18 +528,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Coordinate>(cell, parentEntity, glm::uvec2(i, k));
 			registry.emplace<Components::Cell>(cell, parentEntity);
 			registry.emplace<Components::Tag>(cell, tagName);
-			//registry.emplace<Components::Scale>(cell);
-
-			/*registry.emplace<Components::Scale>(cell, 
-				glm::vec3(
-					container2.GetCellDimensions3().x * 0.01,
-					container2.GetCellDimensions3().y * 0.01,
-					container2.GetCellDimensions3().z * 0.01));*/
-
 			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
-
-			//Components::Container2 container2 = registry.get<Components::Container2>(cell.GetParent());
-			//scale.Set(container2.GetCellDimensions3());
 			registry.emplace<Components::Position>(cell);
 			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
 			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/grey.obj"));
@@ -940,7 +929,6 @@ glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, 
 		shouldInheritScaling = inheritScalingFromParent.Get();
 	}
 
-
 	glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
 
 	if(parentEnt != entt::null)
@@ -952,23 +940,8 @@ glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, 
 	}
 
 	modelMatrix = glm::translate(modelMatrix, position.Get());
-	// modelMatrix = 700,300
-	// position = 662.5,112.5
-	// new modelMatrix = 1362.5,412.5
-	// 700 + 662.5 = 1362.5
-	// 300 + 112.5 = 412.5
-	// Numbers from bag area, cell coordinates 0,0
 		
 	glm::mat4 rotationMatrix = glm::mat4(1.0f);
-
-	/*if (isSelfRotation) {
-		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));   //X
-		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));   //Y
-		rotationalMatrix = glm::rotate(rotationalMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));   //Z
-	}
-	else {
-		rotationalMatrix = glm::eulerAngleZYX(rotation.z, rotation.y, rotation.x);
-	}*/
 
 	rotationMatrix = glm::rotate(rotationMatrix, orientation.Get(), orientation.GetAxis());
 

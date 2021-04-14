@@ -715,22 +715,6 @@ void prerender(entt::registry& registry, double normalizedTime)
 		auto& position = derivedPositionView.get<Components::Position>(entity);
 		auto& coordinates = derivedPositionView.get<Components::Coordinate>(entity);
 
-		string blah = GetTagOfEntity(registry, entity);
-		if (blah.length() > 0 && 
-			(blah == (GetTagFromContainerType(containerType_t::BAG_AREA) + ":Grid:0-0") ||
-			blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:0-0") ||
-			blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:9-0")))
-		{
-			int q = 0;
-			q++;
-		}
-
-		if (registry.any_of<Components::Block>(entity))
-		{
-			int q = 0;
-			q++;
-		}
-
 		if (derivePositionFromCoordinates.IsEnabled() && position.IsEnabled() && coordinates.IsEnabled())
 		{
 			entt::entity deriveCoordinatesFrom = derivePositionFromCoordinates.Get();
@@ -741,11 +725,9 @@ void prerender(entt::registry& registry, double normalizedTime)
 			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0 // Also 0 vector with blocks.
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
+			// Review GetCellPosition3() later. What should it be in reference to? Parent entity? Matrix? Parent coordinates? FIXME TODO
 			//position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
 			position.Set(container2.GetCellPosition3(glm::vec3(0.0, 0.0, 0.0), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
-
-			int z = 0;
-			z++;
 		}
 	}
 }
@@ -794,12 +776,14 @@ void render(entt::registry& registry, double normalizedTime)
 		for (auto entity : renderView)
 		{
 			auto& render = renderView.get<Components::Renderable>(entity);
-			auto& position = renderView.get<Components::Position>(entity);
-			auto& orientation = renderView.get<Components::Orientation>(entity);
-			auto& scale = renderView.get<Components::Scale>(entity);
 			
 			if (render.GetLayer() != i)
 				continue;
+
+			// We grab these after checking the renderlayer as a simplistic optimization. May not even be relevant, hasn't been benchmarked..
+			auto& position = renderView.get<Components::Position>(entity);
+			auto& orientation = renderView.get<Components::Orientation>(entity);
+			auto& scale = renderView.get<Components::Scale>(entity);
 
 			if (render.IsEnabled() && position.IsEnabled() && orientation.IsEnabled() && scale.IsEnabled())
 			{
@@ -809,59 +793,10 @@ void render(entt::registry& registry, double normalizedTime)
 					auto& inheritScalingFromParent = registry.get<Components::InheritScalingFromParent>(entity);
 					inheritScaling = inheritScalingFromParent.Get();
 				}
-
-				if (registry.any_of<Components::Cell>(entity))
-				{
-					int q = 0;
-					q++;
-				}
-
-				if (registry.any_of<Components::Block>(entity))
-				{
-					int q = 0;
-					q++;
-				}
-
-				string blah = GetTagOfEntity(registry, entity);
-				if (blah.length() > 0 &&
-					(blah == (GetTagFromContainerType(containerType_t::BAG_AREA) + ":Grid:0-0") ||
-						blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:0-0") ||
-						blah == (GetTagFromContainerType(containerType_t::MATRIX) + ":Grid:9-0")))
-				{
-					int q = 0;
-					q++;
-				}
 				
-				glm::mat4 matTemp = GetModelMatrixOfEntity(registry, entity, inheritScaling);
-				// Bag Area:Grid:0-0 = 1362.5,412.5
-				// Matrix:Grid:9-0 = 512.5,62.5
-				// Matrix:Grid:0-0 = 287.5,62.5
-				shader->setMat4("model", matTemp);
+				shader->setMat4("model", GetModelMatrixOfEntity(registry, entity, inheritScaling));
 				render.Draw(*shader);
 			}
-
-			/*auto& position = renderView.get<Components::Position>(entity);
-			auto& scale = renderView.get<Components::Scale>(entity);
-
-			if (render.IsEnabled() && position.IsEnabled())
-			{
-
-				glm::mat4 modelMatrix = glm::mat4(1.0f); // Identity Matrix
-
-				modelMatrix = glm::translate(modelMatrix, position.Get());
-				if (registry.all_of<Components::Orientation>(entity))
-				{
-					auto& orientation = registry.get<Components::Orientation>(entity);
-					if (orientation.IsEnabled())
-					{
-						modelMatrix = glm::rotate(modelMatrix, orientation.Get(), orientation.GetAxis());
-					}
-				}
-				modelMatrix = glm::scale(modelMatrix, scale.Get());
-
-				shader->setMat4("model", modelMatrix);
-				render.Draw(*shader);
-			}*/
 		}
 	}
 }
@@ -996,7 +931,6 @@ void InitGame(entt::registry& registry)
 
 	const auto playArea = registry.create();
 	//registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
-	//registry.emplace<Components::Position>(playArea, glm::vec3(0.0f, 0.0f, 0.0f));
 	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
 	//registry.emplace<Components::Scale>(playArea);
@@ -1012,7 +946,6 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
 	registry.emplace<Components::Position>(matrix);
-	//registry.emplace<Components::DerivePositionFromParent>(matrix, playArea); // Lack of this is probably preventing the block parent from having a position.
 	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
