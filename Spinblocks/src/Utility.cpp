@@ -692,6 +692,8 @@ entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& con
 				auto& moveable = registry.get<Components::Moveable>(piece1);
 				moveable.SetMovementState(Components::movementStates_t::FOLLOWING);
 			}
+			registry.emplace<Components::Orientation>(piece1);
+			registry.emplace<Components::ReferenceEntity>(piece1, entity);
 
 			return piece1;
 		}
