@@ -39,6 +39,25 @@ namespace Components
 			m_desiredOrientation = moveDirection;
 		}
 
+		const moveDirection_t GetCurrentDownDirection() const
+		{
+			switch (m_currentOrientation)
+			{
+			case moveDirection_t::NORTH:
+				return moveDirection_t::SOUTH;
+			case moveDirection_t::EAST:
+				return moveDirection_t::WEST;
+			case moveDirection_t::SOUTH:
+				return moveDirection_t::NORTH;
+			case moveDirection_t::WEST:
+				return moveDirection_t::EAST;
+			default:
+				return moveDirection_t::SOUTH;
+			}
+
+			return moveDirection_t::SOUTH;
+		}
+
 		const float GetAngleInRadiansOfOrientation(const moveDirection_t& currentOrientation) const
 		{
 			switch (currentOrientation)
