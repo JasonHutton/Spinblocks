@@ -547,6 +547,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Orientation>(cell);
 			registry.emplace<Components::ReferenceEntity>(cell, parentEntity);
 			registry.emplace<Components::InheritScalingFromParent>(cell, false);
+			//registry.emplace<Components::DerivePositionFromParent>(cell, parentEntity);
 		}
 	}
 
@@ -620,7 +621,7 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 			const auto piece1 = registry.create();
 			registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 			registry.emplace<Components::Position>(piece1);
-			registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
+			registry.emplace<Components::DerivePositionFromCoordinates>(piece1, entity);
 			registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
 			registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model("./data/block/yellow.obj"));
 			registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
@@ -639,6 +640,8 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 				auto& moveable = registry.get<Components::Moveable>(piece1);
 				moveable.SetMovementState(Components::movementStates_t::FALL);
 			}
+			registry.emplace<Components::Orientation>(piece1);
+			registry.emplace<Components::ReferenceEntity>(piece1, entity);
 
 			return piece1;
 		}

@@ -387,6 +387,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 
 				SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(0, 19)));
+				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BAG_AREA)), glm::uvec2(1, 15)));
 
 				break;
 			}
@@ -724,6 +725,12 @@ void prerender(entt::registry& registry, double normalizedTime)
 			q++;
 		}
 
+		if (registry.any_of<Components::Block>(entity))
+		{
+			int q = 0;
+			q++;
+		}
+
 		if (derivePositionFromCoordinates.IsEnabled() && position.IsEnabled() && coordinates.IsEnabled())
 		{
 			entt::entity deriveCoordinatesFrom = derivePositionFromCoordinates.Get();
@@ -731,7 +738,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 			{
 				deriveCoordinatesFrom = coordinates.GetParent();
 			}
-			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0
+			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0 // Also 0 vector with blocks.
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
 			//position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
@@ -804,6 +811,12 @@ void render(entt::registry& registry, double normalizedTime)
 				}
 
 				if (registry.any_of<Components::Cell>(entity))
+				{
+					int q = 0;
+					q++;
+				}
+
+				if (registry.any_of<Components::Block>(entity))
 				{
 					int q = 0;
 					q++;
@@ -999,7 +1012,7 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
 	registry.emplace<Components::Position>(matrix);
-	//registry.emplace<Components::DerivePositionFromParent>(matrix, playArea);
+	//registry.emplace<Components::DerivePositionFromParent>(matrix, playArea); // Lack of this is probably preventing the block parent from having a position.
 	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
