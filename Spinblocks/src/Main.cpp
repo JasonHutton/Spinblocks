@@ -656,7 +656,24 @@ void update(entt::registry& registry, double currentFrameTime)
 	Systems::FallingSystem(registry, currentFrameTime);
 	Systems::MovementSystem(registry, currentFrameTime);
 	Systems::StateChangeSystem(registry, currentFrameTime);
-	Systems::PatternSystem(registry, PlayAreaWidth, currentFrameTime);
+
+
+	const auto& playAreaEnt = FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	if (playAreaEnt == entt::null)
+		throw std::runtime_error("Play Area entity is null!");
+	auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaEnt);
+
+	int lineLength = 0;
+	if(playAreaDirection.GetCurrentOrientation() == moveDirection_t::NORTH || playAreaDirection.GetCurrentOrientation() == moveDirection_t::SOUTH)
+	{
+		lineLength = PlayAreaWidth;
+	}
+	else
+	{
+		lineLength = PlayAreaHeight;
+	}
+
+	Systems::PatternSystem(registry, lineLength, currentFrameTime);
 	Systems::EliminateSystem(registry, currentFrameTime);
 
 	/*auto containerView = registry.view<Components::Container, Components::Scale>();
