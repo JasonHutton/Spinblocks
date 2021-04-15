@@ -8,33 +8,66 @@ namespace Systems
 {
 	void EliminateSystem(entt::registry& registry, double currentFrameTime)
 	{
-		auto rows = std::set<unsigned int>();
+		const auto& playAreaEnt = FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA));
+		if (playAreaEnt == entt::null)
+			throw std::runtime_error("Play Area entity is null!");
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaEnt);
 
-		// Clear all hitlist marked ents
-		auto hittableView = registry.view<Components::Block, Components::Hittable>();
-		for (auto entity : hittableView)
+		if (playAreaDirection.GetCurrentOrientation() == moveDirection_t::NORTH || playAreaDirection.GetCurrentOrientation() == moveDirection_t::SOUTH)
 		{
-			rows.insert(GetCoordinateOfEntity(registry, entity).Get().y); // Note all unique rows that have been cleared.
+			auto rows = std::set<unsigned int>();
 
-			registry.destroy(entity);
-		}
-
-
-		if (rows.size() > 0)
-		{
-			unsigned int lowestRow = *rows.begin();
-
-			auto blockView = registry.view<Components::Block, Components::Moveable>();
-			for (auto entity : blockView)
+			// Clear all hitlist marked ents
+			auto hittableView = registry.view<Components::Block, Components::Hittable>();
+			for (auto entity : hittableView)
 			{
-				auto& moveable = blockView.get<Components::Moveable>(entity);
+				rows.insert(GetCoordinateOfEntity(registry, entity).Get().y); // Note all unique rows that have been cleared.
 
-				if (moveable.GetCurrentCoordinate().Get().y > lowestRow)
+				registry.destroy(entity);
+			}
+
+			if (playAreaDirection.GetCurrentOrientation() == moveDirection_t::NORTH)
+			{ // North
+				if (rows.size() > 0)
 				{
-					moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, static_cast<unsigned int>(rows.size()), true)));
-					moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
+					unsigned int lowestRow = *rows.begin();
+
+					auto blockView = registry.view<Components::Block, Components::Moveable>();
+					for (auto entity : blockView)
+					{
+						auto& moveable = blockView.get<Components::Moveable>(entity);
+
+						if (moveable.GetCurrentCoordinate().Get().y > lowestRow)
+						{
+							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity, playAreaDirection.GetCurrentDownDirection(), static_cast<unsigned int>(rows.size()), true)));
+							moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
+						}
+					}
 				}
 			}
+			else
+			{ // South
+				if (rows.size() > 0)
+				{
+					unsigned int highestRow = *rows.rbegin();
+
+					auto blockView = registry.view<Components::Block, Components::Moveable>();
+					for (auto entity : blockView)
+					{
+						auto& moveable = blockView.get<Components::Moveable>(entity);
+
+						if (moveable.GetCurrentCoordinate().Get().y < highestRow)
+						{
+							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity, playAreaDirection.GetCurrentDownDirection(), static_cast<unsigned int>(rows.size()), true)));
+							moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
+						}
+					}
+				}
+			}
+		}
+		else
+		{ // East/West
+
 		}
 	}
 }
