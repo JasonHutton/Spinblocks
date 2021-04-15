@@ -277,5 +277,8 @@
     <ClInclude Include="include\Components\SpawnMarker.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\DirectionallyActive.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

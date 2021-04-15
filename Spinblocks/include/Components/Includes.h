@@ -46,3 +46,4 @@
 
 #include "Components/CardinalDirection.h"
 #include "Components/SpawnMarker.h"
+#include "Components/DirectionallyActive.h"

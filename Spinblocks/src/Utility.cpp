@@ -888,6 +888,61 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 	return false;
 }
 
+
+glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::string& containerTag, const entt::entity tetrominoEntity, const moveDirection_t& direction)
+{
+	entt::entity foundEntity = entt::null;
+
+	entt::entity containerEntity = FindContainerEntityByTag(registry, containerTag);
+
+	auto& container = registry.get<Components::Container2>(containerEntity);
+
+	moveDirection_t currentDirection = moveDirection_t::NORTH;
+	if (registry.all_of<Components::CardinalDirection>(containerEntity))
+	{
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(containerEntity);
+
+		currentDirection = playAreaDirection.GetCurrentOrientation();
+	}
+	else if(registry.all_of<Components::ReferenceEntity>(containerEntity))
+	{
+		auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(containerEntity);
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
+		currentDirection = playAreaDirection.GetCurrentOrientation();
+	}
+
+	auto spawnMarkerView = registry.view<Components::SpawnMarker, Components::Coordinate>();
+	for (auto entity : spawnMarkerView)
+	{
+		auto& marker = spawnMarkerView.get<Components::SpawnMarker>(entity);
+		auto& coordinate = spawnMarkerView.get<Components::Coordinate>(entity);
+
+		if (coordinate.GetParent() != containerEntity)
+			continue;
+
+		auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
+
+		if (!marker.ValidForTetrominoType(tetromino->GetType()))
+			continue;
+
+		if (registry.all_of<Components::DirectionallyActive>(entity))
+		{
+			auto& dirActive = registry.get<Components::DirectionallyActive>(entity);
+			if (dirActive.IsActive(direction))
+			{
+				return coordinate.Get();
+			}
+		}
+		else
+		{
+			return coordinate.Get();
+		}
+	}
+	
+	throw std::runtime_error("Unable to find valid spawn marker!");
+}
+
 glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::entity entity)
 {
 	if (entity == entt::null)

@@ -141,6 +141,38 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 	}
 }
 
+void PlaceSpawnMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const spawnType_t& spawnType, const moveDirection_t& activeDirection, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& containerTag2 = containerView.get<Components::Tag>(entity);
+
+		if (container2.IsEnabled() && containerTag2.IsEnabled())
+		{
+			if (containerTag2.Get() != containerTag)
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, markerCoordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto marker = registry.create();
+			registry.emplace<Components::SpawnMarker>(marker, entity, spawnType);
+			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
+			registry.emplace<Components::Position>(marker);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
+			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(marker, layer, Model("./data/block/blue.obj"));
+			registry.emplace<Components::Orientation>(marker);
+			registry.emplace<Components::ReferenceEntity>(marker, entity);
+			registry.emplace<Components::DirectionallyActive>(marker, activeDirection);
+		}
+	}
+}
+
 void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate)
 {
 	auto containerView = registry.view<Components::Container2>();
