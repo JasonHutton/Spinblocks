@@ -889,7 +889,7 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 }
 
 
-glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::string& containerTag, const entt::entity tetrominoEntity, const moveDirection_t& direction)
+glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::string& containerTag, const tetrominoType_t& tetrominoType)
 {
 	entt::entity foundEntity = entt::null;
 
@@ -921,15 +921,13 @@ glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::str
 		if (coordinate.GetParent() != containerEntity)
 			continue;
 
-		auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
-
-		if (!marker.ValidForTetrominoType(tetromino->GetType()))
+		if (!marker.ValidForTetrominoType(tetrominoType))
 			continue;
 
 		if (registry.all_of<Components::DirectionallyActive>(entity))
 		{
 			auto& dirActive = registry.get<Components::DirectionallyActive>(entity);
-			if (dirActive.IsActive(direction))
+			if (dirActive.IsActive(currentDirection))
 			{
 				return coordinate.Get();
 			}

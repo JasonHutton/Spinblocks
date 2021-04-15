@@ -33,7 +33,7 @@ Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::en
 bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity, const entt::entity& cellEntity, const bool& disableObstruction);
 bool IsAnyBlockInTetrominoObstructed(entt::registry& registry, entt::entity entity);
 bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity);
-glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::string& containerTag, const entt::entity tetrominoEntity, const moveDirection_t& direction);
+glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::string& containerTag, const tetrominoType_t& tetrominoType);
 glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::entity entity);
 glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type);
 glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, const bool& inheritScaling, const bool& childCall = false);
