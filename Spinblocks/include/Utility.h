@@ -12,6 +12,7 @@
 const std::string GetTagFromContainerType(const containerType_t& t);
 
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName);
+entt::entity FindEntityByTag(entt::registry& registry, const std::string& tagName);
 const std::string FindTagOfContainerEntity(entt::registry& registry, const entt::entity& containerEntity);
 const std::string GetTagOfEntity(entt::registry& registry, const entt::entity& entity);
 bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const entt::entity& cellEntity, const bool& disableObstruction = false);

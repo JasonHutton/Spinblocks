@@ -36,6 +36,23 @@ entt::entity FindContainerEntityByTag(entt::registry& registry, const std::strin
 	return foundEntity;
 }
 
+entt::entity FindEntityByTag(entt::registry& registry, const std::string& tagName)
+{
+	entt::entity foundEntity = entt::null;
+
+	auto view = registry.view<Components::Tag>();
+	for (auto entity : view)
+	{
+		auto& tag = view.get<Components::Tag>(entity);
+		if (tag.IsEnabled() && tag.Get() == tagName)
+		{
+			foundEntity = entity;
+		}
+	}
+
+	return foundEntity;
+}
+
 const std::string FindTagOfContainerEntity(entt::registry& registry, const entt::entity& containerEntity)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
