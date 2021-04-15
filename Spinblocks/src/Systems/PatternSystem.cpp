@@ -82,7 +82,7 @@ namespace Systems
 							linesMatched++;
 
 							// We're not actually interested in the row here, we want the entity id.
-							for (auto& row : linePatternEW.at(parent.first).at(col.first))
+							for (auto& row : linePatternNS.at(parent.first).at(col.first))
 							{
 								const entt::entity& ent = row.second;
 
