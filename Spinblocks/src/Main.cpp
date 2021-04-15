@@ -1045,7 +1045,7 @@ void InitGame(entt::registry& registry)
 	}
 
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 18)), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5, 1)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 1)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
 
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
