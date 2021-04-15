@@ -481,7 +481,11 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), tetrominoType_t::O);
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), 
+					Components::Coordinate(FindContainerEntityByTag(registry, 
+						GetTagFromContainerType(containerType_t::MATRIX)), 
+						GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX), tetrominoType_t::O)),
+					tetrominoType_t::O);
 				//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "O Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), Components::renderLayer_t::RL_MARKER_OVER, tet);
 				if(IsAnyBlockInTetrominoObstructed(registry, tet))
 				{
@@ -1046,6 +1050,9 @@ void InitGame(entt::registry& registry)
 
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 18)), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 1)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
+
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 17)), spawnType_t::OTETROMINO, moveDirection_t::NORTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 1)), spawnType_t::OTETROMINO, moveDirection_t::SOUTH);
 
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
