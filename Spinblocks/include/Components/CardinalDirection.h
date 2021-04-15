@@ -46,16 +46,73 @@ namespace Components
 			case moveDirection_t::NORTH:
 				return moveDirection_t::SOUTH;
 			case moveDirection_t::EAST:
-				return moveDirection_t::WEST;
+				return moveDirection_t::EAST;
 			case moveDirection_t::SOUTH:
 				return moveDirection_t::NORTH;
 			case moveDirection_t::WEST:
-				return moveDirection_t::EAST;
+				return moveDirection_t::WEST;
 			default:
 				return moveDirection_t::SOUTH;
 			}
 
 			return moveDirection_t::SOUTH;
+		}
+
+		const moveDirection_t GetCurrentUpDirection() const
+		{
+			switch (m_currentOrientation)
+			{
+			case moveDirection_t::NORTH:
+				return moveDirection_t::NORTH;
+			case moveDirection_t::EAST:
+				return moveDirection_t::WEST;
+			case moveDirection_t::SOUTH:
+				return moveDirection_t::SOUTH;
+			case moveDirection_t::WEST:
+				return moveDirection_t::EAST;
+			default:
+				return moveDirection_t::NORTH;
+			}
+
+			return moveDirection_t::NORTH;
+		}
+
+		const moveDirection_t GetCurrentLeftDirection() const
+		{
+			switch (m_currentOrientation)
+			{
+			case moveDirection_t::NORTH:
+				return moveDirection_t::WEST;
+			case moveDirection_t::EAST:
+				return moveDirection_t::SOUTH;
+			case moveDirection_t::SOUTH:
+				return moveDirection_t::EAST;
+			case moveDirection_t::WEST:
+				return moveDirection_t::NORTH;
+			default:
+				return moveDirection_t::WEST;
+			}
+
+			return moveDirection_t::WEST;
+		}
+
+		const moveDirection_t GetCurrentRightDirection() const
+		{
+			switch (m_currentOrientation)
+			{
+			case moveDirection_t::NORTH:
+				return moveDirection_t::EAST;
+			case moveDirection_t::EAST:
+				return moveDirection_t::NORTH;
+			case moveDirection_t::SOUTH:
+				return moveDirection_t::WEST;
+			case moveDirection_t::WEST:
+				return moveDirection_t::SOUTH;
+			default:
+				return moveDirection_t::EAST;
+			}
+
+			return moveDirection_t::EAST;
 		}
 
 		const float GetAngleInRadiansOfOrientation(const moveDirection_t& currentOrientation) const
