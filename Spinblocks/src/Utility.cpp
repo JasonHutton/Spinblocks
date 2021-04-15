@@ -767,27 +767,42 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	registry.emplace<Components::Coordinate>(tetrominoEnt, spawnCoordinate.GetParent(), spawnCoordinate.Get());
 	registry.emplace<Components::Position>(tetrominoEnt);
 
+	moveDirection_t currentDirection = moveDirection_t::NORTH;
+	if (registry.all_of<Components::CardinalDirection>(spawnCoordinate.GetParent()))
+	{
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(spawnCoordinate.GetParent());
+
+		currentDirection = playAreaDirection.GetCurrentOrientation();
+	}
+	else if (registry.all_of<Components::ReferenceEntity>(spawnCoordinate.GetParent()))
+	{
+		auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(spawnCoordinate.GetParent());
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
+		currentDirection = playAreaDirection.GetCurrentOrientation();
+	}
+
 	switch (tetrominoType)
 	{
 	case tetrominoType_t::O:
-		registry.emplace<Components::OTetromino>(tetrominoEnt);
+		registry.emplace<Components::OTetromino>(tetrominoEnt, currentDirection);
 	case tetrominoType_t::I:
-		registry.emplace<Components::ITetromino>(tetrominoEnt);
+		registry.emplace<Components::ITetromino>(tetrominoEnt, currentDirection);
 		break;
 	case tetrominoType_t::T:
-		registry.emplace<Components::TTetromino>(tetrominoEnt);
+		registry.emplace<Components::TTetromino>(tetrominoEnt, currentDirection);
 		break;
 	case tetrominoType_t::L:
-		registry.emplace<Components::LTetromino>(tetrominoEnt);
+		registry.emplace<Components::LTetromino>(tetrominoEnt, currentDirection);
 		break;
 	case tetrominoType_t::J:
-		registry.emplace<Components::JTetromino>(tetrominoEnt);
+		registry.emplace<Components::JTetromino>(tetrominoEnt, currentDirection);
 		break;
 	case tetrominoType_t::S:
-		registry.emplace<Components::STetromino>(tetrominoEnt);
+		registry.emplace<Components::STetromino>(tetrominoEnt, currentDirection);
 		break;
 	case tetrominoType_t::Z:
-		registry.emplace<Components::ZTetromino>(tetrominoEnt);
+		registry.emplace<Components::ZTetromino>(tetrominoEnt, currentDirection);
 		break;
 	default:
 		assert(false);

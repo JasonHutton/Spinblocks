@@ -75,7 +75,7 @@ namespace Components
 		virtual void DefineRotationPoints() = 0;
 
 	public:
-		Tetromino(const tetrominoType_t& tetrominoType) : m_tetrominoType(tetrominoType)
+		Tetromino(const tetrominoType_t& tetrominoType, const moveDirection_t& orientation) : m_currentOrientation(orientation), m_desiredOrientation(orientation), m_tetrominoType(tetrominoType)
 		{
 		}
 

@@ -52,7 +52,7 @@ namespace Components
 			m_rotationPoints.push_back(glm::vec2(1, 1));
 		}
 	public:
-		JTetromino() :Tetromino(tetrominoType_t::J)
+		JTetromino(const moveDirection_t& orientation) :Tetromino(tetrominoType_t::J, orientation)
 		{
 			DefineBlockPattern();
 			DefineRotationPoints();

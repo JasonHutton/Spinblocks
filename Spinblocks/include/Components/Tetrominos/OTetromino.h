@@ -53,7 +53,7 @@ namespace Components
 		}
 
 	public:
-		OTetromino() :Tetromino(tetrominoType_t::O)
+		OTetromino(const moveDirection_t& orientation) :Tetromino(tetrominoType_t::O, orientation)
 		{
 			DefineBlockPattern();
 			DefineRotationPoints();
