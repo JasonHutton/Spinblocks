@@ -66,3 +66,10 @@ enum class tetrominoType_t
 	S,
 	I
 };
+
+enum class spawnType_t
+{
+	WIDTH3, // T, L, J, S, Z
+	ITETROMINO, // I
+	OTETROMINO // O
+};

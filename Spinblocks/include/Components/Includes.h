@@ -45,3 +45,4 @@
 #include "Components/InheritScalingFromParent.h"
 
 #include "Components/CardinalDirection.h"
+#include "Components/SpawnMarker.h"
