@@ -484,8 +484,8 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX), 
 					Components::Coordinate(FindContainerEntityByTag(registry, 
 						GetTagFromContainerType(containerType_t::MATRIX)), 
-						GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX), tetrominoType_t::O)),
-					tetrominoType_t::O);
+						GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX), tetrominoType_t::T)),
+					tetrominoType_t::T);
 				//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "O Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), Components::renderLayer_t::RL_MARKER_OVER, tet);
 				if(IsAnyBlockInTetrominoObstructed(registry, tet))
 				{
@@ -1057,6 +1057,11 @@ void InitGame(entt::registry& registry)
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 1)), spawnType_t::OTETROMINO, moveDirection_t::SOUTH);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 9)), spawnType_t::OTETROMINO, moveDirection_t::EAST);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(7, 9)), spawnType_t::OTETROMINO, moveDirection_t::WEST);
+
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 17)), spawnType_t::WIDTH3, moveDirection_t::NORTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5, 2)), spawnType_t::WIDTH3, moveDirection_t::SOUTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 9)), spawnType_t::WIDTH3, moveDirection_t::EAST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(7, 9)), spawnType_t::WIDTH3, moveDirection_t::WEST);
 
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
