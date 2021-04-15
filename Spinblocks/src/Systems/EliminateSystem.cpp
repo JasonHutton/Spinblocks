@@ -67,7 +67,55 @@ namespace Systems
 		}
 		else
 		{ // East/West
+			auto rows = std::set<unsigned int>();
 
+			// Clear all hitlist marked ents
+			auto hittableView = registry.view<Components::Block, Components::Hittable>();
+			for (auto entity : hittableView)
+			{
+				rows.insert(GetCoordinateOfEntity(registry, entity).Get().x); // Note all unique rows that have been cleared.
+
+				registry.destroy(entity);
+			}
+
+			if (playAreaDirection.GetCurrentOrientation() == moveDirection_t::EAST)
+			{ // North
+				if (rows.size() > 0)
+				{
+					unsigned int lowestCol = *rows.begin();
+
+					auto blockView = registry.view<Components::Block, Components::Moveable>();
+					for (auto entity : blockView)
+					{
+						auto& moveable = blockView.get<Components::Moveable>(entity);
+
+						if (moveable.GetCurrentCoordinate().Get().x < lowestCol)
+						{
+							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity, playAreaDirection.GetCurrentDownDirection(), static_cast<unsigned int>(rows.size()), true)));
+							moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
+						}
+					}
+				}
+			}
+			else
+			{ // South
+				if (rows.size() > 0)
+				{
+					unsigned int highestCol = *rows.rbegin();
+
+					auto blockView = registry.view<Components::Block, Components::Moveable>();
+					for (auto entity : blockView)
+					{
+						auto& moveable = blockView.get<Components::Moveable>(entity);
+
+						if (moveable.GetCurrentCoordinate().Get().x > highestCol)
+						{
+							moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity, playAreaDirection.GetCurrentDownDirection(), static_cast<unsigned int>(rows.size()), true)));
+							moveable.SetMovementState(Components::movementStates_t::HARD_DROP);
+						}
+					}
+				}
+			}
 		}
 	}
 }
