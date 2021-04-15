@@ -135,6 +135,8 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 			{
 				registry.emplace<Components::Follower>(marker, followedEnt);
 			}
+			registry.emplace<Components::Orientation>(marker);
+			registry.emplace<Components::ReferenceEntity>(marker, entity);
 		}
 	}
 }
@@ -312,27 +314,31 @@ void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
 					{
 						if (moveable.GetCurrentCoordinate() == coordinate)
 						{
+
+							auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(moveable.GetCurrentCoordinate().GetParent());
+							auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
 							try
 							{
 								switch (movePiece)
 								{
 								case movePiece_t::MOVE_LEFT:
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::WEST, 1)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentLeftDirection(), 1)));
 									break;
 								case movePiece_t::MOVE_RIGHT:
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::EAST, 1)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentRightDirection(), 1)));
 									break;
 								case movePiece_t::MOVE_UP:
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::NORTH, 1)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentUpDirection(), 1)));
 									moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
 									break;
 								case movePiece_t::SOFT_DROP:
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, 1)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), 1)));
 									moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
 									break;
 								case movePiece_t::HARD_DROP:
 								{
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, moveDirection_t::SOUTH, PlayAreaHeight + BufferAreaHeight)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + BufferAreaHeight)));
 									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
 									break;
 								}
@@ -980,7 +986,11 @@ void InitGame(entt::registry& registry)
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
 	
-	//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(0, 0)));
+	for (int i = 0; i < 10; i++)
+	{
+		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(i, 19)));
+	}
+
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 2)));
