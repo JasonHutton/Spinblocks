@@ -26,10 +26,13 @@ namespace Systems
 						entt::entity moveableParentEntity = movableCoord.GetParent();
 						std::string tagOfContainerEntity = FindTagOfContainerEntity(registry, moveableParentEntity);
 
+						auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(movableCoord.GetParent());
+						auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
 						auto& cell = GetCellAtCoordinates(registry, tagOfContainerEntity, movableCoord); // If can't find, don't move
 						if (cell.IsEnabled())
 						{
-							entt::entity desiredCell = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
+							entt::entity desiredCell = MoveBlockInDirection(registry, entity, playAreaDirection.GetCurrentDownDirection(), 1);
 							if (GetCoordinateOfEntity(registry, desiredCell) != GetCoordinateOfEntity(registry, entity))
 							{
 								moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, desiredCell));
