@@ -198,6 +198,8 @@ void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinat
 			registry.emplace<Components::Scale>(wall, container2.GetCellDimensions3());
 			registry.emplace<Components::Renderable>(wall, Components::renderLayer_t::RL_MARKER_OVER, Model("./data/block/red.obj"));
 			registry.emplace<Components::Obstructs>(wall);
+			registry.emplace<Components::Orientation>(wall);
+			registry.emplace<Components::ReferenceEntity>(wall, coordinate.GetParent());
 		}
 	}
 }
@@ -1070,7 +1072,8 @@ void InitGame(entt::registry& registry)
 
 	for (int i = BufferAreaDepth-1; i < PlayAreaWidth + BufferAreaDepth+1; i++)
 	{
-		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 1", Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)));
+		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 1", Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)));
 	}
 
 	/*
@@ -1082,7 +1085,8 @@ void InitGame(entt::registry& registry)
 	
 	for (int i = BufferAreaDepth - 1; i < PlayAreaWidth + BufferAreaDepth + 1; i++)
 	{
-		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 2", Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))));
+		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 2", Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))));
 	}
 	
 	/*// West
@@ -1093,7 +1097,8 @@ void InitGame(entt::registry& registry)
 
 	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
 	{
-		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 3", Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
+		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 3", Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
 	}
 	
 	/*
@@ -1105,7 +1110,8 @@ void InitGame(entt::registry& registry)
 
 	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
 	{
-		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 4", Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)));
+		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 4", Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)));
 	}
 
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 21 + (BufferAreaDepth - 1))), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
