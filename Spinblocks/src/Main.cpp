@@ -370,7 +370,7 @@ void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
 									break;
 								case movePiece_t::HARD_DROP:
 								{
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + BufferAreaHeight)));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2))));
 									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
 									break;
 								}
@@ -1007,7 +1007,7 @@ void InitGame(entt::registry& registry)
 
 	const auto playArea = registry.create();
 	//registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
-	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * 10, cellHeight * 20)); // celldimensions * gridwidth or height
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight)); // celldimensions * gridwidth or height
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
 	//registry.emplace<Components::Scale>(playArea);
 	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
@@ -1021,9 +1021,9 @@ void InitGame(entt::registry& registry)
 	const auto matrix = registry.create();
 	registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * 10, cellHeight * 20));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container2>(matrix, glm::uvec2(10, 20), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(PlayAreaWidth, PlayAreaHeight), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -1034,7 +1034,7 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
-	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(25, 25));
+	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 	registry.emplace<Components::Orientation>(bagArea);
 	//registry.emplace<Components::ReferenceEntity>(bagArea, playArea);
