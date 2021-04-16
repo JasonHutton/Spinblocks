@@ -446,8 +446,26 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					break;
 
 
-				SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(0, 19)));
+				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(0, 19)));
 				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::BAG_AREA)), glm::uvec2(1, 15)));
+
+				auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+					Components::Coordinate(FindContainerEntityByTag(registry,
+						GetTagFromContainerType(containerType_t::MATRIX)),
+						GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX), tetrominoType_t::O)),
+					tetrominoType_t::O);
+				//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "O Tetromino Marker", Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), GetTetrominoSpawnCoordinates(tetrominoType_t::O)), Components::renderLayer_t::RL_MARKER_OVER, tet);
+				if (IsAnyBlockInTetrominoObstructed(registry, tet))
+				{
+					cout << "Obstructed on spawn! Game Over!" << endl;
+
+					auto controllableView = registry.view<Components::Controllable>();
+					for (auto controllable : controllableView)
+					{
+						registry.remove_if_exists<Components::Controllable>(controllable);
+					}
+					GameState::SetState(gameState_t::GAME_OVER);
+				}
 
 				break;
 			}
@@ -1006,8 +1024,8 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::PerspectiveCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
 
 	const auto playArea = registry.create();
-	//registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
-	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight)); // celldimensions * gridwidth or height
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight));
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
 	//registry.emplace<Components::Scale>(playArea);
 	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
@@ -1019,11 +1037,11 @@ void InitGame(entt::registry& registry)
 
 	
 	const auto matrix = registry.create();
-	registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (PlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (PlayAreaHeight + (BufferAreaDepth * 2))));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container2>(matrix, glm::uvec2(PlayAreaWidth, PlayAreaHeight), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth * 2), PlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -1043,25 +1061,30 @@ void InitGame(entt::registry& registry)
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
 	
-	for (int i = 0; i < 10; i++)
+	for (int i = BufferAreaDepth; i < PlayAreaWidth + BufferAreaDepth; i++)
 	{
-		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(i, 19)));
+		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 1", Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1))));
 	}
 
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 18)), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 2)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 10)), spawnType_t::ITETROMINO, moveDirection_t::EAST);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(8, 10)), spawnType_t::ITETROMINO, moveDirection_t::WEST);
+	for (int i = BufferAreaDepth; i < PlayAreaWidth + BufferAreaDepth; i++)
+	{
+		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 2", Components::Coordinate(matrix, glm::uvec2(i, 0 + BufferAreaDepth)));
+	}
 
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 17)), spawnType_t::OTETROMINO, moveDirection_t::NORTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 1)), spawnType_t::OTETROMINO, moveDirection_t::SOUTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 9)), spawnType_t::OTETROMINO, moveDirection_t::EAST);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(7, 9)), spawnType_t::OTETROMINO, moveDirection_t::WEST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 21 + (BufferAreaDepth - 1))), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 0 + BufferAreaDepth)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + BufferAreaDepth, 10 + BufferAreaDepth)), spawnType_t::ITETROMINO, moveDirection_t::EAST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(9 + BufferAreaDepth, 10 + BufferAreaDepth)), spawnType_t::ITETROMINO, moveDirection_t::WEST);
 
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4, 17)), spawnType_t::WIDTH3, moveDirection_t::NORTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5, 2)), spawnType_t::WIDTH3, moveDirection_t::SOUTH);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 9)), spawnType_t::WIDTH3, moveDirection_t::EAST);
-	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(7, 9)), spawnType_t::WIDTH3, moveDirection_t::WEST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 21 + (BufferAreaDepth - 1))), spawnType_t::OTETROMINO, moveDirection_t::NORTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 0 + (BufferAreaDepth - 2))), spawnType_t::OTETROMINO, moveDirection_t::SOUTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + BufferAreaDepth-1, 9 + BufferAreaDepth)), spawnType_t::OTETROMINO, moveDirection_t::EAST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(9 + BufferAreaDepth-1, 9 + BufferAreaDepth)), spawnType_t::OTETROMINO, moveDirection_t::WEST);
+
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 21 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::NORTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5 + BufferAreaDepth, 0 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::SOUTH);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + BufferAreaDepth, 9 + BufferAreaDepth)), spawnType_t::WIDTH3, moveDirection_t::EAST);
+	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(8 + BufferAreaDepth, 9 + BufferAreaDepth)), spawnType_t::WIDTH3, moveDirection_t::WEST);
 
 	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
 	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
