@@ -193,7 +193,7 @@ void PlaceSpawnMarker(entt::registry& registry, const std::string& containerTag,
 			registry.emplace<Components::Position>(marker);
 			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
 			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(marker, layer, Model("./data/block/lightblue.obj"));
+			//registry.emplace<Components::Renderable>(marker, layer, Model("./data/block/lightblue.obj"));
 			registry.emplace<Components::Orientation>(marker);
 			registry.emplace<Components::ReferenceEntity>(marker, entity);
 			registry.emplace<Components::DirectionallyActive>(marker, activeDirection);
