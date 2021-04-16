@@ -2,6 +2,8 @@
 
 #include "Components/Component.h"
 
+#include <vector>
+
 enum class moveDirection_t;
 
 namespace Components
@@ -9,18 +11,31 @@ namespace Components
 	class DirectionallyActive : public Component
 	{
 	protected:
-		moveDirection_t m_direction;
+		std::vector<moveDirection_t> m_directions;
 
 	public:
-		DirectionallyActive(const moveDirection_t& direction) : m_direction(direction)
+		DirectionallyActive(const std::vector<moveDirection_t>& directions) : m_directions(directions)
 		{
 
 		}
 
+		DirectionallyActive(const moveDirection_t& direction)
+		{
+			AddDirection(direction);
+		}
+
+		void AddDirection(const moveDirection_t& direction)
+		{
+			m_directions.push_back(direction);
+		}
+
 		const bool IsActive(const moveDirection_t& direction) const
 		{
-			if (direction == m_direction)
-				return true;
+			for (const auto& dir : m_directions)
+			{
+				if (direction == dir)
+					return true;
+			}
 
 			return false;
 		}
