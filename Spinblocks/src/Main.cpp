@@ -1072,13 +1072,13 @@ void InitGame(entt::registry& registry)
 	{
 		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 2", Components::Coordinate(matrix, glm::uvec2(i, 0 + BufferAreaDepth)));
 	}
-	/*
+	
 	// West
 	for (int i = BufferAreaDepth; i < PlayAreaHeight + BufferAreaDepth; i++)
 	{
 		PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Matrix Edge 3", Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1), i)));
 	}
-	*/
+	
 	// East
 	for (int i = BufferAreaDepth; i < PlayAreaHeight + BufferAreaDepth; i++)
 	{
