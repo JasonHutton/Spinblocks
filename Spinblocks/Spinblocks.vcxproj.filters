@@ -84,6 +84,9 @@
     <ClCompile Include="src\GameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CachedTagLookup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\assimp-vc142-mt.dll">
@@ -279,6 +282,9 @@
     </ClInclude>
     <ClInclude Include="include\Components\DirectionallyActive.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CachedTagLookup.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,8 @@
 #include "Components/Includes.h"
 #include "Systems/SystemShared.h"
 
+#include "CachedTagLookup.h"
+
 #include <string>
 
 // Ensure containerType_t and this function are in sync

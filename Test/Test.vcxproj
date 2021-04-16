@@ -33,6 +33,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ClInclude Include="..\Spinblocks\include\CachedTagLookup.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Block.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Camera.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Cell.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Spinblocks\src\CachedTagLookup.cpp" />
     <ClCompile Include="..\Spinblocks\src\Components\Coordinate.cpp" />
     <ClCompile Include="..\Spinblocks\src\glad.c" />
     <ClCompile Include="..\Spinblocks\src\Input\ContextControl.cpp" />

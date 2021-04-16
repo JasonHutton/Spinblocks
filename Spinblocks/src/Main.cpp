@@ -1192,6 +1192,7 @@ void TeardownGame(entt::registry& registry)
 		registry.destroy(entity);
 		});*/
 	registry.clear();
+	cachedTagLookup.Clear();
 }
 
 int main()
