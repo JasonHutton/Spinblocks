@@ -224,7 +224,7 @@ void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinat
 			registry.emplace<Components::Position>(wall);
 			registry.emplace<Components::DerivePositionFromCoordinates>(wall);
 			registry.emplace<Components::Scale>(wall, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(wall, Components::renderLayer_t::RL_MARKER_OVER, Model("./data/block/red.obj"));
+			registry.emplace<Components::Renderable>(wall, Components::renderLayer_t::RL_MARKER_OVER, Model("./data/block/grey.obj"));
 			registry.emplace<Components::Obstructs>(wall);
 			registry.emplace<Components::Orientation>(wall);
 			registry.emplace<Components::ReferenceEntity>(wall, coordinate.GetParent());
