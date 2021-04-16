@@ -877,6 +877,18 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 			const auto& probeFollower = registry.get<Components::Follower>(probeEntity);
 			const auto& obstructsFollower = registry.get<Components::Follower>(entity);
 
+			if (!probeFollower.IsEnabled() || !obstructsFollower.IsEnabled())
+			{
+				// At least one follower isn't enabled. Obstruct.
+				return true;
+			}
+
+			if (probeFollower.Get() == entt::null || obstructsFollower.Get() == entt::null)
+			{
+				// At least one follower, isn't following anything. Obstruct.
+				return true;
+			}
+
 			if (probeFollower.Get() != obstructsFollower.Get())
 			{ // Followers are not the same. Obstruct.
 				return true;
