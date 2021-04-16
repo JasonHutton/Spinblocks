@@ -74,6 +74,34 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 
 InputHandler input;
 
+void UpdateDirectionalWalls(entt::registry& registry)
+{
+	auto wallView = registry.view<Components::Wall, Components::DirectionallyActive, Components::Obstructs, Components::Renderable>();
+	for (auto entity : wallView)
+	{
+		auto& wall = wallView.get<Components::Wall>(entity);
+		auto& dirActive = wallView.get<Components::DirectionallyActive>(entity);
+		auto& obstructs = wallView.get<Components::Obstructs>(entity);
+		auto& renderable = wallView.get<Components::Renderable>(entity);
+
+		auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
+
+		if (dirActive.IsEnabled())
+		{
+			if (dirActive.IsActive(cardinalDir.GetCurrentOrientation()))
+			{
+				obstructs.Enable(true);
+				renderable.Enable(true);
+			}
+			else
+			{
+				obstructs.Enable(false);
+				renderable.Enable(false);
+			}
+		}
+	}
+}
+
 void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, entt::entity adjacentEntity, const moveDirection_t& dir)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
@@ -173,7 +201,7 @@ void PlaceSpawnMarker(entt::registry& registry, const std::string& containerTag,
 	}
 }
 
-void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate)
+void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions)
 {
 	auto containerView = registry.view<Components::Container2>();
 	for (auto containerEnt : containerView)
@@ -200,6 +228,10 @@ void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinat
 			registry.emplace<Components::Obstructs>(wall);
 			registry.emplace<Components::Orientation>(wall);
 			registry.emplace<Components::ReferenceEntity>(wall, coordinate.GetParent());
+			if (directional)
+			{
+				registry.emplace<Components::DirectionallyActive>(wall, directions);
+			}
 		}
 	}
 }
@@ -266,6 +298,7 @@ void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotatio
 			playAreaCardinalDirection.SetCurrentOrientation(playAreaCardinalDirection.GetDesiredOrientation());
 
 			orientation.Set(playAreaCardinalDirection.GetAngleInRadiansOfOrientation(playAreaCardinalDirection.GetCurrentOrientation()));
+			UpdateDirectionalWalls(registry);
 		}
 	}
 }
@@ -1073,7 +1106,7 @@ void InitGame(entt::registry& registry)
 	for (int i = BufferAreaDepth-1; i < PlayAreaWidth + BufferAreaDepth+1; i++)
 	{
 		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 1", Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)));
-		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)), true, { moveDirection_t::SOUTH, moveDirection_t::EAST, moveDirection_t::WEST });
 	}
 
 	/*
@@ -1086,7 +1119,7 @@ void InitGame(entt::registry& registry)
 	for (int i = BufferAreaDepth - 1; i < PlayAreaWidth + BufferAreaDepth + 1; i++)
 	{
 		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 2", Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))));
-		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))), true, { moveDirection_t::NORTH, moveDirection_t::EAST, moveDirection_t::WEST });
 	}
 	
 	/*// West
@@ -1098,7 +1131,7 @@ void InitGame(entt::registry& registry)
 	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
 	{
 		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 3", Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
-		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)), true, { moveDirection_t::NORTH, moveDirection_t::SOUTH, moveDirection_t::EAST });
 	}
 	
 	/*
@@ -1111,8 +1144,10 @@ void InitGame(entt::registry& registry)
 	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
 	{
 		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 4", Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)));
-		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)));
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)), true, { moveDirection_t::NORTH, moveDirection_t::SOUTH, moveDirection_t::WEST });
 	}
+
+	UpdateDirectionalWalls(registry);
 
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 21 + (BufferAreaDepth - 1))), spawnType_t::ITETROMINO, moveDirection_t::NORTH);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(4 + BufferAreaDepth, 0 + BufferAreaDepth)), spawnType_t::ITETROMINO, moveDirection_t::SOUTH);
