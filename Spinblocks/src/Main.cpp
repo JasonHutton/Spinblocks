@@ -1163,68 +1163,6 @@ void InitGame(entt::registry& registry)
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5 + BufferAreaDepth, 0 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::SOUTH);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), 10 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::EAST);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(10 + BufferAreaDepth, 10 + BufferAreaDepth)), spawnType_t::WIDTH3, moveDirection_t::WEST);
-
-	/*PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 0)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 1)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 2)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 3)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 4)));
-	PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(5, 5)));*/
-
-	/*
-	Components::Container2 container2 = registry.get<Components::Container2>(playArea);
-	Components::Position parentPosition = registry.get<Components::Position>(playArea);
-
-	const auto piece1 = registry.create();
-	registry.emplace<Components::Coordinate>(piece1, glm::uvec2(0, 0));
-	registry.emplace<Components::Position>(piece1);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece1, playArea);
-	registry.emplace<Components::Scale>(piece1, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece1, Model("./data/block/yellow.obj"));
-
-
-	const auto piece2 = registry.create();
-	registry.emplace<Components::Coordinate>(piece2, glm::uvec2(1, 0));
-	registry.emplace<Components::Position>(piece2);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece2, playArea);
-	registry.emplace<Components::Scale>(piece2, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece2, Model("./data/block/lightblue.obj"));
-
-	const auto piece3 = registry.create();
-	registry.emplace<Components::Coordinate>(piece3, glm::uvec2(2, 0));
-	registry.emplace<Components::Position>(piece3);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece3, playArea);
-	registry.emplace<Components::Scale>(piece3, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece3, Model("./data/block/purple.obj"));
-
-	const auto piece4 = registry.create();
-	registry.emplace<Components::Coordinate>(piece4, glm::uvec2(3, 0));
-	registry.emplace<Components::Position>(piece4);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece4, playArea);
-	registry.emplace<Components::Scale>(piece4, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece4, Model("./data/block/orange.obj"));
-
-	const auto piece5 = registry.create();
-	registry.emplace<Components::Coordinate>(piece5, glm::uvec2(4, 0));
-	registry.emplace<Components::Position>(piece5);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece5, playArea);
-	registry.emplace<Components::Scale>(piece5, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece5, Model("./data/block/darkblue.obj"));
-
-	const auto piece6 = registry.create();
-	registry.emplace<Components::Coordinate>(piece6, glm::uvec2(5, 0));
-	registry.emplace<Components::Position>(piece6);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece6, playArea);
-	registry.emplace<Components::Scale>(piece6, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece6, Model("./data/block/green.obj"));
-
-	const auto piece7 = registry.create();
-	registry.emplace<Components::Coordinate>(piece7, glm::uvec2(6, 0));
-	registry.emplace<Components::Position>(piece7);
-	registry.emplace<Components::DerivePositionFromCoordinates>(piece7, playArea);
-	registry.emplace<Components::Scale>(piece7, container2.GetCellDimensions3());
-	registry.emplace<Components::Renderable>(piece7, Model("./data/block/red.obj"));
-	*/
 }
 
 void TeardownGame(entt::registry& registry)
