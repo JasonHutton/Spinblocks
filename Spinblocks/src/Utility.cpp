@@ -774,6 +774,7 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	{
 	case tetrominoType_t::O:
 		registry.emplace<Components::OTetromino>(tetrominoEnt, currentDirection);
+		break;
 	case tetrominoType_t::I:
 		registry.emplace<Components::ITetromino>(tetrominoEnt, currentDirection);
 		break;
