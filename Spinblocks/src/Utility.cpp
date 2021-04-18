@@ -79,6 +79,9 @@ bool IsEntityTetromino(entt::registry& registry, entt::entity ent)
 	if (ent == entt::null)
 		return false;
 
+	if (!registry.valid(ent)) // This should never happen, yet it is. FIXME TODO
+		return false;
+
 	return registry.any_of</*Components::Tetromino, */
 		Components::OTetromino, 
 		Components::ITetromino,
