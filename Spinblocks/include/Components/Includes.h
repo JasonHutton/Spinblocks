@@ -49,3 +49,5 @@
 #include "Components/DirectionallyActive.h"
 
 #include "Components/Bag.h"
+#include "Components/QueueNode.h"
+#include "Components/NodeOrder.h"

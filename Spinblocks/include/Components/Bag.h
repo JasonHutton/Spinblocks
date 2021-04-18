@@ -18,7 +18,7 @@ namespace Components
 		{
 		}
 
-		const tetrominoType_t& PopTetromino()
+		tetrominoType_t PopTetromino()
 		{
 			if (m_tetrominos.empty())
 				FillBag();

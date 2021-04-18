@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/Tetrominos/Tetromino.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with Tetromino without it...
+#include "Components/NodeOrder.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with NodeOrder without it...
 
 #include <entt/entity/registry.hpp>
 #include "Components/Includes.h"
@@ -39,3 +40,4 @@ glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::str
 glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::entity entity);
 glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type);
 glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, const bool& inheritScaling, const bool& childCall = false);
+void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt::entity source, entt::entity destination);

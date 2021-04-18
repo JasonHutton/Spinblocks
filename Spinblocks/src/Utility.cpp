@@ -1042,3 +1042,22 @@ glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, 
 
 	return modelMatrix;
 }
+
+void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt::entity source, entt::entity destination)
+{
+	entt::entity sourceNodeEnt = source;
+	entt::entity destinationNodeEnt = nodeOrder.GetNode();
+
+	while (destinationNodeEnt != entt::null)
+	{
+		auto& node = registry.get<Components::QueueNode>(destinationNodeEnt);
+		destinationNodeEnt = nodeOrder.GetNode();
+		node.SetSource(sourceNodeEnt);
+		node.SetDestination(destinationNodeEnt);
+
+		sourceNodeEnt = node.GetSelf();
+	}
+
+	auto& node = registry.get<Components::QueueNode>(sourceNodeEnt);
+	node.SetDestination(destination);
+}

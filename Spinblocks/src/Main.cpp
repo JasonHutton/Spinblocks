@@ -32,6 +32,7 @@
 #include "Globals.h"
 #include "Utility.h"
 
+#include "Systems/GenerationSystem.h"
 #include "Systems/FallingSystem.h"
 #include "Systems/MovementSystem.h"
 #include "Systems/StateChangeSystem.h"
@@ -131,7 +132,40 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 	}
 }
 
-//void PlaceEdgeMarker2(entt::registry& registry, const std::string& originTag, const Components::Coordinate& originCoordinate, entt::entity destinationTagadjacentEntity, const moveDirection_t& dir)
+const entt::entity& PlaceBagMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
+{
+	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	for (auto entity : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& containerTag2 = containerView.get<Components::Tag>(entity);
+
+		if (container2.IsEnabled() && containerTag2.IsEnabled())
+		{
+			if (containerTag2.Get() != containerTag)
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, markerCoordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto marker = registry.create();
+			registry.emplace<Components::QueueNode>(marker, marker); // Don't attempt to link nodes at first
+			registry.emplace<Components::Coordinate>(marker, markerCoordinate.GetParent(), markerCoordinate.Get());
+			registry.emplace<Components::Position>(marker);
+			registry.emplace<Components::DerivePositionFromCoordinates>(marker);
+			registry.emplace<Components::Scale>(marker, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(marker, layer, Model("./data/block/green.obj"));
+			registry.emplace<Components::Orientation>(marker);
+			registry.emplace<Components::ReferenceEntity>(marker, entity);
+
+			return marker;
+		}
+	}
+
+	return entt::null;
+}
 
 void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER, const entt::entity followedEnt = entt::null)
 {
@@ -746,6 +780,7 @@ void update(entt::registry& registry, double currentFrameTime)
 		}
 	}
 
+	Systems::GenerationSystem(registry, currentFrameTime);
 	Systems::FallingSystem(registry, currentFrameTime);
 	Systems::MovementSystem(registry, currentFrameTime);
 	Systems::StateChangeSystem(registry, currentFrameTime);
@@ -1093,6 +1128,7 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::ReferenceEntity>(bagArea, playArea);
 	registry.emplace<Components::InheritScalingFromParent>(bagArea, false);
 	registry.emplace<Components::Bag>(bagArea);
+	registry.emplace<Components::NodeOrder>(bagArea);
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
@@ -1165,10 +1201,15 @@ void InitGame(entt::registry& registry)
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), 10 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::EAST);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(10 + BufferAreaDepth, 10 + BufferAreaDepth)), spawnType_t::WIDTH3, moveDirection_t::WEST);
 
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 1", Components::Coordinate(bagArea, glm::uvec2(1, 13)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 2", Components::Coordinate(bagArea, glm::uvec2(1, 9)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 3", Components::Coordinate(bagArea, glm::uvec2(1, 5)));
-	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 4", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
+	// Setup the nodes
+	auto& nodeOrder = registry.get<Components::NodeOrder>(bagArea);
+
+	nodeOrder.AddNode(PlaceBagMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(bagArea, glm::uvec2(1, 1))));
+	nodeOrder.AddNode(PlaceBagMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(bagArea, glm::uvec2(1, 5))));
+	nodeOrder.AddNode(PlaceBagMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(bagArea, glm::uvec2(1, 9))));
+	nodeOrder.AddNode(PlaceBagMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(bagArea, glm::uvec2(1, 13))));
+
+	LinkNodes(registry, nodeOrder, bagArea, matrix);
 }
 
 void TeardownGame(entt::registry& registry)
