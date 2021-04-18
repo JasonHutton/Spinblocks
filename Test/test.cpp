@@ -541,16 +541,24 @@ TEST(PatternTest, Pattern0LinesFound) {
 	entt::registry registry;
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
 
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
 
 	auto blockView = registry.view<Components::Block, Components::Moveable>();
 	for (auto entity : blockView)
@@ -568,17 +576,25 @@ TEST(PatternTest, Pattern1LineFound) {
 	entt::registry registry;
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
 
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 0)), false);
 
 	auto blockView = registry.view<Components::Block, Components::Moveable>();
 	for (auto entity : blockView)
@@ -596,20 +612,27 @@ TEST(PatternTest, Pattern2LinesFound) {
 	entt::registry registry;
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(3, 3), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::CardinalDirection>(playArea);
 
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(3, 3), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 1)), false);
 
 	auto blockView = registry.view<Components::Block, Components::Moveable>();
 	for (auto entity : blockView)
@@ -627,26 +650,34 @@ TEST(PatternTest, Pattern3LinesFound) {
 	entt::registry registry;
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(4, 4), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(4, 4), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
 
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 2)), false);
 
 	auto blockView = registry.view<Components::Block, Components::Moveable>();
 	for (auto entity : blockView)
@@ -664,30 +695,38 @@ TEST(PatternTest, Pattern4LinesFound) {
 	entt::registry registry;
 
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(4, 4), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	registry.emplace<Components::Position>(matrix, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(4, 4), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
 
 
-	BuildGrid(registry, playArea);
+	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 2)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(0, 3)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(1, 3)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(2, 3)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(playArea, glm::uvec2(3, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 2)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 3)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 3)), false);
 
 	auto blockView = registry.view<Components::Block, Components::Moveable>();
 	for (auto entity : blockView)
