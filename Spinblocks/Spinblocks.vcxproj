@@ -194,6 +194,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CachedTagLookup.h" />
+    <ClInclude Include="include\Components\Bag.h" />
     <ClInclude Include="include\Components\Block.h" />
     <ClInclude Include="include\Components\Camera.h" />
     <ClInclude Include="include\Components\CardinalDirection.h" />
