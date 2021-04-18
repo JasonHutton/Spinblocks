@@ -41,3 +41,5 @@ glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const entt::en
 glm::uvec2 GetTetrominoSpawnCoordinates(const tetrominoType_t& type);
 glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, const bool& inheritScaling, const bool& childCall = false);
 void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt::entity source, entt::entity destination);
+void RelocateBlock(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity blockEnt);
+void RelocateTetromino(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity tetrominoEnt);

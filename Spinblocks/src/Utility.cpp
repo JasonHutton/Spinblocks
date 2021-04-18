@@ -742,14 +742,73 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 	}
 }
 
-entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
+void RelocateBlock(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity blockEnt)
 {
-	auto controllableView = registry.view<Components::Controllable>();
-	for (auto controllable : controllableView)
+	if (blockEnt == entt::null)
+		return;
+
+	auto& coordinate = registry.get<Components::Coordinate>(blockEnt);
+	coordinate.Set(newCoordinate.Get());
+	coordinate.SetParent(newCoordinate.GetParent());
+
+	auto& derivePositionFromCoordinates = registry.get<Components::DerivePositionFromCoordinates>(blockEnt);
+	derivePositionFromCoordinates.Set(newCoordinate.GetParent());
+
+	// Not going to adjust cell dimensions for now. They're not changing in this, though hypothetically they COULD. FIXME TODO
+
+	auto& moveable = registry.get<Components::Moveable>(blockEnt);
+	moveable.SetCurrentCoordinate(newCoordinate);
+	moveable.SetDesiredCoordinate(moveable.GetCurrentCoordinate());
+
+	auto& block = registry.get<Components::Block>(blockEnt);
+	block.Set(newCoordinate.GetParent());
+
+	auto& obstructable = registry.get<Components::Obstructable>(blockEnt);
+	obstructable.Set(newCoordinate.GetParent());
+
+	// This is wrong, we don't want to be "following" the matrix we're in. Should be fine untouched.
+	/*if (registry.all_of<Components::Follower>(blockEnt))
 	{
-		registry.remove_if_exists<Components::Controllable>(controllable);
+		auto& follower = registry.get<Components::Follower>(blockEnt);
+		follower.Set(newCoordinate.GetParent());
+	}*/
+
+	auto& referenceEntity = registry.get<Components::ReferenceEntity>(blockEnt);
+	referenceEntity.Set(newCoordinate.GetParent());
+}
+
+void RelocateTetromino(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity tetrominoEnt)
+{
+	if (tetrominoEnt == entt::null)
+		return;
+
+	if (!IsEntityTetromino(registry, tetrominoEnt))
+		return;
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEnt);
+	auto& coordinate = registry.get<Components::Coordinate>(tetrominoEnt);
+	coordinate.Set(newCoordinate.Get());
+	coordinate.SetParent(newCoordinate.GetParent());
+
+	// Not going to adjust cell dimensions for now. They're not changing in this, though hypothetically they COULD. FIXME TODO
+
+	for (int i = 0; i < 4; i++)
+	{
+		auto spawnPoint = Components::Coordinate(newCoordinate.GetParent(),
+			(glm::vec2)newCoordinate.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
+		RelocateBlock(registry, spawnPoint, tetromino->GetBlock(i));
 	}
 
+	auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
+	moveable.SetCurrentCoordinate(newCoordinate);
+	moveable.SetDesiredCoordinate(moveable.GetCurrentCoordinate());
+
+	auto& obstructable = registry.get<Components::Obstructable>(tetrominoEnt);
+	obstructable.Set(newCoordinate.GetParent());
+}
+
+entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
+{
 	const auto tetrominoEnt = registry.create();
 
 	registry.emplace<Components::Coordinate>(tetrominoEnt, spawnCoordinate.GetParent(), spawnCoordinate.Get());
