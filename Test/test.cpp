@@ -391,7 +391,7 @@ TEST(ObstructionTest, Step1EastClear) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 1);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 1 == endCoord.Get().x);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(1, 0));
 	}
 }
 
@@ -419,7 +419,7 @@ TEST(ObstructionTest, Step1SouthObstructedByNull) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::SOUTH, 1);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get() == endCoord.Get()); // Move was not allowed, same spot.
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(0, 0)); // Move was not allowed, same spot.
 	}
 }
 
@@ -447,7 +447,7 @@ TEST(ObstructionTest, Step2EastClear) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 2);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 2 == endCoord.Get().x);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(2, 0)); // Move was allowed, moved 2 east.
 	}
 }
 
@@ -475,7 +475,7 @@ TEST(ObstructionTest, Step3EastObstructedByNull) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 3);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x + 2 == endCoord.Get().x); // Move did NOT go 3, only went 2 because it was obstructed.
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(2, 0)); // Move did NOT go 3, only went 2 because it was obstructed.
 	}
 }
 
@@ -504,7 +504,7 @@ TEST(ObstructionTest, Step1NorthObstructedByBlock) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::NORTH, 1);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x == endCoord.Get().x);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(0, 0)); // Move did NOT go 1, only went 0 because it was obstructed.
 	}
 }
 
@@ -533,7 +533,7 @@ TEST(ObstructionTest, Step2NorthObstructedByBlock) {
 		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
 		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::NORTH, 2);
 		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && beginCoord.Get().y == endCoord.Get().y && beginCoord.Get().x == endCoord.Get().x);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(0, 1)); // Move did NOT go 2, only went 1 because it was obstructed.
 	}
 }
 
