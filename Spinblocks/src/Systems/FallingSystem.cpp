@@ -18,6 +18,9 @@ namespace Systems
 
 				if (moveable.IsEnabled() && coordinate.IsEnabled())
 				{
+					if (coordinate.GetParent() != FindEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)))
+						continue;
+
 					switch (moveable.GetMovementState())
 					{
 					case Components::movementStates_t::FALL:
