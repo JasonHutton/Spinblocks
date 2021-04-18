@@ -1086,12 +1086,13 @@ void InitGame(entt::registry& registry)
 	const auto bagArea = registry.create();
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
-	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 8, displayData.y / 2));
+	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 11, displayData.y / 2));
 	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 	registry.emplace<Components::Orientation>(bagArea);
 	//registry.emplace<Components::ReferenceEntity>(bagArea, playArea);
 	registry.emplace<Components::InheritScalingFromParent>(bagArea, false);
+	registry.emplace<Components::Bag>(bagArea);
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
@@ -1163,6 +1164,11 @@ void InitGame(entt::registry& registry)
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5 + BufferAreaDepth, 0 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::SOUTH);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), 10 + (BufferAreaDepth - 1))), spawnType_t::WIDTH3, moveDirection_t::EAST);
 	PlaceSpawnMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(10 + BufferAreaDepth, 10 + BufferAreaDepth)), spawnType_t::WIDTH3, moveDirection_t::WEST);
+
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 1", Components::Coordinate(bagArea, glm::uvec2(1, 13)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 2", Components::Coordinate(bagArea, glm::uvec2(1, 9)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 3", Components::Coordinate(bagArea, glm::uvec2(1, 5)));
+	PlaceMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), "Bag Marker 4", Components::Coordinate(bagArea, glm::uvec2(1, 1)));
 }
 
 void TeardownGame(entt::registry& registry)
