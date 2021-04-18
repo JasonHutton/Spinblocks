@@ -602,13 +602,6 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
-			// Remove all existing controllable blocks.
-			// We probably want this more where one locks down, not here, but for now this is fine.
-			auto blockView = registry.view<Components::Block, Components::Controllable>();
-			for (auto block : blockView)
-			{
-				registry.remove_if_exists<Components::Controllable>(block);
-			}
 			Components::Container2 container2 = registry.get<Components::Container2>(entity);
 			Components::Position parentPosition = registry.get<Components::Position>(entity);
 
@@ -628,12 +621,6 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 			registry.emplace<Components::Obstructable>(piece1, entity);
 			registry.emplace<Components::Obstructs>(piece1);
 
-			// Temporary for testing. Switch directly to the falling state.
-			if (registry.all_of<Components::Moveable>(piece1))
-			{
-				auto& moveable = registry.get<Components::Moveable>(piece1);
-				moveable.SetMovementState(Components::movementStates_t::FALL);
-			}
 			registry.emplace<Components::Orientation>(piece1);
 			registry.emplace<Components::ReferenceEntity>(piece1, entity);
 
@@ -656,13 +643,6 @@ entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& con
 
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
-			// Remove all existing controllable blocks.
-			// We probably want this more where one locks down, not here, but for now this is fine.
-			auto blockView = registry.view<Components::Block, Components::Controllable>();
-			for (auto block : blockView)
-			{
-				registry.remove_if_exists<Components::Controllable>(block);
-			}
 			Components::Container2 container2 = registry.get<Components::Container2>(entity);
 			Components::Position parentPosition = registry.get<Components::Position>(entity);
 
@@ -680,12 +660,6 @@ entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& con
 			registry.emplace<Components::Obstructs>(piece1);
 			registry.emplace<Components::Follower>(piece1, followedEntity);
 
-			// Temporary for testing. Switch directly to the falling state.
-			if (registry.all_of<Components::Moveable>(piece1))
-			{
-				auto& moveable = registry.get<Components::Moveable>(piece1);
-				moveable.SetMovementState(Components::movementStates_t::FOLLOWING);
-			}
 			registry.emplace<Components::Orientation>(piece1);
 			registry.emplace<Components::ReferenceEntity>(piece1, entity);
 
@@ -890,13 +864,6 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	//registry.emplace<Components::Renderable>(tetrominoEnt, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
 	registry.emplace<Components::Moveable>(tetrominoEnt, registry.get<Components::Coordinate>(tetrominoEnt), registry.get<Components::Coordinate>(tetrominoEnt));
 	registry.emplace<Components::Obstructable>(tetrominoEnt, spawnCoordinate.GetParent());
-
-	// Temporary for testing. Switch directly to the falling state.
-	if (registry.all_of<Components::Moveable>(tetrominoEnt))
-	{
-		auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
-		moveable.SetMovementState(Components::movementStates_t::FALL);
-	}
 
 	return tetrominoEnt;
 }
