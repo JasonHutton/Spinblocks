@@ -35,6 +35,7 @@ namespace Systems
 					{
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);
+						lastLockdownTime = currentFrameTime;
 					}
 
 					if (IsEntityTetromino(registry, entity))
@@ -44,6 +45,7 @@ namespace Systems
 						if (tetromino->GetAreAllBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLastObstructedTime(registry) + lockdownDelay)
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+							lastLockdownTime = currentFrameTime;
 						}
 					}
 					
@@ -71,6 +73,7 @@ namespace Systems
 						// This never gets called, probably due to the fall state being set places instead, and the obstructed flag being set from the fall state. Not necessarily a problem.
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);
+						lastLockdownTime = currentFrameTime;
 
 						if (IsEntityTetromino(registry, entity))
 						{
@@ -79,6 +82,7 @@ namespace Systems
 							if (tetromino->GetAreAllBlocksObstructed(registry))
 							{
 								tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+								lastLockdownTime = currentFrameTime;
 							}
 						}
 					}
@@ -93,6 +97,8 @@ namespace Systems
 					lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
 					moveable.SetMovementState(Components::movementStates_t::LOCKED);
 					registry.remove_if_exists<Components::Controllable>(entity);
+					lastLockdownTime = currentFrameTime;
+
 					if (IsEntityTetromino(registry, entity))
 					{
 						auto* tetromino = GetTetrominoFromEntity(registry, entity);
@@ -100,6 +106,7 @@ namespace Systems
 						if (tetromino->GetAreAllBlocksObstructed(registry))
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+							lastLockdownTime = currentFrameTime;
 						}
 					}
 					break;

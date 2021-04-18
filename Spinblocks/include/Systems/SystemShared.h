@@ -9,6 +9,8 @@
 	const double KeyRepeatRate = 0.5 / PlayAreaWidth; // Delay between repeats. // This does not change when changing orientation.
 	const double FallSpeed = 1.0; // Base fall speed, time it takes to move 1 line.
 	inline double lastFallUpdate = 0.0;
+	inline double lastLockdownTime = 0.0;
+	const double generationTimeDelay = 0.2; // Delay after last lockdown before a new generation occurs. (And a Tetromino is spawned into the play area matrix.)
 	const double lockdownDelay = 0.5;
 	const unsigned int cellWidth = 25;
 	const unsigned int cellHeight = 25;
