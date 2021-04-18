@@ -539,7 +539,7 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 			registry.emplace<Components::Scale>(cell, container2.GetCellDimensions3());
 			registry.emplace<Components::Position>(cell);
 			registry.emplace<Components::DerivePositionFromCoordinates>(cell, parentEntity);
-			registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/darkgrey.obj"));
+			//registry.emplace<Components::Renderable>(cell, Components::renderLayer_t::RL_CELL, Model("./data/block/darkgrey.obj"));
 			//registry.emplace<Components::ScaleToCellDimensions>(cell, parentEntity);
 			registry.emplace<Components::Orientation>(cell);
 			registry.emplace<Components::ReferenceEntity>(cell, parentEntity);

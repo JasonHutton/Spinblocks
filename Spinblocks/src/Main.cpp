@@ -1309,7 +1309,6 @@ int main()
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
-	//Model ourModel("./data/box/cube.obj");
 	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
