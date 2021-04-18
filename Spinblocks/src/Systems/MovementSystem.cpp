@@ -94,6 +94,9 @@ namespace Systems
 
 			if (moveable.IsEnabled() && coordinate.IsEnabled() && follower.IsEnabled())
 			{
+				if (moveable.GetMovementState() == Components::movementStates_t::UNMOVING)
+					continue;
+
 				if (!IsEntityTetromino(registry, follower.Get()))
 					continue;
 
