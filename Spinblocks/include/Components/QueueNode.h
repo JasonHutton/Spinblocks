@@ -19,12 +19,12 @@ namespace Components
 		{
 		}
 
-		const entt::entity& GetSelf() const
+		entt::entity GetSelf() const
 		{
 			return m_self;
 		}
 
-		const entt::entity& GetContent() const
+		entt::entity GetContent() const
 		{
 			return m_contentEntity;
 		}
@@ -34,7 +34,7 @@ namespace Components
 			m_contentEntity = content;
 		}
 
-		const entt::entity& GetDestination() const
+		entt::entity GetDestination() const
 		{
 			return m_destination;
 		}
