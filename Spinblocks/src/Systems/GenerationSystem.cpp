@@ -98,49 +98,6 @@ namespace Systems
 		}
 	}
 
-	int CountTetrominos(entt::registry& registry)
-	{
-		int tetCount = 0;
-
-		auto itets = registry.view<Components::ITetromino>();
-		for (auto entity : itets)
-		{
-			tetCount++;
-		}
-		auto jtets = registry.view<Components::JTetromino>();
-		for (auto entity : jtets)
-		{
-			tetCount++;
-		}
-		auto ltets = registry.view<Components::LTetromino>();
-		for (auto entity : ltets)
-		{
-			tetCount++;
-		}
-		auto otets = registry.view<Components::OTetromino>();
-		for (auto entity : otets)
-		{
-			tetCount++;
-		}
-		auto stets = registry.view<Components::STetromino>();
-		for (auto entity : stets)
-		{
-			tetCount++;
-		}
-		auto ztets = registry.view<Components::ZTetromino>();
-		for (auto entity : ztets)
-		{
-			tetCount++;
-		}
-		auto ttets = registry.view<Components::TTetromino>();
-		for (auto entity : ttets)
-		{
-			tetCount++;
-		}
-
-		return tetCount;
-	}
-
 	void GenerationSystem(entt::registry& registry, double currentFrameTime)
 	{
 		const auto& bagAreaEnt = FindEntityByTag(registry, GetTagFromContainerType(containerType_t::BAG_AREA));
@@ -153,14 +110,6 @@ namespace Systems
 		
 		auto& nodeOrder = registry.get<Components::NodeOrder>(bagAreaEnt);
 		entt::entity nodeEnt = entt::null;
-
-		int tetCount = CountTetrominos(registry);
-		if (tetCount != 5 && tetCount != 4) // 5 is the default state when one is falling, 4 is the default state when one locks down, before a new one is generated
-		{
-			int q = 0;
-			q++;
-		}
-		cout << "Tetrominos in existence: " << tetCount << endl;
 
 		// Fill the queue if it's not full
 		bool atLeastOneNodeIsEmpty = false;

@@ -43,3 +43,4 @@ glm::mat4 GetModelMatrixOfEntity(entt::registry& registry, entt::entity entity, 
 void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt::entity source, entt::entity destination);
 void RelocateBlock(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity blockEnt);
 void RelocateTetromino(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity tetrominoEnt);
+int CountTetrominos(entt::registry& registry);

@@ -1090,3 +1090,46 @@ void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt:
 	auto& node = registry.get<Components::QueueNode>(sourceNodeEnt);
 	node.SetDestination(destination);
 }
+
+int CountTetrominos(entt::registry& registry)
+{
+	int tetCount = 0;
+
+	auto itets = registry.view<Components::ITetromino>();
+	for (auto entity : itets)
+	{
+		tetCount++;
+	}
+	auto jtets = registry.view<Components::JTetromino>();
+	for (auto entity : jtets)
+	{
+		tetCount++;
+	}
+	auto ltets = registry.view<Components::LTetromino>();
+	for (auto entity : ltets)
+	{
+		tetCount++;
+	}
+	auto otets = registry.view<Components::OTetromino>();
+	for (auto entity : otets)
+	{
+		tetCount++;
+	}
+	auto stets = registry.view<Components::STetromino>();
+	for (auto entity : stets)
+	{
+		tetCount++;
+	}
+	auto ztets = registry.view<Components::ZTetromino>();
+	for (auto entity : ztets)
+	{
+		tetCount++;
+	}
+	auto ttets = registry.view<Components::TTetromino>();
+	for (auto entity : ttets)
+	{
+		tetCount++;
+	}
+
+	return tetCount;
+}
