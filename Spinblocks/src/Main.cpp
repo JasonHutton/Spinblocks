@@ -132,7 +132,7 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 	}
 }
 
-const entt::entity& PlaceBagMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
+entt::entity PlaceBagMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
 {
 	auto containerView = registry.view<Components::Container2, Components::Tag>();
 	for (auto entity : containerView)
