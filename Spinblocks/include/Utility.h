@@ -44,3 +44,5 @@ void LinkNodes(entt::registry& registry, Components::NodeOrder& nodeOrder, entt:
 void RelocateBlock(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity blockEnt);
 void RelocateTetromino(entt::registry& registry, const Components::Coordinate& newCoordinate, entt::entity tetrominoEnt);
 int CountTetrominos(entt::registry& registry);
+void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection);
+void UpdateDirectionalWalls(entt::registry& registry);

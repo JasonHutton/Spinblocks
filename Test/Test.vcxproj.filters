@@ -47,6 +47,9 @@
     <ClCompile Include="..\Spinblocks\src\CachedTagLookup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\Systems\BoardRotateSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="..\Spinblocks\include\CachedTagLookup.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Systems\BoardRotateSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

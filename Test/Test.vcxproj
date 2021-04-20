@@ -72,6 +72,7 @@
     <ClInclude Include="..\Spinblocks\include\learnopengl\model.h" />
     <ClInclude Include="..\Spinblocks\include\learnopengl\shader.h" />
     <ClInclude Include="..\Spinblocks\include\stb_image.h" />
+    <ClInclude Include="..\Spinblocks\include\Systems\BoardRotateSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\EliminateSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\FallingSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\MovementSystem.h" />
@@ -90,6 +91,7 @@
     <ClCompile Include="..\Spinblocks\src\Input\InputHandler.cpp" />
     <ClCompile Include="..\Spinblocks\src\Input\KeyInput.cpp" />
     <ClCompile Include="..\Spinblocks\src\learnopengl\model.cpp" />
+    <ClCompile Include="..\Spinblocks\src\Systems\BoardRotateSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\EliminateSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\FallingSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\MovementSystem.cpp" />

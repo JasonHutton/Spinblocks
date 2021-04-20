@@ -38,6 +38,7 @@
 #include "Systems/StateChangeSystem.h"
 #include "Systems/PatternSystem.h"
 #include "Systems/EliminateSystem.h"
+#include "Systems/BoardRotateSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
@@ -74,34 +75,6 @@ Shader* RetrieveShader(const char* key, const char* vs, const char* fs)
 //Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 InputHandler input;
-
-void UpdateDirectionalWalls(entt::registry& registry)
-{
-	auto wallView = registry.view<Components::Wall, Components::DirectionallyActive, Components::Obstructs, Components::Renderable>();
-	for (auto entity : wallView)
-	{
-		auto& wall = wallView.get<Components::Wall>(entity);
-		auto& dirActive = wallView.get<Components::DirectionallyActive>(entity);
-		auto& obstructs = wallView.get<Components::Obstructs>(entity);
-		auto& renderable = wallView.get<Components::Renderable>(entity);
-
-		auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
-
-		if (dirActive.IsEnabled())
-		{
-			if (dirActive.IsActive(cardinalDir.GetCurrentOrientation()))
-			{
-				obstructs.Enable(true);
-				renderable.Enable(true);
-			}
-			else
-			{
-				obstructs.Enable(false);
-				renderable.Enable(false);
-			}
-		}
-	}
-}
 
 void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, entt::entity adjacentEntity, const moveDirection_t& dir)
 {
@@ -312,29 +285,6 @@ void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 			cerr << ex.what() << endl;
 		}
 	}*/
-}
-
-void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection)
-{
-	auto playAreaView = registry.view<Components::Tag, Components::CardinalDirection, Components::Orientation>();
-	for (auto entity : playAreaView)
-	{
-		auto& tag = playAreaView.get<Components::Tag>(entity);
-		auto& cardinalDirection = playAreaView.get<Components::CardinalDirection>(entity);
-		auto& orientation = playAreaView.get<Components::Orientation>(entity);
-
-		if (tag.IsEnabled() && cardinalDirection.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
-		{
-			auto& playAreaCardinalDirection = registry.get<Components::CardinalDirection>(entity);
-
-			// Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
-			playAreaCardinalDirection.SetDesiredOrientation(playAreaCardinalDirection.GetNewOrientation(rotationDirection, playAreaCardinalDirection.GetCurrentOrientation()));
-			playAreaCardinalDirection.SetCurrentOrientation(playAreaCardinalDirection.GetDesiredOrientation());
-
-			orientation.Set(playAreaCardinalDirection.GetAngleInRadiansOfOrientation(playAreaCardinalDirection.GetCurrentOrientation()));
-			UpdateDirectionalWalls(registry);
-		}
-	}
 }
 
 void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)

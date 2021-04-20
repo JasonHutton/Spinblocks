@@ -90,6 +90,9 @@
     <ClCompile Include="src\Systems\GenerationSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Systems\BoardRotateSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\assimp-vc142-mt.dll">
@@ -300,6 +303,9 @@
     </ClInclude>
     <ClInclude Include="include\Components\NodeOrder.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Systems\BoardRotateSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1133,3 +1133,54 @@ int CountTetrominos(entt::registry& registry)
 
 	return tetCount;
 }
+
+void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection)
+{
+	auto playAreaView = registry.view<Components::Tag, Components::CardinalDirection, Components::Orientation>();
+	for (auto entity : playAreaView)
+	{
+		auto& tag = playAreaView.get<Components::Tag>(entity);
+		auto& cardinalDirection = playAreaView.get<Components::CardinalDirection>(entity);
+		auto& orientation = playAreaView.get<Components::Orientation>(entity);
+
+		if (tag.IsEnabled() && cardinalDirection.IsEnabled() && orientation.IsEnabled() && tag.Get() == GetTagFromContainerType(containerType_t::PLAY_AREA))
+		{
+			auto& playAreaCardinalDirection = registry.get<Components::CardinalDirection>(entity);
+
+			// Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
+			playAreaCardinalDirection.SetDesiredOrientation(playAreaCardinalDirection.GetNewOrientation(rotationDirection, playAreaCardinalDirection.GetCurrentOrientation()));
+			playAreaCardinalDirection.SetCurrentOrientation(playAreaCardinalDirection.GetDesiredOrientation());
+
+			orientation.Set(playAreaCardinalDirection.GetAngleInRadiansOfOrientation(playAreaCardinalDirection.GetCurrentOrientation()));
+			UpdateDirectionalWalls(registry);
+		}
+	}
+}
+
+void UpdateDirectionalWalls(entt::registry& registry)
+{
+	auto wallView = registry.view<Components::Wall, Components::DirectionallyActive, Components::Obstructs, Components::Renderable>();
+	for (auto entity : wallView)
+	{
+		auto& wall = wallView.get<Components::Wall>(entity);
+		auto& dirActive = wallView.get<Components::DirectionallyActive>(entity);
+		auto& obstructs = wallView.get<Components::Obstructs>(entity);
+		auto& renderable = wallView.get<Components::Renderable>(entity);
+
+		auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
+
+		if (dirActive.IsEnabled())
+		{
+			if (dirActive.IsActive(cardinalDir.GetCurrentOrientation()))
+			{
+				obstructs.Enable(true);
+				renderable.Enable(true);
+			}
+			else
+			{
+				obstructs.Enable(false);
+				renderable.Enable(false);
+			}
+		}
+	}
+}
