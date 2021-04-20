@@ -2,7 +2,9 @@
 
 #include <entt/entity/registry.hpp>
 
+enum class rotationDirection_t;
+
 namespace Systems
 {
-	void BoardRotateSystem(entt::registry& registry, double currentFrameTime);
+	rotationDirection_t BoardRotateSystem(entt::registry& registry, double currentFrameTime, rotationDirection_t rotationDirection);
 }

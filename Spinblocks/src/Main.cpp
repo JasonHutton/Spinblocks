@@ -792,6 +792,16 @@ void update(entt::registry& registry, double currentFrameTime)
 	Systems::PatternSystem(registry, lineLength, currentFrameTime);
 	Systems::EliminateSystem(registry, currentFrameTime);
 
+	rotationDirection_t shouldBoardRotate = ChooseBoardRotationDirection(registry);
+
+	if (Systems::BoardRotateSystem(registry, currentFrameTime, shouldBoardRotate) != rotationDirection_t::NONE)
+	{ // We did a rotation.
+		// Re-do patterning and elimination.
+		Systems::PatternSystem(registry, lineLength, currentFrameTime);
+		Systems::EliminateSystem(registry, currentFrameTime);
+	}
+
+
 	/*auto containerView = registry.view<Components::Container, Components::Scale>();
 	for (auto entity : containerView)
 	{

@@ -4,7 +4,8 @@
 
 namespace Systems
 {
-	void BoardRotateSystem(entt::registry& registry, double currentFrameTime)
+	rotationDirection_t BoardRotateSystem(entt::registry& registry, double currentFrameTime, rotationDirection_t rotationDirection)
 	{
+		return rotationDirection_t::NONE;
 	}
 }

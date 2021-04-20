@@ -1184,3 +1184,8 @@ void UpdateDirectionalWalls(entt::registry& registry)
 		}
 	}
 }
+
+rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry)
+{
+	return rotationDirection_t::NONE;
+}
