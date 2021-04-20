@@ -25,6 +25,9 @@ namespace Systems
 			{
 				if (moveable.GetMovementState() == Components::movementStates_t::LOCKED)
 				{
+					if (coordinate.GetParent() != FindEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX))) // Don't pattern anything not in the play area matrix
+						continue;
+
 					linePatternEW[coordinate.GetParent()][coordinate.Get().y][coordinate.Get().x] = entity;
 					linePatternNS[coordinate.GetParent()][coordinate.Get().x][coordinate.Get().y] = entity;
 				}

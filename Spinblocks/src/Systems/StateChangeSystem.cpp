@@ -28,6 +28,9 @@ namespace Systems
 
 			if (moveable.IsEnabled() && coordinate.IsEnabled() && obstructable.IsEnabled())
 			{
+				if (coordinate.GetParent() != FindEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX))) // Don't fiddle with states if not in the play area matrix
+					continue;
+
 				switch (moveable.GetMovementState())
 				{
 				case Components::movementStates_t::FALL:
