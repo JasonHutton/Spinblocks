@@ -644,6 +644,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 						}
 					}
 				}
+				break;
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
@@ -658,7 +659,6 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
 				MovePiece(registry, movePiece_t::MOVE_LEFT);
-
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
