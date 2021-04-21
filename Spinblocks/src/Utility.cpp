@@ -784,6 +784,134 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 	obstructable.Set(newCoordinate.GetParent());
 }
 
+moveDirection_t GetDesiredDirectionOfTetromino(entt::registry& registry, const entt::entity& containerEnt)
+{
+	moveDirection_t desiredDirection = moveDirection_t::NORTH;
+
+	if (registry.all_of<Components::CardinalDirection>(containerEnt))
+	{
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(containerEnt);
+
+		desiredDirection = playAreaDirection.GetCurrentOrientation();
+	}
+	else if (registry.all_of<Components::ReferenceEntity>(containerEnt))
+	{
+		auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(containerEnt);
+		auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
+		desiredDirection = playAreaDirection.GetCurrentOrientation();
+	}
+
+	return desiredDirection;
+}
+
+entt::entity SpawnProjectedFollowerBlock(entt::registry& registry, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, entt::entity parentTetromino, const std::string& blockModelPath)
+{
+	const auto& container = registry.get<Components::Container2>(spawnCoordinate.GetParent());
+
+	if (container.IsEnabled())
+	{
+		const auto piece1 = registry.create();
+		registry.emplace<Components::Coordinate>(piece1, spawnCoordinate.GetParent(), spawnCoordinate.Get());
+		registry.emplace<Components::Position>(piece1);
+		registry.emplace<Components::DerivePositionFromCoordinates>(piece1);
+		registry.emplace<Components::Scale>(piece1, container.GetCellDimensions3());
+		registry.emplace<Components::Renderable>(piece1, Components::renderLayer_t::RL_BLOCK, Model(blockModelPath));
+		registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), registry.get<Components::Coordinate>(piece1));
+		//registry.emplace<Components::Moveable>(piece1, registry.get<Components::Coordinate>(piece1), Components::Coordinate(glm::uvec2(1, 0)));// registry.get<Components::Coordinate>(piece1));
+
+		registry.emplace<Components::Block>(piece1, spawnCoordinate.GetParent());
+		registry.emplace<Components::Obstructable>(piece1, spawnCoordinate.GetParent());
+		registry.emplace<Components::Follower>(piece1, followedEntity);
+
+		registry.emplace<Components::Orientation>(piece1);
+		registry.emplace<Components::ReferenceEntity>(piece1, spawnCoordinate.GetParent());
+		registry.emplace<Components::ProjectionOf>(piece1, parentTetromino);
+
+		return piece1;
+	}
+
+	return entt::null;
+}
+
+entt::entity SpawnProjectedTetromino(entt::registry& registry, const entt::entity& tetrominoEnt)
+{
+	if (!IsEntityTetromino(registry, tetrominoEnt))
+		return entt::null;
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEnt);
+	auto tetCoord = registry.get<Components::Coordinate>(tetrominoEnt);
+	moveDirection_t currentOrientation = tetromino->GetCurrentOrientation();
+	tetrominoType_t tetType = tetromino->GetType();
+	int patternWidth = tetromino->GetPatternWidth();
+	int pattternHeight = tetromino->GetPatternHeight();
+		
+	const auto projectionEnt = registry.create();
+
+	registry.emplace<Components::Coordinate>(projectionEnt, tetCoord.GetParent(), tetCoord.Get());
+	registry.emplace<Components::Position>(projectionEnt);
+
+	switch (tetType)
+	{
+	case tetrominoType_t::O:
+		registry.emplace<Components::OTetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::I:
+		registry.emplace<Components::ITetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::T:
+		registry.emplace<Components::TTetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::L:
+		registry.emplace<Components::LTetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::J:
+		registry.emplace<Components::JTetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::S:
+		registry.emplace<Components::STetromino>(projectionEnt, currentOrientation);
+		break;
+	case tetrominoType_t::Z:
+		registry.emplace<Components::ZTetromino>(projectionEnt, currentOrientation);
+		break;
+	default:
+		assert(false);
+	}
+
+	//GetDesiredDirectionOfTetromino(registry, originCoordinate.GetParent());
+
+	switch (tetType)
+	{
+	case tetrominoType_t::I:
+		registry.emplace<Components::DerivePositionFromCoordinates>(projectionEnt, entt::null, glm::vec2(cellWidth / 2, -(static_cast<int>(cellHeight) / 2)));
+		break;
+	default:
+		registry.emplace<Components::DerivePositionFromCoordinates>(projectionEnt);
+		break;
+	}
+
+	registry.emplace<Components::Scale>(projectionEnt, glm::uvec2(cellWidth * patternWidth, cellHeight * pattternHeight));
+	registry.emplace<Components::Container2>(projectionEnt, glm::uvec2(patternWidth, pattternHeight), glm::uvec2(cellWidth, cellHeight));
+
+	auto* projection = GetTetrominoFromEntity(registry, projectionEnt);
+	auto projCoord = registry.get<Components::Coordinate>(projectionEnt);
+	for (int i = 0; i < 4; i++)
+	{
+		auto spawnPoint = Components::Coordinate(projCoord.GetParent(),
+			(glm::vec2)projCoord.Get() + projection->GetBlockOffsetCoordinates(currentOrientation, i));
+
+		entt::entity blockEnt = SpawnProjectedFollowerBlock(registry, spawnPoint, projectionEnt, tetrominoEnt, "./data/block/purple.obj");
+		projection->AddBlock(blockEnt);
+	}
+	
+	//registry.emplace<Components::Renderable>(tetrominoEnt, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
+	registry.emplace<Components::Moveable>(projectionEnt, projCoord, projCoord);
+	registry.emplace<Components::Obstructable>(projectionEnt, projCoord.GetParent());
+	registry.emplace<Components::ProjectionOf>(projectionEnt, tetrominoEnt);
+
+	return projectionEnt;
+}
+
 entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable)
 {
 	const auto tetrominoEnt = registry.create();
@@ -901,6 +1029,28 @@ bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordi
 
 		if (!obstructsCoordinate.IsEnabled() || !obstructs.IsEnabled())
 			continue;
+
+		if (registry.all_of<Components::ProjectionOf>(probeEntity))
+		{
+			const auto& probeProjectionOf = registry.get<Components::ProjectionOf>(probeEntity);
+			if (probeProjectionOf.IsEnabled())
+			{
+				if (probeProjectionOf.Get() == entity)
+				{ // We only care if we're not a projection of this obstruction
+					continue;
+				}
+
+				if (registry.all_of<Components::Follower>(entity))
+				{
+					const auto& obstructsFollower = registry.get<Components::Follower>(entity);
+
+					if (probeProjectionOf.Get() == obstructsFollower.Get())
+					{
+						continue;
+					}
+				}
+			}
+		}
 
 		if (registry.all_of<Components::Follower>(entity) && registry.all_of<Components::Follower>(probeEntity))
 		{
@@ -1274,22 +1424,30 @@ glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt)
 	auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(tetCoordinate.GetParent());
 	auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
 
-	entt::entity tempTetEnt = SpawnTetromino(registry, GetTagOfEntity(registry, tetCoordinate.GetParent()), tetCoordinate, tetromino->GetType(), false);
+	entt::entity tempTetEnt = SpawnProjectedTetromino(registry, tetrominoEnt);
 	auto* tempTet = GetTetrominoFromEntity(registry, tempTetEnt);
 	if (!IsEntityTetromino(registry, tempTetEnt))
 		throw std::runtime_error("Temporary tetromino not a tetromino!");
+	auto& tempTetCoord = registry.get<Components::Coordinate>(tempTetEnt);
 
-	entt::entity lowestCellEnt = MoveBlockInDirection(registry, tempTetEnt, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2), false, tetrominoEnt); // PlayAreaHeight is a const of 20. This is fine to be excessive with when the height is lower.
+	entt::entity lowestCellEnt = MoveBlockInDirection(registry, tempTetEnt, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2)); // PlayAreaHeight is a const of 20. This is fine to be excessive with when the height is lower.
 	if (lowestCellEnt == entt::null)
 		throw std::runtime_error("Lowest cell entity is null!");
 
 	const auto& lowestCell = registry.get<Components::Cell>(lowestCellEnt);
 	const auto& lowestCellCoord = registry.get<Components::Coordinate>(lowestCellEnt);
 
+	auto& tempTetMoveable = registry.get<Components::Moveable>(tempTetEnt);
+
+	tempTetCoord.Set(lowestCellCoord.Get());
+	tempTetCoord.SetParent(lowestCellCoord.GetParent());
+	tempTetMoveable.SetCurrentCoordinate(lowestCellCoord);
+	tempTetMoveable.SetDesiredCoordinate(tempTetMoveable.GetCurrentCoordinate());
+
 	// Destroy the temporary Tetromino and all its blocks.
 	for (int i = 0; i < 4; i++)
 	{
-		registry.remove_if_exists<Components::Follower>(tempTet->GetBlock(i));
+		registry.destroy(tempTet->GetBlock(i));
 	}
 	registry.destroy(tempTetEnt);
 

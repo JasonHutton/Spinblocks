@@ -51,3 +51,5 @@
 #include "Components/Bag.h"
 #include "Components/QueueNode.h"
 #include "Components/NodeOrder.h"
+
+#include "Components/ProjectionOf.h"

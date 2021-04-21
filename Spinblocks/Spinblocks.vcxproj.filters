@@ -307,5 +307,8 @@
     <ClInclude Include="include\Systems\BoardRotateSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\ProjectionOf.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
