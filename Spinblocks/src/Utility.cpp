@@ -1261,3 +1261,37 @@ rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const
 	else
 		return rotationDirection_t::NONE;
 }
+
+// This isn't being setup to work with plain non-Tetromino blocks, currently.
+glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt)
+{
+	if (!IsEntityTetromino(registry, tetrominoEnt))
+		throw std::runtime_error("Entity is not a tetromino!");
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEnt);
+	const auto& tetCoordinate = registry.get<Components::Coordinate>(tetrominoEnt);
+
+	auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(tetCoordinate.GetParent());
+	auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
+	entt::entity tempTetEnt = SpawnTetromino(registry, GetTagOfEntity(registry, tetCoordinate.GetParent()), tetCoordinate, tetromino->GetType(), false);
+	auto* tempTet = GetTetrominoFromEntity(registry, tempTetEnt);
+	if (!IsEntityTetromino(registry, tempTetEnt))
+		throw std::runtime_error("Temporary tetromino not a tetromino!");
+
+	entt::entity lowestCellEnt = MoveBlockInDirection(registry, tempTetEnt, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2), false, tetrominoEnt); // PlayAreaHeight is a const of 20. This is fine to be excessive with when the height is lower.
+	if (lowestCellEnt == entt::null)
+		throw std::runtime_error("Lowest cell entity is null!");
+
+	const auto& lowestCell = registry.get<Components::Cell>(lowestCellEnt);
+	const auto& lowestCellCoord = registry.get<Components::Coordinate>(lowestCellEnt);
+
+	// Destroy the temporary Tetromino and all its blocks.
+	for (int i = 0; i < 4; i++)
+	{
+		registry.remove_if_exists<Components::Follower>(tempTet->GetBlock(i));
+	}
+	registry.destroy(tempTetEnt);
+
+	return lowestCellCoord.Get();
+}

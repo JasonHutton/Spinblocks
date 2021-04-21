@@ -389,7 +389,7 @@ void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
 									break;
 								case movePiece_t::HARD_DROP:
 								{
-									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2))));
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2)))); // PlayAreaHeight is a const of 20. This is fine to be excessive with when the height is lower.
 									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
 									break;
 								}
@@ -622,6 +622,28 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				RotatePlayArea(registry, rotationDirection_t::CLOCKWISE);
 
 				break;
+			}
+			case KeyInput::usercmdButton_t::UB_DEBUG_PROJECT_DOWN:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+				for (auto entity : controllableView)
+				{
+					auto& controllable = controllableView.get<Components::Controllable>(entity);
+					auto& moveable = controllableView.get<Components::Moveable>(entity);
+
+					if (controllable.IsEnabled() && moveable.IsEnabled())
+					{
+						if (IsEntityTetromino(registry, entity))
+						{
+							auto cell = FindLowestCell(registry, entity);
+							int q = 0;
+							q++;
+						}
+					}
+				}
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
