@@ -4,7 +4,7 @@
 
 namespace Systems
 {
-	void StateChangeSystem(entt::registry& registry, double currentFrameTime)
+	void StateChangeSystem(entt::registry& registry, double currentFrameTime, std::vector<BlockLockData>& blockLockData)
 	{
 		/*auto tetrominoView = registry.view<Components::Moveable, Components::Coordinate>(entt::exclude<Components::Obstructable>);
 		for (auto entity : tetrominoView)
@@ -47,7 +47,7 @@ namespace Systems
 
 						if (tetromino->GetAreAllBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLastObstructedTime(registry) + lockdownDelay)
 						{
-							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
 						}
 					}
@@ -84,7 +84,7 @@ namespace Systems
 
 							if (tetromino->GetAreAllBlocksObstructed(registry))
 							{
-								tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+								tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 								lastLockdownTime = currentFrameTime;
 							}
 						}
@@ -108,7 +108,7 @@ namespace Systems
 
 						if (tetromino->GetAreAllBlocksObstructed(registry))
 						{
-							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED);
+							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
 						}
 					}

@@ -5,6 +5,7 @@
 #include "Components/Component.h"
 #include "Components/Obstructable.h"
 #include "Components/Moveable.h"
+#include "Components/Block.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -169,6 +170,19 @@ namespace Components
 				{
 					auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
 					moveable.SetMovementState(movementState);
+				}
+			}
+		}
+
+		void SetAllBlocksMovementState(entt::registry& registry, Components::movementStates_t movementState, std::vector<BlockLockData>& blockLockData)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.all_of<Components::Moveable>(GetBlock(i)))
+				{
+					auto& moveable = registry.get<Components::Moveable>(GetBlock(i));
+					moveable.SetMovementState(movementState);
+					blockLockData.push_back(moveable.GetCurrentCoordinate());
 				}
 			}
 		}

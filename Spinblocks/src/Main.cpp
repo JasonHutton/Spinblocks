@@ -768,10 +768,12 @@ void update(entt::registry& registry, double currentFrameTime)
 		}
 	}
 
+	auto blockLockData = std::vector<BlockLockData>();
+
 	Systems::GenerationSystem(registry, currentFrameTime);
 	Systems::FallingSystem(registry, currentFrameTime);
 	Systems::MovementSystem(registry, currentFrameTime);
-	Systems::StateChangeSystem(registry, currentFrameTime);
+	Systems::StateChangeSystem(registry, currentFrameTime, blockLockData);
 
 
 	const auto& playAreaEnt = FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA));
@@ -789,10 +791,12 @@ void update(entt::registry& registry, double currentFrameTime)
 		lineLength = PlayAreaHeight;
 	}
 
-	Systems::PatternSystem(registry, lineLength, currentFrameTime);
+	int linesMatched = 0;
+
+	linesMatched = Systems::PatternSystem(registry, lineLength, currentFrameTime);
 	Systems::EliminateSystem(registry, currentFrameTime);
 
-	rotationDirection_t shouldBoardRotate = ChooseBoardRotationDirection(registry);
+	rotationDirection_t shouldBoardRotate = ChooseBoardRotationDirection(registry, blockLockData, playAreaDirection.GetCurrentOrientation(), linesMatched);
 
 	if (Systems::BoardRotateSystem(registry, currentFrameTime, shouldBoardRotate) != rotationDirection_t::NONE)
 	{ // We did a rotation.

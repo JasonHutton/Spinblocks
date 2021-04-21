@@ -2,6 +2,7 @@
 
 #include "Components/Tetrominos/Tetromino.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with Tetromino without it...
 #include "Components/NodeOrder.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with NodeOrder without it...
+#include "Components/Block.h"
 
 #include <entt/entity/registry.hpp>
 #include "Components/Includes.h"
@@ -10,6 +11,7 @@
 #include "CachedTagLookup.h"
 
 #include <string>
+#include <vector>
 
 // Ensure containerType_t and this function are in sync
 const std::string GetTagFromContainerType(const containerType_t& t);
@@ -46,4 +48,4 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 int CountTetrominos(entt::registry& registry);
 void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection);
 void UpdateDirectionalWalls(entt::registry& registry);
-rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry);
+rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const std::vector<BlockLockData>& blockLockData, const moveDirection_t& playAreaDirection, const int& linesMatched);

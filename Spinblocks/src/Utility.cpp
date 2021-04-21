@@ -1136,6 +1136,9 @@ int CountTetrominos(entt::registry& registry)
 
 void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection)
 {
+	if (rotationDirection == rotationDirection_t::NONE)
+		return;
+
 	auto playAreaView = registry.view<Components::Tag, Components::CardinalDirection, Components::Orientation>();
 	for (auto entity : playAreaView)
 	{
@@ -1185,7 +1188,76 @@ void UpdateDirectionalWalls(entt::registry& registry)
 	}
 }
 
-rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry)
+rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const std::vector<BlockLockData>& blockLockData, const moveDirection_t& playAreaDirection, const int& linesMatched)
 {
-	return rotationDirection_t::NONE;
+	if (linesMatched < 1)
+		return rotationDirection_t::NONE;
+
+	if (blockLockData.empty())
+		return rotationDirection_t::NONE;
+
+	unsigned int blockPosition;
+	unsigned int playAreaWidth;
+
+	int desiredShift = 0;
+	switch (playAreaDirection)
+	{
+	case moveDirection_t::NORTH:
+		playAreaWidth = PlayAreaWidth;
+		blockPosition = playAreaWidth / 2;
+
+		for (BlockLockData bld : blockLockData)
+		{
+			if ((bld.GetCoordinates().Get().x - BufferAreaDepth) < blockPosition)
+				desiredShift--;
+			else
+				desiredShift++;
+		}
+		break;
+	case moveDirection_t::SOUTH:
+		playAreaWidth = PlayAreaWidth;
+		blockPosition = playAreaWidth / 2;
+
+		for (BlockLockData bld : blockLockData)
+		{
+			if ((bld.GetCoordinates().Get().x - BufferAreaDepth) >= blockPosition)
+				desiredShift--;
+			else
+				desiredShift++;
+		}
+		break;
+	case moveDirection_t::EAST:
+		playAreaWidth = PlayAreaHeight;
+		blockPosition = playAreaWidth / 2;
+
+		for (BlockLockData bld : blockLockData)
+		{
+			if ((bld.GetCoordinates().Get().y - BufferAreaDepth) < blockPosition)
+				desiredShift--;
+			else
+				desiredShift++;
+		}
+		break;
+	case moveDirection_t::WEST:
+		playAreaWidth = PlayAreaHeight;
+		blockPosition = playAreaWidth / 2;
+
+		for (BlockLockData bld : blockLockData)
+		{
+			if ((bld.GetCoordinates().Get().y - BufferAreaDepth) >= blockPosition)
+				desiredShift--;
+			else
+				desiredShift++;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (desiredShift < 0)
+		return rotationDirection_t::CLOCKWISE;
+	else if (desiredShift > 0)
+		return rotationDirection_t::COUNTERCLOCKWISE;
+	else
+		return rotationDirection_t::NONE;
 }
