@@ -1413,6 +1413,9 @@ rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const
 }
 
 // This isn't being setup to work with plain non-Tetromino blocks, currently.
+// This has severe potential issues. SPIN-27
+// FIXME TODO
+// DO NOT USE THIS FOR NOW
 glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt)
 {
 	if (!IsEntityTetromino(registry, tetrominoEnt))
