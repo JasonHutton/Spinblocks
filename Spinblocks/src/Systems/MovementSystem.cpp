@@ -149,28 +149,26 @@ namespace Systems
 				}
 				case Components::movementStates_t::HARD_DROP:
 				{
-					if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
+					// Just comparing Current and Desired isn't good enough. But maybe not checking at all is fine?
+					coordinate = moveable.GetDesiredCoordinate();
+					moveable.SetCurrentCoordinate(coordinate);
+					if (registry.all_of<Components::Obstructable>(entity))
 					{
-						// Need to detect if a move is allowed before permitting it.
-						coordinate = moveable.GetDesiredCoordinate();
-						moveable.SetCurrentCoordinate(coordinate);
-						if (registry.all_of<Components::Obstructable>(entity))
+						auto& obstructable = registry.get<Components::Obstructable>(entity);
+
+						if (registry.all_of<Components::Obstructs>(entity))
 						{
-							auto& obstructable = registry.get<Components::Obstructable>(entity);
+							obstructable.SetIsObstructed(true);
+						}
 
-							if (registry.all_of<Components::Obstructs>(entity))
-							{
-								obstructable.SetIsObstructed(true);
-							}
-
-							if (IsEntityTetromino(registry, entity))
-							{
-								auto* tetromino = GetTetrominoFromEntity(registry, entity);
-								tetromino->SetAllBlocksObstructed(registry, true);
-								tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
-							}
+						if (IsEntityTetromino(registry, entity))
+						{
+							auto* tetromino = GetTetrominoFromEntity(registry, entity);
+							tetromino->SetAllBlocksObstructed(registry, true);
+							tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
 						}
 					}
+
 					break;
 				}
 				default:
