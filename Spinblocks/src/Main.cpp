@@ -39,6 +39,7 @@
 #include "Systems/PatternSystem.h"
 #include "Systems/EliminateSystem.h"
 #include "Systems/BoardRotateSystem.h"
+#include "Systems/DetachSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
@@ -822,6 +823,8 @@ void update(entt::registry& registry, double currentFrameTime)
 
 	if (Systems::BoardRotateSystem(registry, currentFrameTime, shouldBoardRotate) != rotationDirection_t::NONE)
 	{ // We did a rotation.
+		Systems::DetachSystem(registry, currentFrameTime);
+		
 		// Re-do patterning and elimination.
 		Systems::PatternSystem(registry, lineLength, currentFrameTime);
 		Systems::EliminateSystem(registry, currentFrameTime);
