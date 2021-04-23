@@ -159,6 +159,7 @@ namespace Systems
 						if (registry.all_of<Components::Obstructs>(entity))
 						{
 							obstructable.SetIsObstructed(true);
+							obstructable.SetLastObstructedTime(currentFrameTime);
 						}
 
 						if (IsEntityTetromino(registry, entity))
