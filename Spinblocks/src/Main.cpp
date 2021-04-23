@@ -1125,7 +1125,7 @@ void InitGame(entt::registry& registry)
 	LinesClearedTotal = 0;
 
 	GameLevel = StartGameLevel;
-	FallSpeed = StartFallSpeed;
+	FallSpeed = CalculateFallSpeed(GameLevel);
 
 	const auto camera = registry.create();
 	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));
