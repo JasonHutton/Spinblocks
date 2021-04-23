@@ -134,6 +134,22 @@ namespace Components
 			}
 		}
 
+		double GetAllBlocksLockdownDelay(entt::registry& registry) const
+		{
+			double lockdownDelay = 0.0;
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
+				{
+					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					if (obstructable.GetLockdownDelay() > lockdownDelay)
+						lockdownDelay = obstructable.GetLockdownDelay();
+				}
+			}
+
+			return lockdownDelay;
+		}
+
 		double GetAllBlocksLastObstructedTime(entt::registry& registry) const
 		{
 			double lastObstructedTime = 0.0;
@@ -158,6 +174,18 @@ namespace Components
 				{
 					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
 					obstructable.SetLastObstructedTime(lastObstructedTime);
+				}
+			}
+		}
+
+		void SetAllBlocksLockdownDelay(entt::registry& registry, double lockdownDelay)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
+				{
+					auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					obstructable.SetLockdownDelay(lockdownDelay);
 				}
 			}
 		}

@@ -158,6 +158,10 @@ namespace Systems
 
 						if (registry.all_of<Components::Obstructs>(entity))
 						{
+							if (!obstructable.GetIsObstructed())
+							{
+								obstructable.SetLockdownDelay(currentFrameTime + lockdownDelay);
+							}
 							obstructable.SetIsObstructed(true);
 							obstructable.SetLastObstructedTime(currentFrameTime);
 						}
@@ -165,6 +169,11 @@ namespace Systems
 						if (IsEntityTetromino(registry, entity))
 						{
 							auto* tetromino = GetTetrominoFromEntity(registry, entity);
+
+							if (!tetromino->GetAreAllBlocksObstructed(registry))
+							{
+								tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime + lockdownDelay);
+							}
 							tetromino->SetAllBlocksObstructed(registry, true);
 							tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
 						}

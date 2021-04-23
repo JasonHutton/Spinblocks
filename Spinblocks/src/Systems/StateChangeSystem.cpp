@@ -34,7 +34,7 @@ namespace Systems
 				switch (moveable.GetMovementState())
 				{
 				case Components::movementStates_t::FALL:
-					if (obstructable.GetIsObstructed() && currentFrameTime >= obstructable.GetLastObstructedTime() + lockdownDelay)
+					if (obstructable.GetIsObstructed() && currentFrameTime >= obstructable.GetLockdownDelay())
 					{
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);
@@ -45,7 +45,7 @@ namespace Systems
 					{
 						auto* tetromino = GetTetrominoFromEntity(registry, entity);
 
-						if (tetromino->GetAreAllBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLastObstructedTime(registry) + lockdownDelay)
+						if (tetromino->GetAreAllBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLockdownDelay(registry))
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;

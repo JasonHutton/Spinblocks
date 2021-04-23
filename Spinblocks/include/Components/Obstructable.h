@@ -11,6 +11,7 @@ namespace Components
 	protected:
 		bool m_isObstructed = false;
 		double m_lastObstructedTime = 0.0;
+		double m_lockdownDelay = 0.0;
 
 	public:
 		Obstructable(entt::entity entity) : ReferenceEntity(entity)
@@ -35,6 +36,16 @@ namespace Components
 		void SetLastObstructedTime(double lastObstructedTime)
 		{
 			m_lastObstructedTime = lastObstructedTime;
+		}
+
+		double GetLockdownDelay() const
+		{
+			return m_lockdownDelay;
+		}
+
+		void SetLockdownDelay(double lockdownDelay)
+		{
+			m_lockdownDelay = lockdownDelay;
 		}
 	};
 }
