@@ -7,11 +7,28 @@ namespace KeyInput
 	// Make sure everything here is lower-case. We're not checking both ways.
 	KeyInput::userCmdString_t	userCmdStrings[] = {
 		{ "_force_quit", usercmdButton_t::UB_FORCE_QUIT },
-
+#ifdef _DEBUG
 		{ "_debug_spawn_1", usercmdButton_t::UB_DEBUG_SPAWN_1 },
+		{ "_debug_spawn_2", usercmdButton_t::UB_DEBUG_SPAWN_2 },
+		{ "_debug_spawn_3", usercmdButton_t::UB_DEBUG_SPAWN_3 },
+		{ "_debug_move_up", usercmdButton_t::UB_DEBUG_MOVE_UP },
+		{ "_debug_rotate_play_area_counterclockwise", usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_COUNTERCLOCKWISE },
+		{ "_debug_rotate_play_area_clockwise", usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_CLOCKWISE },
+		{ "_debug_project_down", usercmdButton_t::UB_DEBUG_PROJECT_DOWN },
+#endif
 
 		{ "_move_left", usercmdButton_t::UB_MOVE_LEFT },
 		{ "_move_right", usercmdButton_t::UB_MOVE_RIGHT },
+
+		{ "_soft_drop", usercmdButton_t::UB_SOFT_DROP },
+		{ "_hard_drop", usercmdButton_t::UB_HARD_DROP },
+
+		{ "_rotate_counterclockwise", usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE },
+		{ "_rotate_clockwise", usercmdButton_t::UB_ROTATE_CLOCKWISE },
+#ifdef _DEBUG
+		{ "_hold", usercmdButton_t::UB_HOLD },
+		{ "_pause", usercmdButton_t::UB_PAUSE },
+#endif
 
 		{ NULL, usercmdButton_t::UB_MAX_BUTTONS },
 

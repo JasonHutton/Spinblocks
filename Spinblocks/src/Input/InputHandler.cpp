@@ -12,6 +12,7 @@ InputHandler::InputHandler()
 
 	// Setup the default controls.
 	BindDefault(GLFW_KEY_ESCAPE, KeyInput::usercmdButton_t::UB_FORCE_QUIT);
+#ifdef _DEBUG
 	BindDefault(GLFW_KEY_1, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1);
 	BindDefault(GLFW_KEY_2, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_2);
 	BindDefault(GLFW_KEY_3, KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_3);
@@ -19,14 +20,17 @@ InputHandler::InputHandler()
 	BindDefault(GLFW_KEY_DELETE, KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_COUNTERCLOCKWISE);
 	BindDefault(GLFW_KEY_PAGE_DOWN, KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_CLOCKWISE);
 	BindDefault(GLFW_KEY_Q, KeyInput::usercmdButton_t::UB_DEBUG_PROJECT_DOWN);
+#endif
 	BindDefault(GLFW_KEY_LEFT, KeyInput::usercmdButton_t::UB_MOVE_LEFT);
 	BindDefault(GLFW_KEY_RIGHT, KeyInput::usercmdButton_t::UB_MOVE_RIGHT);
 	BindDefault(GLFW_KEY_DOWN, KeyInput::usercmdButton_t::UB_SOFT_DROP);
 	BindDefault(GLFW_KEY_UP, KeyInput::usercmdButton_t::UB_HARD_DROP);
 	BindDefault(GLFW_KEY_Z, KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE);
 	BindDefault(GLFW_KEY_X, KeyInput::usercmdButton_t::UB_ROTATE_CLOCKWISE);
+#ifdef _DEBUG
 	BindDefault(GLFW_KEY_SPACE, KeyInput::usercmdButton_t::UB_HOLD);
 	BindDefault(GLFW_KEY_PAUSE, KeyInput::usercmdButton_t::UB_PAUSE);
+#endif
 
 	ResetBindings(); // Set the default controls.
 

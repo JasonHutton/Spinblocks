@@ -461,6 +461,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_FORCE_QUIT:
 				glfwSetWindowShouldClose(window, true);
 				break;
+#ifdef _DEBUG
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
 			{
 				if (keyState.second.prevKeyDown == true)
@@ -648,6 +649,7 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				break;
 			}
+#endif
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
 				if (keyState.second.prevKeyDown == true)
