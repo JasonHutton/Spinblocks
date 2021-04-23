@@ -1456,3 +1456,8 @@ glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt)
 
 	return lowestCellCoord.Get();
 }
+
+double CalculateFallSpeed(int level)
+{
+	return pow((0.8 - ((static_cast<double>(level) - 1) * 0.007)), static_cast<double>(level) - 1);
+}

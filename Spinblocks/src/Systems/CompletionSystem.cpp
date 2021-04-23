@@ -46,7 +46,7 @@ namespace Systems
 			LevelGoal += (GameLevel * LevelGoalIncrement);
 		}
 
-		FallSpeed = pow((0.8 - ((static_cast<double>(GameLevel) - 1) * 0.007)), static_cast<double>(GameLevel) - 1);
+		FallSpeed = CalculateFallSpeed(GameLevel);
 
 		/*
 		cout << "Score: " << GameScore << endl;

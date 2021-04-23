@@ -50,3 +50,4 @@ void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotatio
 void UpdateDirectionalWalls(entt::registry& registry);
 rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const std::vector<BlockLockData>& blockLockData, const moveDirection_t& playAreaDirection, const int& linesMatched);
 glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt);
+double CalculateFallSpeed(int level);
