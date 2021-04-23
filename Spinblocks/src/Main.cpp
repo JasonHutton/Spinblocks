@@ -823,11 +823,12 @@ void update(entt::registry& registry, double currentFrameTime)
 
 	if (Systems::BoardRotateSystem(registry, currentFrameTime, shouldBoardRotate) != rotationDirection_t::NONE)
 	{ // We did a rotation.
+		// Handle any elimination that should have happened.
+		// This ensures any falling realignment after an elimination occurs.
+		Systems::MovementSystem(registry, currentFrameTime);
+		Systems::StateChangeSystem(registry, currentFrameTime, blockLockData);
+		// Now detach, after the falling realignment.
 		Systems::DetachSystem(registry, currentFrameTime);
-		
-		// Re-do patterning and elimination.
-		Systems::PatternSystem(registry, lineLength, currentFrameTime);
-		Systems::EliminateSystem(registry, currentFrameTime);
 	}
 
 
