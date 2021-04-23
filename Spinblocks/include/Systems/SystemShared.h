@@ -14,8 +14,7 @@
 	const int StartLevelGoal = 5;
 	inline int LevelGoal = 5;
 	inline int LinesClearedTotal = 0;
-	const double StartFallSpeed = 1.0; // Base fall speed, time it takes to move 1 line.
-	inline double FallSpeed = 1.0; // (0.8 - ((level - 1) * 0.007))^(level-1)
+	inline double FallSpeed = 1.0; // // Base fall speed, time it takes to move 1 line.... (0.8 - ((level - 1) * 0.007))^(level-1)
 	inline double lastFallUpdate = 0.0;
 	inline double lastLockdownTime = 0.0;
 	const double generationTimeDelay = 0.2; // Delay after last lockdown before a new generation occurs. (And a Tetromino is spawned into the play area matrix.)
