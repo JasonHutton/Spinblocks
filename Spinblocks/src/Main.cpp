@@ -40,6 +40,7 @@
 #include "Systems/EliminateSystem.h"
 #include "Systems/BoardRotateSystem.h"
 #include "Systems/DetachSystem.h"
+#include "Systems/CompletionSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
@@ -831,6 +832,8 @@ void update(entt::registry& registry, double currentFrameTime)
 		Systems::DetachSystem(registry, currentFrameTime);
 	}
 
+	Systems::CompletionSystem(registry, currentFrameTime, linesMatched);
+
 
 	/*auto containerView = registry.view<Components::Container, Components::Scale>();
 	for (auto entity : containerView)
@@ -1116,6 +1119,13 @@ void InitGame(entt::registry& registry)
 {
 	GameInput::setVerticalAxis(0);
 	GameInput::setHorizontalAxis(0);
+
+	GameScore = 0;
+	LevelGoal = StartLevelGoal;
+	LinesClearedTotal = 0;
+
+	GameLevel = StartGameLevel;
+	FallSpeed = StartFallSpeed;
 
 	const auto camera = registry.create();
 	registry.emplace<Components::OrthographicCamera>(camera, glm::vec3(0.0f, 0.0f, 3.0f));

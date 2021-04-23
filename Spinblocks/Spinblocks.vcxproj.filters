@@ -96,6 +96,9 @@
     <ClCompile Include="src\Systems\DetachSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\Systems\CompletionSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="dll\assimp-vc142-mt.dll">
@@ -314,6 +317,9 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="include\Systems\DetachSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Systems\CompletionSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
