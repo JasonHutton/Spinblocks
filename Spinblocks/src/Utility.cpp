@@ -1340,7 +1340,7 @@ void UpdateDirectionalWalls(entt::registry& registry)
 
 rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const std::vector<BlockLockData>& blockLockData, const moveDirection_t& playAreaDirection, const int& linesMatched)
 {
-	if (linesMatched < 1)
+	if (linesMatched < minimumLinesMatchedToTriggerBoardRotation)
 		return rotationDirection_t::NONE;
 
 	if (blockLockData.empty())
