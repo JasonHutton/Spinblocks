@@ -47,6 +47,8 @@
 
 #include "GameState.h"
 
+#include "imgui.h"
+
 using std::string;
 using std::cout;
 using std::endl;

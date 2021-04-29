@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Components\Tetrominos">
       <UniqueIdentifier>{6830e11c-7b73-4146-8771-cf0159786d47}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DearImGUI">
+      <UniqueIdentifier>{18d12a96-0bf7-46eb-a211-2bd712394ed0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DearImGUI">
+      <UniqueIdentifier>{cbc48bb4-7e78-425d-a1ca-83b2a7514c62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -98,6 +104,21 @@
     </ClCompile>
     <ClCompile Include="src\Systems\CompletionSystem.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_demo.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_draw.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_tables.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_widgets.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -321,6 +342,21 @@
     </ClInclude>
     <ClInclude Include="include\Systems\CompletionSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgui_internal.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imstb_rectpack.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imstb_textedit.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imstb_truetype.h">
+      <Filter>Header Files\DearImGUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
