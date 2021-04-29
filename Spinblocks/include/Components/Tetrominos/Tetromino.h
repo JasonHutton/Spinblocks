@@ -122,6 +122,24 @@ namespace Components
 			return true;
 		}
 
+		bool GetAreAnyBlocksObstructed(entt::registry& registry) const
+		{
+			bool atLeastOneObstructed = false;
+			for (int i = 0; i < 4; i++)
+			{
+				if (registry.all_of<Components::Obstructable>(GetBlock(i)))
+				{
+					const auto& obstructable = registry.get<Components::Obstructable>(GetBlock(i));
+					if (obstructable.GetIsObstructed())
+					{
+						atLeastOneObstructed = true;
+					}
+				}
+			}
+
+			return atLeastOneObstructed;
+		}
+
 		void SetAllBlocksObstructed(entt::registry& registry, bool isObstructed)
 		{
 			for (int i = 0; i < 4; i++)

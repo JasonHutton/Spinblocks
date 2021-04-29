@@ -45,7 +45,7 @@ namespace Systems
 					{
 						auto* tetromino = GetTetrominoFromEntity(registry, entity);
 
-						if (tetromino->GetAreAllBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLockdownDelay(registry))
+						if (tetromino->GetAreAnyBlocksObstructed(registry) && currentFrameTime >= tetromino->GetAllBlocksLockdownDelay(registry))
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
@@ -82,7 +82,7 @@ namespace Systems
 						{
 							auto* tetromino = GetTetrominoFromEntity(registry, entity);
 
-							if (tetromino->GetAreAllBlocksObstructed(registry))
+							if (tetromino->GetAreAnyBlocksObstructed(registry))
 							{
 								tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 								lastLockdownTime = currentFrameTime;
@@ -106,7 +106,7 @@ namespace Systems
 					{
 						auto* tetromino = GetTetrominoFromEntity(registry, entity);
 
-						if (tetromino->GetAreAllBlocksObstructed(registry))
+						if (tetromino->GetAreAnyBlocksObstructed(registry))
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;

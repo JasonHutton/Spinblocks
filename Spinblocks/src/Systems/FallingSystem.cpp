@@ -61,7 +61,7 @@ namespace Systems
 									{
 										auto* tetromino = GetTetrominoFromEntity(registry, entity);
 
-										if (!tetromino->GetAreAllBlocksObstructed(registry))
+										if (!tetromino->GetAreAnyBlocksObstructed(registry))
 										{
 											tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime + lockdownDelay);
 										}
