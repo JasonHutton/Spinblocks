@@ -1406,6 +1406,19 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		// IMGUI begin
+		char buf[500] = "Blah blah blah.\n";
+		float f = 0.0f;
+		ImGui::Text("Hello, world %d", 123);
+		if (ImGui::Button("Save"))
+		{
+			// Do nothing
+		}
+		ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		// IMGUI end
+
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
