@@ -385,5 +385,14 @@
     <ClInclude Include="include\Components\UI\UIOverlay.h">
       <Filter>Header Files\Components\UI</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\UI\UIText.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UITextLevel.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UITextScore.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

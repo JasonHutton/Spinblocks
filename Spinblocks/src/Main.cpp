@@ -1073,10 +1073,18 @@ void render(entt::registry& registry, double normalizedTime)
 			ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
 
 			//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-			if (ImGui::Begin("Example: Simple overlay", NULL, overlay.GetWindowFlags()))
+			if (ImGui::Begin(overlay.GetWindowName().c_str(), NULL, overlay.GetWindowFlags()))
 			{
-				ImGui::Text("Score: %d", GameScore);
-				ImGui::Text("Level: %d", GameLevel);
+				if (registry.all_of<Components::UITextScore>(entity))
+				{
+					auto& score = registry.get<Components::UITextScore>(entity);
+					score.DisplayElement();
+				}
+				if (registry.all_of<Components::UITextLevel>(entity))
+				{
+					auto& level = registry.get<Components::UITextLevel>(entity);
+					level.DisplayElement();
+				}
 			}
 
 			ImGui::End();
@@ -1209,8 +1217,10 @@ void InitUI(entt::registry& registry)
 {
 	const auto scoreOverlay = registry.create();
 	registry.emplace<Components::UIPosition>(scoreOverlay, ImVec2(displayData.x / 20, displayData.y - displayData.y / 4));
-	registry.emplace<Components::UIOverlay>(scoreOverlay);
+	registry.emplace<Components::UIOverlay>(scoreOverlay, "Score Overlay");
 	registry.emplace<Components::UIRenderable>(scoreOverlay);
+	registry.emplace<Components::UITextScore>(scoreOverlay);
+	registry.emplace<Components::UITextLevel>(scoreOverlay);
 }
 
 void InitGame(entt::registry& registry)

@@ -2,6 +2,7 @@
 
 #include "Components/UI/UIComponent.h"
 #include "imgui.h"
+#include <string>
 
 namespace Components
 {
@@ -16,11 +17,17 @@ namespace Components
 										ImGuiWindowFlags_NoMove |
 										ImGuiWindowFlags_NoInputs;
 		ImGuiCond m_condition = ImGuiCond_Always;
+		std::string m_windowName;
 
 	public:
-		UIOverlay()
+		UIOverlay(const std::string windowName) : m_windowName(windowName)
 		{
 		
+		}
+
+		const std::string& GetWindowName() const
+		{
+			return m_windowName;
 		}
 
 		const ImGuiCond& GetCondition() const

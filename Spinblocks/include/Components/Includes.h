@@ -58,3 +58,6 @@
 #include "Components/UI/UIPosition.h"
 #include "Components/UI/UIRenderable.h"
 #include "Components/UI/UIOverlay.h"
+#include "Components/UI/UIText.h"
+#include "Components/UI/UITextLevel.h"
+#include "Components/UI/UITextScore.h"

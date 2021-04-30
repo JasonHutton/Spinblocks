@@ -255,6 +255,9 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\UI\UIOverlay.h" />
     <ClInclude Include="include\Components\UI\UIPosition.h" />
     <ClInclude Include="include\Components\UI\UIRenderable.h" />
+    <ClInclude Include="include\Components\UI\UIText.h" />
+    <ClInclude Include="include\Components\UI\UITextLevel.h" />
+    <ClInclude Include="include\Components\UI\UITextScore.h" />
     <ClInclude Include="include\Components\Wall.h" />
     <ClInclude Include="include\GameState.h" />
     <ClInclude Include="include\GameTime.h" />
