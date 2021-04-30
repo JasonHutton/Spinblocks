@@ -43,6 +43,9 @@
     <Filter Include="Source Files\DearImGUI">
       <UniqueIdentifier>{cbc48bb4-7e78-425d-a1ca-83b2a7514c62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components\UI">
+      <UniqueIdentifier>{8491576d-d655-4603-a0a3-63a175ca85d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -369,6 +372,18 @@
     </ClInclude>
     <ClInclude Include="include\imgui_impl_opengl3.h">
       <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIComponent.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIPosition.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIRenderable.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIOverlay.h">
+      <Filter>Header Files\Components\UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

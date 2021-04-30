@@ -8,7 +8,7 @@ namespace Components
 		bool m_enabled; // Is the component enabled to systems?
 
 	public:
-		Component() : m_enabled(true)
+		Component(bool enabled = true) : m_enabled(enabled)
 		{
 
 		}

@@ -53,3 +53,8 @@
 #include "Components/NodeOrder.h"
 
 #include "Components/ProjectionOf.h"
+
+#include "Components/UI/UIComponent.h"
+#include "Components/UI/UIPosition.h"
+#include "Components/UI/UIRenderable.h"
+#include "Components/UI/UIOverlay.h"

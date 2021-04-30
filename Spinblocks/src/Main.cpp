@@ -862,6 +862,61 @@ void postupdate(entt::registry& registry, double currentFrameTime)
 
 }
 
+void ImGUIInit(GLFWwindow* window)
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.IniFilename = NULL;
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
+	// Load Fonts
+	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+	// - Read 'docs/FONTS.md' for more instructions and details.
+	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+	//io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+	//IM_ASSERT(font != NULL);
+}
+
+void ImGUITeardown()
+{
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+}
+
+void ImGUIFrameInit()
+{
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+}
+
+void ImGUIFrameEnd()
+{
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 void prerender(entt::registry& registry, double normalizedTime)
 {
@@ -1003,6 +1058,32 @@ void render(entt::registry& registry, double normalizedTime)
 			}
 		}
 	}
+
+	ImGUIFrameInit();
+
+	auto UIOverlayView = registry.view<Components::UIRenderable, Components::UIPosition, Components::UIOverlay>();
+	for (auto entity : UIOverlayView)
+	{
+		auto& overlay = UIOverlayView.get<Components::UIOverlay>(entity);
+		auto& position = UIOverlayView.get<Components::UIPosition>(entity);
+		auto& renderable = UIOverlayView.get<Components::UIRenderable>(entity);
+
+		if (renderable.IsEnabled() && overlay.IsEnabled() && position.IsEnabled())
+		{
+			ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
+
+			//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+			if (ImGui::Begin("Example: Simple overlay", NULL, overlay.GetWindowFlags()))
+			{
+				ImGui::Text("Score: %d", GameScore);
+				ImGui::Text("Level: %d", GameLevel);
+			}
+
+			ImGui::End();
+		}
+	}
+
+	ImGUIFrameEnd();
 }
 void postrender(entt::registry& registry, double normalizedTime)
 {
@@ -1122,6 +1203,14 @@ void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lh
 			//if(lhsLine.x > -1 && lhsLine.x == lhsCellCoord.Get().x && rhsCellCoord.Get().x == 
 		}
 	}
+}
+
+void InitUI(entt::registry& registry)
+{
+	const auto scoreOverlay = registry.create();
+	registry.emplace<Components::UIPosition>(scoreOverlay, ImVec2(displayData.x / 20, displayData.y - displayData.y / 4));
+	registry.emplace<Components::UIOverlay>(scoreOverlay);
+	registry.emplace<Components::UIRenderable>(scoreOverlay);
 }
 
 void InitGame(entt::registry& registry)
@@ -1268,62 +1357,6 @@ void TeardownGame(entt::registry& registry)
 	cachedTagLookup.Clear();
 }
 
-void ImGUIInit(GLFWwindow* window)
-{
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.IniFilename = NULL;
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
-
-	// Load Fonts
-	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-	// - Read 'docs/FONTS.md' for more instructions and details.
-	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != NULL);
-}
-
-void ImGUITeardown()
-{
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-void ImGUIFrameInit()
-{
-	// Start the Dear ImGui frame
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-}
-
-void ImGUIFrameEnd()
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
 int main()
 {
 	if (!glfwInit())
@@ -1390,6 +1423,7 @@ int main()
 
 		if (GameState::GetState() == gameState_t::INIT)
 		{
+			InitUI(registry);
 			InitGame(registry);
 
 			GameState::SetState(gameState_t::MENU); // Placeholder.
@@ -1420,22 +1454,6 @@ int main()
 		prerender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 		render(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
 		postrender(registry, GameTime::accumulator / GameTime::fixedDeltaTime);
-
-		ImGUIFrameInit();
-
-		// IMGUI begin
-		char buf[500] = "Blah blah blah.\n";
-		float f = 0.0f;
-		ImGui::Text("Hello, world %d", 123);
-		if (ImGui::Button("Save"))
-		{
-			// Do nothing
-		}
-		ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-		// IMGUI end
-
-		ImGUIFrameEnd();
 
 		if (GameState::GetState() == gameState_t::GAME_OVER)
 		{
