@@ -27,9 +27,9 @@ InputHandler::InputHandler()
 	BindDefault(GLFW_KEY_UP, KeyInput::usercmdButton_t::UB_HARD_DROP);
 	BindDefault(GLFW_KEY_Z, KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE);
 	BindDefault(GLFW_KEY_X, KeyInput::usercmdButton_t::UB_ROTATE_CLOCKWISE);
+	BindDefault(GLFW_KEY_PAUSE, KeyInput::usercmdButton_t::UB_PAUSE);
 #ifdef _DEBUG
 	BindDefault(GLFW_KEY_SPACE, KeyInput::usercmdButton_t::UB_HOLD);
-	BindDefault(GLFW_KEY_PAUSE, KeyInput::usercmdButton_t::UB_PAUSE);
 #endif
 
 	ResetBindings(); // Set the default controls.

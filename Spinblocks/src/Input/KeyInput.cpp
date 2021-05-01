@@ -25,9 +25,9 @@ namespace KeyInput
 
 		{ "_rotate_counterclockwise", usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE },
 		{ "_rotate_clockwise", usercmdButton_t::UB_ROTATE_CLOCKWISE },
+		{ "_pause", usercmdButton_t::UB_PAUSE },
 #ifdef _DEBUG
 		{ "_hold", usercmdButton_t::UB_HOLD },
-		{ "_pause", usercmdButton_t::UB_PAUSE },
 #endif
 
 		{ NULL, usercmdButton_t::UB_MAX_BUTTONS },

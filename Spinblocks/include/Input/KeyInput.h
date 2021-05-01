@@ -26,9 +26,9 @@ namespace KeyInput
 		UB_HARD_DROP,
 		UB_ROTATE_COUNTERCLOCKWISE,
 		UB_ROTATE_CLOCKWISE,
+		UB_PAUSE,
 #ifdef _DEBUG
 		UB_HOLD,
-		UB_PAUSE,
 #endif
 		UB_MAX_BUTTONS
 	};
