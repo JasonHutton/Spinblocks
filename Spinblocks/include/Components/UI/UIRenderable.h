@@ -7,7 +7,7 @@ namespace Components
 	class UIRenderable : public UIComponent
 	{
 	public:
-		UIRenderable()
+		UIRenderable(bool enabled = true) : UIComponent(enabled)
 		{
 		}
 	};

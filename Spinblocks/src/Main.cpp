@@ -750,6 +750,21 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
 				break;
 			}
+			case KeyInput::usercmdButton_t::UB_PAUSE:
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
+				auto& isPaused = registry.get<Components::Flag>(pauseEnt);
+
+				isPaused.Set(!isPaused.Get()); // Toggle pause state.
+
+				auto& renderable = registry.get<Components::UIRenderable>(pauseEnt);
+				renderable.Enable(isPaused.Get());
+				
+				break;
+			}
 			case KeyInput::usercmdButton_t::UB_NONE:
 			default:
 				break;
@@ -1085,6 +1100,11 @@ void render(entt::registry& registry, double normalizedTime)
 					auto& level = registry.get<Components::UITextLevel>(entity);
 					level.DisplayElement();
 				}
+				if (registry.all_of<Components::UIText>(entity))
+				{
+					auto& pause = registry.get<Components::UIText>(entity);
+					pause.DisplayElement();
+				}
 			}
 
 			ImGui::End();
@@ -1216,11 +1236,19 @@ void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lh
 void InitUI(entt::registry& registry)
 {
 	const auto scoreOverlay = registry.create();
-	registry.emplace<Components::UIPosition>(scoreOverlay, ImVec2(displayData.x / 20, displayData.y - displayData.y / 4));
+	registry.emplace<Components::UIPosition>(scoreOverlay, ImVec2(displayData.x / 20.0f, displayData.y - displayData.y / 4.0f));
 	registry.emplace<Components::UIOverlay>(scoreOverlay, "Score Overlay");
 	registry.emplace<Components::UIRenderable>(scoreOverlay);
 	registry.emplace<Components::UITextScore>(scoreOverlay);
 	registry.emplace<Components::UITextLevel>(scoreOverlay);
+
+	const auto pauseOverlay = registry.create();
+	registry.emplace<Components::UIPosition>(pauseOverlay, ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImVec2(0.5f, 0.5f));
+	registry.emplace<Components::UIOverlay>(pauseOverlay, "Pause Overlay");
+	registry.emplace<Components::UIRenderable>(pauseOverlay, false);
+	registry.emplace<Components::UIText>(pauseOverlay, "Paused");
+	registry.emplace<Components::Tag>(pauseOverlay, "Pause Overlay");
+	registry.emplace<Components::Flag>(pauseOverlay, false);
 }
 
 void InitGame(entt::registry& registry)
