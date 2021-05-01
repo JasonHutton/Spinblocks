@@ -437,6 +437,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 		}
 	}
 
+	const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
+	const auto& isPaused = registry.get<Components::Flag>(pauseEnt);
+
 	// Check all bound controls, as single buttons
 	for (auto& keyState : input.GetAllKeyStates())
 	{
@@ -472,6 +475,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (isPaused.Get())
 					break;
 
 				//SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(FindContainerEntityByTag(registry, GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(0, 19)));
@@ -515,6 +521,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (isPaused.Get())
+					break;
+
 				auto controllableView = registry.view<Components::Controllable>();
 				for (auto controllable : controllableView)
 				{
@@ -551,6 +560,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_3:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (isPaused.Get())
 					break;
 
 				auto controllableView = registry.view<Components::Controllable>();
@@ -611,6 +623,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
+				if (isPaused.Get())
+					break;
+
 				MovePiece(registry, movePiece_t::MOVE_UP);
 
 				break;
@@ -618,6 +633,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_COUNTERCLOCKWISE:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (isPaused.Get())
 					break;
 
 				RotatePlayArea(registry, rotationDirection_t::COUNTERCLOCKWISE);
@@ -629,6 +647,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (isPaused.Get())
+					break;
+
 				RotatePlayArea(registry, rotationDirection_t::CLOCKWISE);
 
 				break;
@@ -636,6 +657,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_PROJECT_DOWN:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (isPaused.Get())
 					break;
 
 				auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
@@ -659,6 +683,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 #endif
 			case KeyInput::usercmdButton_t::UB_MOVE_LEFT:
 			{
+				if (isPaused.Get())
+					break;
+
 				if (keyState.second.prevKeyDown == true)
 				{
 					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
@@ -674,6 +701,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			}
 			case KeyInput::usercmdButton_t::UB_MOVE_RIGHT:
 			{
+				if (isPaused.Get())
+					break;
+
 				if (keyState.second.prevKeyDown == true)
 				{
 					if (keyState.second.currentKeyDownBeginTime + KeyRepeatDelay >= currentFrameTime)
@@ -711,6 +741,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
+				if (isPaused.Get())
+					break;
+
 				MovePiece(registry, movePiece_t::SOFT_DROP);
 				break;
 			}
@@ -731,12 +764,18 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					}
 				}
 
+				if (isPaused.Get())
+					break;
+
 				MovePiece(registry, movePiece_t::HARD_DROP);
 				break;
 			}
 			case KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (isPaused.Get())
 					break;
 
 				RotatePiece(registry, rotatePiece_t::ROTATE_COUNTERCLOCKWISE);
@@ -747,6 +786,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (isPaused.Get())
+					break;
+
 				RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
 				break;
 			}
@@ -755,13 +797,12 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
-				const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
-				auto& isPaused = registry.get<Components::Flag>(pauseEnt);
+				auto& paused = registry.get<Components::Flag>(pauseEnt);
 
-				isPaused.Set(!isPaused.Get()); // Toggle pause state.
+				paused.Set(!paused.Get()); // Toggle pause state.
 
 				auto& renderable = registry.get<Components::UIRenderable>(pauseEnt);
-				renderable.Enable(isPaused.Get());
+				renderable.Enable(paused.Get());
 				
 				break;
 			}
@@ -1480,10 +1521,16 @@ int main()
 		{
 			if (GameState::GetState() == gameState_t::PLAY)
 			{
-				// Update game logic for ECS
-				preupdate(registry, currentFrameTime);
-				update(registry, currentFrameTime);
-				postupdate(registry, currentFrameTime);
+				const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
+				auto& isPaused = registry.get<Components::Flag>(pauseEnt);
+
+				if (!isPaused.Get())
+				{
+					// Update game logic for ECS
+					preupdate(registry, currentFrameTime);
+					update(registry, currentFrameTime);
+					postupdate(registry, currentFrameTime);
+				}
 			}
 
 			GameTime::accumulator -= GameTime::fixedDeltaTime;
