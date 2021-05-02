@@ -66,6 +66,7 @@ T* Coalesce(T* value, T* defaultValue)
 }
 
 void glfwErrorCallback(int error, const char* description);
+void glfwWindowFocusCallback(GLFWwindow* window, int focused);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 auto shaders = std::unordered_map<std::string, Shader*>();
 
@@ -1069,6 +1070,21 @@ void prerender(entt::registry& registry, double normalizedTime)
 			position.Set(container2.GetCellPosition3(glm::vec3(0.0, 0.0, 0.0), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
 		}
 	}
+
+	// Only render the focus lost entity when we don't have focus and are not paused.
+	const auto& focusLostEnt = FindEntityByTag(registry, "Focus Lost Overlay");
+	const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
+	
+	const auto& focusLostOverlay = registry.get<Components::UIOverlay>(focusLostEnt);
+	const auto& hasFocus = registry.get<Components::Flag>(focusLostEnt);
+	const auto& isPaused = registry.get<Components::Flag>(pauseEnt);
+
+	auto& focus = registry.get<Components::UIRenderable>(focusLostEnt);
+	if (focusLostOverlay.IsEnabled() && !hasFocus.Get() && !isPaused.Get())
+	{
+		focus.Enable(!GameWindowHasFocus);
+	}
+	
 }
 void render(entt::registry& registry, double normalizedTime)
 {
@@ -1314,6 +1330,14 @@ void InitUI(entt::registry& registry)
 	registry.emplace<Components::UIText>(pauseOverlay, "Paused");
 	registry.emplace<Components::Tag>(pauseOverlay, "Pause Overlay");
 	registry.emplace<Components::Flag>(pauseOverlay, false);
+
+	const auto focusLostOverlay = registry.create();
+	registry.emplace<Components::UIPosition>(focusLostOverlay, ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImVec2(0.5f, 0.5f));
+	registry.emplace<Components::UIOverlay>(focusLostOverlay, "Focus Lost Overlay");
+	registry.emplace<Components::UIRenderable>(focusLostOverlay, false);
+	registry.emplace<Components::UIText>(focusLostOverlay, "OUT OF FOCUS");
+	registry.emplace<Components::Tag>(focusLostOverlay, "Focus Lost Overlay");
+	registry.emplace<Components::Flag>(focusLostOverlay, false);
 }
 
 void InitGame(entt::registry& registry)
@@ -1486,6 +1510,8 @@ int main()
 		return -1;
 	}
 
+	glfwSetWindowFocusCallback(window, glfwWindowFocusCallback);
+
 	glfwMakeContextCurrent(window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -1587,6 +1613,14 @@ int main()
 void glfwErrorCallback(int error, const char* description)
 {
 	std::cout << "Error " << error << ": " << description << endl;
+}
+
+void glfwWindowFocusCallback(GLFWwindow* window, int focused)
+{
+	if (focused == GLFW_TRUE)
+		GameWindowHasFocus = true;
+	else
+		GameWindowHasFocus = false;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

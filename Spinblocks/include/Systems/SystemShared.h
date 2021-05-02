@@ -23,4 +23,5 @@
 	const unsigned int cellWidth = 25;
 	const unsigned int cellHeight = 25;
 	const unsigned int minimumLinesMatchedToTriggerBoardRotation = 2;
+	inline bool GameWindowHasFocus = true;
 //}
