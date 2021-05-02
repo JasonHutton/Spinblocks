@@ -21,6 +21,9 @@
 #include <learnopengl/model.h>
 #include <learnopengl/camera.h>
 
+#include <fmod/fmod.hpp>
+#include <fmod/fmod_errors.h>
+
 #include <string>
 #include <iostream>
 #include <vector>
@@ -1537,6 +1540,26 @@ int main()
 	//glEnable(GL_DEPTH_TEST);
 
 	ImGUIInit(window);
+
+	// FMOD Begin
+	FMOD_RESULT result;
+	FMOD::System* system = NULL;
+
+	result = FMOD::System_Create(&system);      // Create the main system object.
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+		exit(-1);
+	}
+
+	result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+		exit(-1);
+	}
+	// FMOD end
+
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
