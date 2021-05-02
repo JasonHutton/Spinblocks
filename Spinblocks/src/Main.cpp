@@ -803,6 +803,30 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 				auto& renderable = registry.get<Components::UIRenderable>(pauseEnt);
 				renderable.Enable(paused.Get());
+
+				UpdateCensors(registry);
+
+				auto censorView = registry.view<Components::Censor, Components::Renderable>();
+				for (auto entity : censorView)
+				{
+					auto& censor = censorView.get<Components::Censor>(entity);
+					auto& renderable = censorView.get<Components::Renderable>(entity);
+
+					if (!censor.IsEnabled())
+						renderable.Enable(false);
+
+					if (paused.Get())
+					{
+						if (censor.IsEnabled())
+							renderable.Enable(true);
+						else
+							renderable.Enable(false);
+					}
+					else
+					{
+						renderable.Enable(false);
+					}
+				}
 				
 				break;
 			}
@@ -1347,6 +1371,8 @@ void InitGame(entt::registry& registry)
 
 	BuildGrid(registry, matrix);
 	BuildGrid(registry, bagArea);
+
+	FillPauseCensors(registry, matrix, bagArea);
 	
 	/*
 	// North

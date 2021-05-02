@@ -515,6 +515,52 @@ entt::entity GetActiveControllable(entt::registry& registry)
 	return entt::null;
 }
 
+void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordinate, const bool& startVisible, const bool& directional, const std::vector<moveDirection_t> directions)
+{
+	auto containerView = registry.view<Components::Container2>();
+	for (auto containerEnt : containerView)
+	{
+		auto& container2 = containerView.get<Components::Container2>(containerEnt);
+
+		if (container2.IsEnabled())
+		{
+			if (containerEnt != coordinate.GetParent())
+				continue;
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
+
+			if (cellEnt == entt::null)
+				continue;
+
+			const auto censor = registry.create();
+			registry.emplace<Components::Censor>(censor);
+			registry.emplace<Components::Coordinate>(censor, coordinate.GetParent(), coordinate.Get());
+			registry.emplace<Components::Position>(censor);
+			registry.emplace<Components::DerivePositionFromCoordinates>(censor);
+			registry.emplace<Components::Scale>(censor, container2.GetCellDimensions3());
+			registry.emplace<Components::Renderable>(censor, Components::renderLayer_t::RL_MARKER_OVER, Model("./data/block/grey.obj"), startVisible);
+			registry.emplace<Components::Orientation>(censor);
+			registry.emplace<Components::ReferenceEntity>(censor, coordinate.GetParent());
+			if (directional)
+			{
+				registry.emplace<Components::DirectionallyActive>(censor, directions);
+			}
+		}
+	}
+}
+
+void FillPauseCensors(entt::registry&  registry, entt::entity matrix, entt::entity bagArea)
+{
+	Components::Container2 container2 = registry.get<Components::Container2>(bagArea);
+	for (unsigned int i = 0; i < container2.GetGridDimensions().x; i++)
+	{
+		for (unsigned int k = 0; k < container2.GetGridDimensions().y; k++)
+		{
+			PlaceCensor(registry, Components::Coordinate(bagArea, glm::vec2(i, k)), false, false, std::vector<moveDirection_t>());
+		}
+	}
+}
+
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 {
 	Components::Container2 container2 = registry.get<Components::Container2>(parentEntity);
@@ -1312,6 +1358,8 @@ void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotatio
 
 void UpdateDirectionalWalls(entt::registry& registry)
 {
+	auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
+
 	auto wallView = registry.view<Components::Wall, Components::DirectionallyActive, Components::Obstructs, Components::Renderable>();
 	for (auto entity : wallView)
 	{
@@ -1319,8 +1367,6 @@ void UpdateDirectionalWalls(entt::registry& registry)
 		auto& dirActive = wallView.get<Components::DirectionallyActive>(entity);
 		auto& obstructs = wallView.get<Components::Obstructs>(entity);
 		auto& renderable = wallView.get<Components::Renderable>(entity);
-
-		auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
 
 		if (dirActive.IsEnabled())
 		{
@@ -1334,6 +1380,35 @@ void UpdateDirectionalWalls(entt::registry& registry)
 				obstructs.Enable(false);
 				renderable.Enable(false);
 			}
+		}
+	}
+}
+
+void UpdateCensors(entt::registry& registry)
+{
+	auto& cardinalDir = registry.get<Components::CardinalDirection>(FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA)));
+
+	auto censorView = registry.view<Components::Censor, Components::DirectionallyActive, Components::Renderable>();
+	for (auto entity : censorView)
+	{
+		auto& censor = censorView.get<Components::Censor>(entity);
+		auto& dirActive = censorView.get<Components::DirectionallyActive>(entity);
+		auto& renderable = censorView.get<Components::Renderable>(entity);
+
+		if (dirActive.IsEnabled())
+		{
+			if (dirActive.IsActive(cardinalDir.GetCurrentOrientation()))
+			{
+				censor.Enable(true);
+			}
+			else
+			{
+				censor.Enable(false);
+			}
+		}
+		else
+		{
+			censor.Enable(true);
 		}
 	}
 }

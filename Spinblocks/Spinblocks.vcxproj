@@ -210,6 +210,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Camera.h" />
     <ClInclude Include="include\Components\CardinalDirection.h" />
     <ClInclude Include="include\Components\Cell.h" />
+    <ClInclude Include="include\Components\Censor.h" />
     <ClInclude Include="include\Components\DeriveOrientationFromParent.h" />
     <ClInclude Include="include\Components\DirectionallyActive.h" />
     <ClInclude Include="include\Components\InheritScalingFromParent.h" />

@@ -25,7 +25,7 @@ namespace Components
 		renderLayer_t m_renderLayer;
 
 	public:
-		Renderable(renderLayer_t renderLayer, Model model) : m_model(model), m_renderLayer(renderLayer)
+		Renderable(renderLayer_t renderLayer, Model model, bool enabled = true) : m_model(model), m_renderLayer(renderLayer), Component(enabled)
 		{
 		}
 

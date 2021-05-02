@@ -48,6 +48,9 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 int CountTetrominos(entt::registry& registry);
 void RotatePlayArea(entt::registry& registry, const rotationDirection_t& rotationDirection);
 void UpdateDirectionalWalls(entt::registry& registry);
+void UpdateCensors(entt::registry& registry);
 rotationDirection_t ChooseBoardRotationDirection(entt::registry& registry, const std::vector<BlockLockData>& blockLockData, const moveDirection_t& playAreaDirection, const int& linesMatched);
 glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt);
 double CalculateFallSpeed(int level);
+void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions);
+void FillPauseCensors(entt::registry& registry, entt::entity matrix, entt::entity bagArea);

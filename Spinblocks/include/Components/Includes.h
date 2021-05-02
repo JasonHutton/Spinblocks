@@ -61,3 +61,5 @@
 #include "Components/UI/UIText.h"
 #include "Components/UI/UITextLevel.h"
 #include "Components/UI/UITextScore.h"
+
+#include "Components/Censor.h"

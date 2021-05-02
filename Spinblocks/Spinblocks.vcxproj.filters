@@ -394,5 +394,8 @@
     <ClInclude Include="include\Components\UI\UITextScore.h">
       <Filter>Header Files\Components\UI</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\Censor.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
