@@ -551,6 +551,18 @@ void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordin
 
 void FillPauseCensors(entt::registry&  registry, entt::entity matrix, entt::entity bagArea)
 {
+	Components::Container2 container1 = registry.get<Components::Container2>(matrix);
+	for (unsigned int i = BufferAreaDepth; i < container1.GetGridDimensions().x - BufferAreaDepth; i++)
+	{
+		for (unsigned int k = BufferAreaDepth; k < container1.GetGridDimensions().y - BufferAreaDepth; k++)
+		{
+			PlaceCensor(registry, Components::Coordinate(matrix, glm::vec2(i, k)), false, false, std::vector<moveDirection_t>());
+		}
+	}
+
+	// Directional censors for the top buffer area of the matrix here. FIXME TODO
+	// This is basically just directional walls' positioning loops(different, but same idea) using censors instead.
+
 	Components::Container2 container2 = registry.get<Components::Container2>(bagArea);
 	for (unsigned int i = 0; i < container2.GetGridDimensions().x; i++)
 	{
