@@ -5,7 +5,9 @@
 #include <vector>
 #include "Components/Block.h"
 
+#include "Globals.h"
+
 namespace Systems
 {
-	void StateChangeSystem(entt::registry& registry, double currentFrameTime, std::vector<BlockLockData>& blockLockData);
+	statesChanged_t StateChangeSystem(entt::registry& registry, double currentFrameTime, std::vector<BlockLockData>& blockLockData);
 }

@@ -4,5 +4,5 @@
 
 namespace Systems
 {
-	void MovementSystem(entt::registry& registry, double currentFrameTime);
+	bool MovementSystem(entt::registry& registry, double currentFrameTime);
 }

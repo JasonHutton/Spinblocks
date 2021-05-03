@@ -2,10 +2,14 @@
 #include "Systems/SystemShared.h"
 #include "Utility.h"
 
+#
+
 namespace Systems
 {
-	void StateChangeSystem(entt::registry& registry, double currentFrameTime, std::vector<BlockLockData>& blockLockData)
+	statesChanged_t StateChangeSystem(entt::registry& registry, double currentFrameTime, std::vector<BlockLockData>& blockLockData)
 	{
+		statesChanged_t statesChanged;
+
 		/*auto tetrominoView = registry.view<Components::Moveable, Components::Coordinate>(entt::exclude<Components::Obstructable>);
 		for (auto entity : tetrominoView)
 		{
@@ -39,6 +43,7 @@ namespace Systems
 						moveable.SetMovementState(Components::movementStates_t::LOCKED);
 						registry.remove_if_exists<Components::Controllable>(entity);
 						lastLockdownTime = currentFrameTime;
+						statesChanged.pieceLocked = true;
 					}
 
 					if (IsEntityTetromino(registry, entity))
@@ -49,6 +54,7 @@ namespace Systems
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
+							statesChanged.pieceLocked = true;
 						}
 					}
 					
@@ -67,6 +73,8 @@ namespace Systems
 						tetromino->SetAllBlocksObstructed(registry, false);
 						//tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::FALL);
 					}
+
+					statesChanged.pieceMoved = true;
 					
 					
 					break;
@@ -86,6 +94,7 @@ namespace Systems
 							{
 								tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 								lastLockdownTime = currentFrameTime;
+								statesChanged.pieceLocked = true;
 							}
 						}
 					}
@@ -94,6 +103,7 @@ namespace Systems
 						lastFallUpdate = currentFrameTime; // Reset the fall time, to avoid a change of state here resulting in an immediate fall, which manifests as a double-move, which feels bad.
 						//block.SetIsFallingObstructed(false);
 						moveable.SetMovementState(Components::movementStates_t::FALL); // Reset to falling state for the next tick.
+						statesChanged.pieceMoved = true;
 					}
 					break;
 				case Components::movementStates_t::HARD_DROP:
@@ -110,6 +120,8 @@ namespace Systems
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
+							statesChanged.pieceMoved = true;
+							statesChanged.peiceHardDropped = true;
 						}
 					}
 					break;
@@ -137,5 +149,7 @@ namespace Systems
 				registry.destroy(entity);
 			}
 		}
+
+		return statesChanged;
 	}
 }

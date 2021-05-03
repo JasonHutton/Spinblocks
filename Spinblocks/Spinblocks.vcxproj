@@ -197,6 +197,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClCompile Include="src\Systems\GenerationSystem.cpp" />
     <ClCompile Include="src\Systems\MovementSystem.cpp" />
     <ClCompile Include="src\Systems\PatternSystem.cpp" />
+    <ClCompile Include="src\Systems\SoundSystem.cpp" />
     <ClCompile Include="src\Systems\StateChangeSystem.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
@@ -289,6 +290,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Systems\FallingSystem.h" />
     <ClInclude Include="include\Systems\MovementSystem.h" />
     <ClInclude Include="include\Systems\PatternSystem.h" />
+    <ClInclude Include="include\Systems\SoundSystem.h" />
     <ClInclude Include="include\Systems\StateChangeSystem.h" />
     <ClInclude Include="include\Systems\SystemShared.h" />
     <ClInclude Include="include\Utility.h" />

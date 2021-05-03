@@ -4,8 +4,10 @@
 
 namespace Systems
 {
-	void MovementSystem(entt::registry& registry, double currentFrameTime)
+	bool MovementSystem(entt::registry& registry, double currentFrameTime)
 	{
+		bool aPieceMoved = false;
+
 		std::set<entt::entity> leaderEntities;
 		auto followerView = registry.view<Components::Moveable, Components::Coordinate, Components::Follower>();
 		for (auto entity : followerView)
@@ -144,6 +146,12 @@ namespace Systems
 						// Need to detect if a move is allowed before permitting it.
 						coordinate = moveable.GetDesiredCoordinate();
 						moveable.SetCurrentCoordinate(coordinate);
+
+						if (moveable.GetMovementState() == Components::movementStates_t::DEBUG_MOVE_UP ||
+							moveable.GetMovementState() == Components::movementStates_t::SOFT_DROP)
+						{
+							aPieceMoved = true;
+						}
 					}
 					break;
 				}
@@ -164,6 +172,8 @@ namespace Systems
 							}
 							obstructable.SetIsObstructed(true);
 							obstructable.SetLastObstructedTime(currentFrameTime);
+
+							aPieceMoved = true;
 						}
 
 						if (IsEntityTetromino(registry, entity))
@@ -176,6 +186,8 @@ namespace Systems
 							}
 							tetromino->SetAllBlocksObstructed(registry, true);
 							tetromino->SetAllBlocksLastObstructedTime(registry, currentFrameTime);
+
+							aPieceMoved = true;
 						}
 					}
 
@@ -186,5 +198,7 @@ namespace Systems
 				}
 			}
 		}
+
+		return aPieceMoved;
 	}
 }

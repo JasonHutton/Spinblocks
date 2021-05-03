@@ -91,3 +91,10 @@ struct audioData_t
 	audioChannel_t audioChannel = audioChannel_t::SOUND;
 	bool looping = false;
 };
+
+struct statesChanged_t
+{
+	bool pieceMoved = false;
+	bool pieceLocked = false;
+	bool peiceHardDropped = false;
+};

@@ -41,6 +41,7 @@
 #include "Systems/BoardRotateSystem.h"
 #include "Systems/DetachSystem.h"
 #include "Systems/CompletionSystem.h"
+#include "Systems/SoundSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
@@ -884,11 +885,13 @@ void update(entt::registry& registry, double currentFrameTime)
 	}
 
 	auto blockLockData = std::vector<BlockLockData>();
+	bool aPieceMoved = false;
+	statesChanged_t statesChanged;
 
 	Systems::GenerationSystem(registry, currentFrameTime);
 	Systems::FallingSystem(registry, currentFrameTime);
-	Systems::MovementSystem(registry, currentFrameTime);
-	Systems::StateChangeSystem(registry, currentFrameTime, blockLockData);
+	aPieceMoved = Systems::MovementSystem(registry, currentFrameTime);
+	statesChanged = Systems::StateChangeSystem(registry, currentFrameTime, blockLockData);
 
 
 	const auto& playAreaEnt = FindEntityByTag(registry, GetTagFromContainerType(containerType_t::PLAY_AREA));
@@ -922,7 +925,7 @@ void update(entt::registry& registry, double currentFrameTime)
 		// Now detach, after the falling realignment.
 		Systems::DetachSystem(registry, currentFrameTime);
 	}
-
+	Systems::SoundSystem(registry, aPieceMoved, statesChanged, linesMatched);
 	Systems::CompletionSystem(registry, currentFrameTime, linesMatched);
 
 
@@ -1530,14 +1533,23 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	//stbi_set_flip_vertically_on_load(true);
 
-	
+	// Set default audio volume levels
 	audioManager.SetChannelVolume(audioChannel_t::MASTER, 0.6f);
 	audioManager.SetChannelVolume(audioChannel_t::SOUND, 0.6f);
 	audioManager.SetChannelVolume(audioChannel_t::MUSIC, 0.4f);
-	audioData_t audioData = audioManager.GetSound("./data/audio/music/Heavy Riff 1 (looped).wav", audioChannel_t::MUSIC, true, true);
-	//audioData_t audioData = audioManager.GetSound("./data/audio/music/EDM Loop #2.wav", audioChannel_t::MUSIC, true, true);
-	
 
+	// Default Music, load it first
+	audioData_t audioDataDefaultMusic = audioManager.GetSound("./data/audio/music/Heavy Riff 1 (looped).wav", audioChannel_t::MUSIC, true, true);
+	
+	// Sound effects, load them next.
+	audioData_t audioDataLockdown = audioManager.GetSound("./data/audio/sounds/Lever 1.wav", audioChannel_t::SOUND, false, true);
+	audioData_t audioDataLineClear = audioManager.GetSound("./data/audio/sounds/Fading Block 2.mp3", audioChannel_t::SOUND, false, true);
+	audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
+	audioData_t audioDataPieceRotate = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 2.mp3", audioChannel_t::SOUND, false, true);
+
+	// Other music, load them last
+	audioData_t audioData = audioManager.GetSound("./data/audio/music/EDM Loop #2.wav", audioChannel_t::MUSIC, true, true);
+	
 	GameState::SetState(gameState_t::INIT);
 
 	entt::registry registry;
@@ -1552,12 +1564,12 @@ int main()
 	bool starving;
 	bool diskbusy;
 
+	// Wait until the default music has loaded, then play it. Other audio can finish loading later. (OTher loading should be delayed later on, too. FIXME TODO)
 	while (openState != FMOD_OPENSTATE_READY)
 	{
-		audioData.sound->getOpenState(&openState, &percentBuffered, &starving, &diskbusy);
+		audioDataDefaultMusic.sound->getOpenState(&openState, &percentBuffered, &starving, &diskbusy);
 	}
-	audioManager.PlaySound(audioData);
-
+	audioManager.PlaySound(audioDataDefaultMusic);
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");

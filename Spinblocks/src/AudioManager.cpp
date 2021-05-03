@@ -75,9 +75,6 @@ void AudioManager::PlaySound(const audioData_t& audioData) const
 		break;
 	}
 
-	//m_masterChannelGroup->setVolume(0.2f);
-	//m_musicChannelGroup->setVolume(0.2f);
-	m_soundChannelGroup->setVolume(0.2f);
 	result = m_system->playSound(audioData.sound, channel, false, nullptr);
 	if (result != FMOD_OK)
 	{
