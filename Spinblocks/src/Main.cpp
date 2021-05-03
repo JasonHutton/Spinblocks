@@ -21,9 +21,6 @@
 #include <learnopengl/model.h>
 #include <learnopengl/camera.h>
 
-#include <fmod/fmod.hpp>
-#include <fmod/fmod_errors.h>
-
 #include <string>
 #include <iostream>
 #include <vector>
@@ -47,6 +44,7 @@
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
+#include "AudioManager.h"
 
 #include "GameState.h"
 
@@ -1532,6 +1530,14 @@ int main()
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
 	//stbi_set_flip_vertically_on_load(true);
 
+	
+	audioManager.SetChannelVolume(audioChannel_t::MASTER, 0.6f);
+	audioManager.SetChannelVolume(audioChannel_t::SOUND, 0.6f);
+	audioManager.SetChannelVolume(audioChannel_t::MUSIC, 0.4f);
+	audioData_t audioData = audioManager.GetSound("./data/audio/music/Heavy Riff 1 (looped).wav", audioChannel_t::MUSIC, true, true);
+	//audioData_t audioData = audioManager.GetSound("./data/audio/music/EDM Loop #2.wav", audioChannel_t::MUSIC, true, true);
+	
+
 	GameState::SetState(gameState_t::INIT);
 
 	entt::registry registry;
@@ -1541,24 +1547,16 @@ int main()
 
 	ImGUIInit(window);
 
-	// FMOD Begin
-	FMOD_RESULT result;
-	FMOD::System* system = NULL;
+	FMOD_OPENSTATE openState = FMOD_OPENSTATE_LOADING;
+	unsigned int percentBuffered;
+	bool starving;
+	bool diskbusy;
 
-	result = FMOD::System_Create(&system);      // Create the main system object.
-	if (result != FMOD_OK)
+	while (openState != FMOD_OPENSTATE_READY)
 	{
-		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		exit(-1);
+		audioData.sound->getOpenState(&openState, &percentBuffered, &starving, &diskbusy);
 	}
-
-	result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
-	if (result != FMOD_OK)
-	{
-		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-		exit(-1);
-	}
-	// FMOD end
+	audioManager.PlaySound(audioData);
 
 
 	// Do one-time OpenGL things here.
@@ -1606,6 +1604,8 @@ int main()
 					update(registry, currentFrameTime);
 					postupdate(registry, currentFrameTime);
 				}
+
+				audioManager.Update();
 			}
 
 			GameTime::accumulator -= GameTime::fixedDeltaTime;

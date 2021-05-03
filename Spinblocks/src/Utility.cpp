@@ -18,6 +18,22 @@ const std::string GetTagFromContainerType(const containerType_t& t)
 	}
 }
 
+// Ensure audioChannel_t and this function are in sync
+const std::string GetNameOfAudioChannel(const audioChannel_t& t)
+{
+	switch (t)
+	{
+	case audioChannel_t::SOUND:
+		return "SOUND";
+	case audioChannel_t::MUSIC:
+		return "MUSIC";
+	case audioChannel_t::MASTER:
+		return "MASTER";
+	default:
+		throw std::runtime_error("Unable to convert audio channel to name!");
+	}
+}
+
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName)
 {
 	entt::entity foundEntity = entt::null;

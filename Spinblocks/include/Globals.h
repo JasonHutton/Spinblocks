@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <fmod/fmod.hpp>
+
 inline struct displayData_t
 {
 	int x{ 800 };
@@ -72,4 +74,20 @@ enum class spawnType_t
 	WIDTH3, // T, L, J, S, Z
 	ITETROMINO, // I
 	OTETROMINO // O
+};
+
+// Ensure GetNameOfAudioChannel() and this enum are in sync
+enum class audioChannel_t
+{
+	SOUND,
+	MUSIC,
+	MASTER
+};
+
+struct audioData_t
+{
+	std::string path{ "" };
+	FMOD::Sound* sound = NULL;
+	audioChannel_t audioChannel = audioChannel_t::SOUND;
+	bool looping = false;
 };

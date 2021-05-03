@@ -171,6 +171,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AudioManager.cpp" />
     <ClCompile Include="src\CachedTagLookup.cpp" />
     <ClCompile Include="src\Components\Coordinate.cpp" />
     <ClCompile Include="src\GameState.cpp" />
@@ -204,6 +205,7 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <None Include="dll\zlib.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AudioManager.h" />
     <ClInclude Include="include\CachedTagLookup.h" />
     <ClInclude Include="include\Components\Bag.h" />
     <ClInclude Include="include\Components\Block.h" />
