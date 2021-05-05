@@ -61,6 +61,9 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+#include <chrono> // std::chrono::microseconds
+#include <thread> // std::this_thread::sleep_for
+
 template<class T>
 T* Coalesce(T* value, T* defaultValue)
 {
@@ -1066,6 +1069,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 			{
 				deriveCoordinatesFrom = coordinates.GetParent();
 			}
+			// The line below likes to trigger crashes. Probably something above shouldn't be a reference.
 			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0 // Also 0 vector with blocks.
 			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
 
@@ -1534,15 +1538,15 @@ int main()
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Set default audio volume levels
-	audioManager.SetChannelVolume(audioChannel_t::MASTER, 0.6f);
+	audioManager.SetChannelVolume(audioChannel_t::MASTER, 0.4f);
 	audioManager.SetChannelVolume(audioChannel_t::SOUND, 0.6f);
-	audioManager.SetChannelVolume(audioChannel_t::MUSIC, 0.4f);
+	audioManager.SetChannelVolume(audioChannel_t::MUSIC, 0.05f);
 
 	// Default Music, load it first
 	audioData_t audioDataDefaultMusic = audioManager.GetSound("./data/audio/music/Heavy Riff 1 (looped).wav", audioChannel_t::MUSIC, true, true);
 	
 	// Sound effects, load them next.
-	audioData_t audioDataLockdown = audioManager.GetSound("./data/audio/sounds/Lever 1.wav", audioChannel_t::SOUND, false, true);
+	audioData_t audioDataLockdown = audioManager.GetSound("./data/audio/sounds/Lever 1.mp3", audioChannel_t::SOUND, false, true);
 	audioData_t audioDataLineClear = audioManager.GetSound("./data/audio/sounds/Fading Block 2.mp3", audioChannel_t::SOUND, false, true);
 	audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
 	audioData_t audioDataPieceRotate = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 2.mp3", audioChannel_t::SOUND, false, true);
@@ -1559,16 +1563,13 @@ int main()
 
 	ImGUIInit(window);
 
-	FMOD_OPENSTATE openState = FMOD_OPENSTATE_LOADING;
-	unsigned int percentBuffered;
-	bool starving;
-	bool diskbusy;
-
 	// Wait until the default music has loaded, then play it. Other audio can finish loading later. (OTher loading should be delayed later on, too. FIXME TODO)
-	while (openState != FMOD_OPENSTATE_READY)
+	while (!audioManager.IsSoundLoaded("./data/audio/music/Heavy Riff 1 (looped).wav"))
 	{
-		audioDataDefaultMusic.sound->getOpenState(&openState, &percentBuffered, &starving, &diskbusy);
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		// Do nothing, wait.
 	}
+
 	audioManager.PlaySound(audioDataDefaultMusic);
 
 	// Do one-time OpenGL things here.
@@ -1591,6 +1592,12 @@ int main()
 			InitGame(registry);
 
 			GameState::SetState(gameState_t::MENU); // Placeholder.
+			while (!audioManager.IsSoundLoaded("./data/audio/sounds/Lever 1.mp3"))
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+				// Do nothing, wait.
+			}
+
 			GameState::SetState(gameState_t::PLAY);
 		}
 

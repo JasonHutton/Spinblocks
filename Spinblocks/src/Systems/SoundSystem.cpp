@@ -10,16 +10,15 @@ namespace Systems
 {
 	void SoundSystem(entt::registry& registry, const bool& aPieceMoved, const statesChanged_t& statesChanged, const int& linesMatched)
 	{
-		if (false)//aPieceMoved)
+		if (false)// aPieceMoved)
 		{
 			audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
 			audioManager.PlaySound(audioDataPieceMove);
 		}
 
-		
-		if(false)//statesChanged.pieceLocked)
+		if(statesChanged.pieceLocked || statesChanged.peiceHardDropped)
 		{
-			audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
+			audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Lever 1.mp3", audioChannel_t::SOUND, false, true);
 			audioManager.PlaySound(audioDataPieceMove);
 		}
 
