@@ -352,6 +352,9 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 	{ // Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
 		tetromino->SetDesiredOrientation(desiredOrientation);
 		tetromino->SetCurrentOrientation(tetromino->GetDesiredOrientation());
+
+		audioData_t audioRotate = audioManager.GetSound(audioAsset_t::SOUND_ROTATE, audioChannel_t::SOUND, false, true);
+		audioManager.PlaySound(audioRotate);
 	}
 }
 
@@ -1547,10 +1550,11 @@ int main()
 	audioManager.AddPath(audioAsset_t::MUSIC_GAMEPLAY1, "./data/audio/music/Heavy Riff 1 (looped).wav");
 	audioManager.AddPath(audioAsset_t::MUSIC_GAMEPLAY2, "./data/audio/music/EDM Loop #2.wav");
 	audioManager.AddPath(audioAsset_t::SOUND_MOVE, "");
-	audioManager.AddPath(audioAsset_t::SOUND_ROTATE, "");
+	audioManager.AddPath(audioAsset_t::SOUND_ROTATE, "./data/audio/sounds/Metal Slide 1.mp3");
 	audioManager.AddPath(audioAsset_t::SOUND_LOCK, "./data/audio/sounds/Lever 1.mp3");
 	audioManager.AddPath(audioAsset_t::SOUND_HARD_DROP, "./data/audio/sounds/Lever 1.mp3");
-	audioManager.AddPath(audioAsset_t::SOUND_LINE_CLEAR, "");
+	audioManager.AddPath(audioAsset_t::SOUND_LINE_CLEAR, "./data/audio/sounds/Fading Block 2.mp3");
+	audioManager.AddPath(audioAsset_t::SOUND_GAME_OVER, "./data/audio/sounds/Wrong 4.mp3");
 	
 	
 	// Default Music, load it first
@@ -1562,6 +1566,7 @@ int main()
 	audioManager.GetSound(audioAsset_t::SOUND_LOCK, audioChannel_t::SOUND, false, true);
 	audioManager.GetSound(audioAsset_t::SOUND_HARD_DROP, audioChannel_t::SOUND, false, true);
 	audioManager.GetSound(audioAsset_t::SOUND_LINE_CLEAR, audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_GAME_OVER, audioChannel_t::SOUND, false, true);
 
 	// Other music, load them last
 	audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY1, audioChannel_t::MUSIC, true, true);
@@ -1648,6 +1653,9 @@ int main()
 
 		if (GameState::GetState() == gameState_t::GAME_OVER)
 		{
+			audioData_t audioGameOver = audioManager.GetSound(audioAsset_t::SOUND_GAME_OVER, audioChannel_t::SOUND, false, true);
+			audioManager.PlaySound(audioGameOver);
+
 			TeardownGame(registry);
 			GameState::SetState(gameState_t::INIT);
 		}

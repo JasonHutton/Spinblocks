@@ -49,6 +49,8 @@ const std::string GetNameOfAudioAsset(const audioAsset_t& t)
 		return "SOUND_HARD_DROP";
 	case audioAsset_t::SOUND_LINE_CLEAR:
 		return "SOUND_LINE_CLEAR";
+	case audioAsset_t::SOUND_GAME_OVER:
+		return "SOUND_GAME_OVER";
 	case audioAsset_t::MUSIC_MENU:
 		return "MUSIC_MENU";
 	case audioAsset_t::MUSIC_GAMEPLAY1:
