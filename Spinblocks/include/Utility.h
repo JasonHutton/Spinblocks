@@ -17,6 +17,8 @@
 const std::string GetTagFromContainerType(const containerType_t& t);
 // Ensure audioChannel_t and this function are in sync
 const std::string GetNameOfAudioChannel(const audioChannel_t& t);
+// Ensure audioAsset_t and this function are in sync
+const std::string GetNameOfAudioAsset(const audioAsset_t& t);
 
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName);
 entt::entity FindEntityByTag(entt::registry& registry, const std::string& tagName);

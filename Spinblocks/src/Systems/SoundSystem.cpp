@@ -12,19 +12,19 @@ namespace Systems
 	{
 		if (false)// aPieceMoved)
 		{
-			audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
+			audioData_t audioDataPieceMove = audioManager.GetSound(audioAsset_t::SOUND_MOVE, audioChannel_t::SOUND, false, true);
 			audioManager.PlaySound(audioDataPieceMove);
 		}
 
 		if(statesChanged.pieceLocked || statesChanged.peiceHardDropped)
 		{
-			audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Lever 1.mp3", audioChannel_t::SOUND, false, true);
+			audioData_t audioDataPieceMove = audioManager.GetSound(audioAsset_t::SOUND_LOCK, audioChannel_t::SOUND, false, true);
 			audioManager.PlaySound(audioDataPieceMove);
 		}
 
 		if (linesMatched > 0)
 		{
-			audioData_t audioDataLineClear = audioManager.GetSound("./data/audio/sounds/Fading Block 2.mp3", audioChannel_t::SOUND, false, true);
+			audioData_t audioDataLineClear = audioManager.GetSound(audioAsset_t::SOUND_LINE_CLEAR, audioChannel_t::SOUND, false, true);
 			audioManager.PlaySound(audioDataLineClear);
 		}
 	}

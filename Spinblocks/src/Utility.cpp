@@ -34,6 +34,32 @@ const std::string GetNameOfAudioChannel(const audioChannel_t& t)
 	}
 }
 
+// Ensure audioAsset_t and this function are in sync
+const std::string GetNameOfAudioAsset(const audioAsset_t& t)
+{
+	switch (t)
+	{
+	case audioAsset_t::SOUND_MOVE:
+		return "SOUND_MOVE";
+	case audioAsset_t::SOUND_ROTATE:
+		return "SOUND_ROTATE";
+	case audioAsset_t::SOUND_LOCK:
+		return "SOUND_LOCK";
+	case audioAsset_t::SOUND_HARD_DROP:
+		return "SOUND_HARD_DROP";
+	case audioAsset_t::SOUND_LINE_CLEAR:
+		return "SOUND_LINE_CLEAR";
+	case audioAsset_t::MUSIC_MENU:
+		return "MUSIC_MENU";
+	case audioAsset_t::MUSIC_GAMEPLAY1:
+		return "MUSIC_GAMEPLAY1";
+	case audioAsset_t::MUSIC_GAMEPLAY2:
+		return "MUSIC_GAMEPLAY2";
+	default:
+		throw std::runtime_error("Unable to convert audio asset to name!");
+	}
+}
+
 entt::entity FindContainerEntityByTag(entt::registry& registry, const std::string& tagName)
 {
 	entt::entity foundEntity = entt::null;

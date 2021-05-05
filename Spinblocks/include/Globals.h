@@ -84,8 +84,22 @@ enum class audioChannel_t
 	MASTER
 };
 
+// Ensure GetNameOfAudioAsset() and this enum are in sync
+enum class audioAsset_t
+{
+	SOUND_MOVE,
+	SOUND_ROTATE,
+	SOUND_LOCK,
+	SOUND_HARD_DROP,
+	SOUND_LINE_CLEAR,
+	MUSIC_MENU,
+	MUSIC_GAMEPLAY1,
+	MUSIC_GAMEPLAY2
+};
+
 struct audioData_t
 {
+	audioAsset_t asset;
 	std::string path{ "" };
 	FMOD::Sound* sound = NULL;
 	audioChannel_t audioChannel = audioChannel_t::SOUND;

@@ -23,17 +23,42 @@ void AudioManager::Init()
 	m_system->createChannelGroup(GetNameOfAudioChannel(audioChannel_t::MUSIC).c_str(), &m_musicChannelGroup);
 }
 
-audioData_t AudioManager::GetSound(const std::string& path, const audioChannel_t& audioChannel, const bool& looping, const bool& nonblocking)
+void AudioManager::AddPath(const audioAsset_t& key, const std::string& path)
+{
+	m_soundPaths.emplace(key, path);
+}
+
+bool AudioManager::AreAllAssetsLoaded() const
+{
+	for(auto asset : m_soundPaths)
+	{ 
+		if (asset.second.empty())
+			continue; // Ignore if it's not been setup.
+
+		if (!IsSoundLoaded(asset.first))
+			return false; // No. Abort immediately.
+	}
+
+	return true;
+}
+
+const std::string& AudioManager::GetSoundPath(const audioAsset_t& key) const
+{
+	return m_soundPaths.at(key);
+}
+
+audioData_t AudioManager::GetSound(const audioAsset_t& asset, const audioChannel_t& audioChannel, const bool& looping, const bool& nonblocking)
 {
 	audioData_t soundData;
 
 	try
 	{
-		soundData = m_lookupTable.at(path);
+		soundData = m_lookupTable.at(asset);
 	}
 	catch (std::out_of_range ex)
 	{
-		soundData.path = path;
+		soundData.asset = asset;
+		soundData.path = GetSoundPath(asset);
 		soundData.audioChannel = audioChannel;
 		soundData.looping = looping;
 
@@ -52,7 +77,7 @@ audioData_t AudioManager::GetSound(const std::string& path, const audioChannel_t
 		{
 			throw std::runtime_error("FMOD error! Unable to create sound!");
 		}
-		m_lookupTable.emplace(path, soundData);
+		m_lookupTable.emplace(asset, soundData);
 	}
 
 	return soundData;
@@ -60,6 +85,9 @@ audioData_t AudioManager::GetSound(const std::string& path, const audioChannel_t
 
 void AudioManager::PlaySound(const audioData_t& audioData) const
 {
+	if (audioData.path.empty())
+		return;
+
 	FMOD_RESULT result;
 	FMOD::ChannelGroup* channel = NULL;
 	switch (audioData.audioChannel)
@@ -123,13 +151,13 @@ float AudioManager::GetChannelVolume(const audioChannel_t& audioChannel) const
 	return volume;
 }
 
-bool AudioManager::IsSoundLoaded(const std::string& path) const
+bool AudioManager::IsSoundLoaded(const audioAsset_t& asset) const
 {
 	audioData_t soundData;
 
 	try
 	{
-		soundData = m_lookupTable.at(path);
+		soundData = m_lookupTable.at(asset);
 	}
 	catch (std::out_of_range ex)
 	{

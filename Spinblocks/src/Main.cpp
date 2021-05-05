@@ -1542,17 +1542,30 @@ int main()
 	audioManager.SetChannelVolume(audioChannel_t::SOUND, 0.6f);
 	audioManager.SetChannelVolume(audioChannel_t::MUSIC, 0.05f);
 
+	// Key the paths so we can avoid typos and other silliness when working with them.
+	audioManager.AddPath(audioAsset_t::MUSIC_MENU, "./data/audio/music/Heavy Riff 1 (looped).wav");
+	audioManager.AddPath(audioAsset_t::MUSIC_GAMEPLAY1, "./data/audio/music/Heavy Riff 1 (looped).wav");
+	audioManager.AddPath(audioAsset_t::MUSIC_GAMEPLAY2, "./data/audio/music/EDM Loop #2.wav");
+	audioManager.AddPath(audioAsset_t::SOUND_MOVE, "");
+	audioManager.AddPath(audioAsset_t::SOUND_ROTATE, "");
+	audioManager.AddPath(audioAsset_t::SOUND_LOCK, "./data/audio/sounds/Lever 1.mp3");
+	audioManager.AddPath(audioAsset_t::SOUND_HARD_DROP, "./data/audio/sounds/Lever 1.mp3");
+	audioManager.AddPath(audioAsset_t::SOUND_LINE_CLEAR, "");
+	
+	
 	// Default Music, load it first
-	audioData_t audioDataDefaultMusic = audioManager.GetSound("./data/audio/music/Heavy Riff 1 (looped).wav", audioChannel_t::MUSIC, true, true);
+	audioData_t audioDataDefaultMusic = audioManager.GetSound(audioAsset_t::MUSIC_MENU, audioChannel_t::MUSIC, true, true);
 	
 	// Sound effects, load them next.
-	audioData_t audioDataLockdown = audioManager.GetSound("./data/audio/sounds/Lever 1.mp3", audioChannel_t::SOUND, false, true);
-	audioData_t audioDataLineClear = audioManager.GetSound("./data/audio/sounds/Fading Block 2.mp3", audioChannel_t::SOUND, false, true);
-	audioData_t audioDataPieceMove = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 1.mp3", audioChannel_t::SOUND, false, true);
-	audioData_t audioDataPieceRotate = audioManager.GetSound("./data/audio/sounds/Puntuation Sound 2.mp3", audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_MOVE, audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_ROTATE, audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_LOCK, audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_HARD_DROP, audioChannel_t::SOUND, false, true);
+	audioManager.GetSound(audioAsset_t::SOUND_LINE_CLEAR, audioChannel_t::SOUND, false, true);
 
 	// Other music, load them last
-	audioData_t audioData = audioManager.GetSound("./data/audio/music/EDM Loop #2.wav", audioChannel_t::MUSIC, true, true);
+	audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY1, audioChannel_t::MUSIC, true, true);
+	audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY2, audioChannel_t::MUSIC, true, true);
 	
 	GameState::SetState(gameState_t::INIT);
 
@@ -1563,13 +1576,12 @@ int main()
 
 	ImGUIInit(window);
 
-	// Wait until the default music has loaded, then play it. Other audio can finish loading later. (OTher loading should be delayed later on, too. FIXME TODO)
-	while (!audioManager.IsSoundLoaded("./data/audio/music/Heavy Riff 1 (looped).wav"))
+	// Wait until the default music has loaded, then play it. Other audio can finish loading later. (Other loading should be delayed later on, too. FIXME TODO)
+	while (!audioManager.IsSoundLoaded(audioAsset_t::MUSIC_MENU))
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		// Do nothing, wait.
 	}
-
 	audioManager.PlaySound(audioDataDefaultMusic);
 
 	// Do one-time OpenGL things here.
@@ -1592,7 +1604,7 @@ int main()
 			InitGame(registry);
 
 			GameState::SetState(gameState_t::MENU); // Placeholder.
-			while (!audioManager.IsSoundLoaded("./data/audio/sounds/Lever 1.mp3"))
+			while (!audioManager.AreAllAssetsLoaded())
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Do nothing, wait.
