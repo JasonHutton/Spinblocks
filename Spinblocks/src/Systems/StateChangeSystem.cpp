@@ -54,7 +54,7 @@ namespace Systems
 						{
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
-							statesChanged.pieceLocked = true;
+							statesChanged.pieceLocked = true; // This gets called once for a soft drop, seems like it should be okay?
 						}
 					}
 					
@@ -121,7 +121,7 @@ namespace Systems
 							tetromino->SetAllBlocksMovementState(registry, Components::movementStates_t::LOCKED, blockLockData);
 							lastLockdownTime = currentFrameTime;
 							statesChanged.pieceMoved = true;
-							statesChanged.peiceHardDropped = true;
+							statesChanged.peiceHardDropped = true; // This gets called once for a hard drop, seems like it should be okay?
 						}
 					}
 					break;
