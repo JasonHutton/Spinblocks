@@ -123,4 +123,31 @@ float AudioManager::GetChannelVolume(const audioChannel_t& audioChannel) const
 	return volume;
 }
 
+bool AudioManager::IsSoundLoaded(const std::string& path) const
+{
+	audioData_t soundData;
+
+	try
+	{
+		soundData = m_lookupTable.at(path);
+	}
+	catch (std::out_of_range ex)
+	{
+		return false;
+	}
+
+	FMOD_RESULT result;
+	FMOD_OPENSTATE openState;
+	unsigned int percentBuffered;
+	bool starving;
+	bool diskbusy;
+	
+	result = soundData.sound->getOpenState(&openState, &percentBuffered, &starving, &diskbusy);
+
+	if (result == FMOD_OK && (openState == FMOD_OPENSTATE_READY || openState == FMOD_OPENSTATE_PLAYING))
+		return true;
+
+	return false;
+}
+
 AudioManager audioManager;

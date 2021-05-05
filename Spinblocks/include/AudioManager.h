@@ -51,6 +51,7 @@ public:
 
 	void SetChannelVolume(const audioChannel_t& audioChannel, const float& volume);
 	float GetChannelVolume(const audioChannel_t& audioChannel) const;
+	bool IsSoundLoaded(const std::string& path) const;
 };
 
 extern AudioManager audioManager;
