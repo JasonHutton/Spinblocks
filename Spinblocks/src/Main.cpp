@@ -478,12 +478,27 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			switch (cc.GetControl("")) // Default context.
 			{
 			case KeyInput::usercmdButton_t::UB_FORCE_QUIT:
-				glfwSetWindowShouldClose(window, true);
+			{
+				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameHasBeenInitializedAtLeastOnce == true)
+				{
+					if (GameState::GetState() == gameState_t::PLAY)
+						GameState::SetState(gameState_t::MENU);
+					else if (GameState::GetState() == gameState_t::MENU)
+						GameState::SetState(gameState_t::PLAY);
+				}
+
 				break;
+			}
 #ifdef _DEBUG
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_1:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				if (isPaused.Get())
@@ -530,6 +545,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -569,6 +587,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_SPAWN_3:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				if (isPaused.Get())
@@ -632,6 +653,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -642,6 +666,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_ROTATE_PLAY_AREA_COUNTERCLOCKWISE:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				if (isPaused.Get())
@@ -656,6 +683,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -666,6 +696,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_DEBUG_PROJECT_DOWN:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				if (isPaused.Get())
@@ -705,6 +738,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				MovePiece(registry, movePiece_t::MOVE_LEFT);
 				break;
 			}
@@ -722,6 +758,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 						break;
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
+
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
 
 				MovePiece(registry, movePiece_t::MOVE_RIGHT);
 				break;
@@ -750,6 +789,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				}
 				keyState.second.lastKeyDownRepeatTime = currentFrameTime;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -773,6 +815,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 					}
 				}
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -782,6 +827,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_ROTATE_COUNTERCLOCKWISE:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				if (isPaused.Get())
@@ -795,6 +843,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 				if (keyState.second.prevKeyDown == true)
 					break;
 
+				if (GameState::GetState() != gameState_t::PLAY)
+					break;
+
 				if (isPaused.Get())
 					break;
 
@@ -804,6 +855,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 			case KeyInput::usercmdButton_t::UB_PAUSE:
 			{
 				if (keyState.second.prevKeyDown == true)
+					break;
+
+				if (GameState::GetState() != gameState_t::PLAY)
 					break;
 
 				auto& paused = registry.get<Components::Flag>(pauseEnt);
@@ -855,6 +909,9 @@ void processinput(GLFWwindow* window, entt::registry& registry, double currentFr
 
 void preupdate(entt::registry& registry, double currentFrameTime)
 {
+	if (GameState::GetState() != gameState_t::PLAY)
+		return;
+
 	auto cardinalDirectionView = registry.view<Components::CardinalDirection, Components::Orientation>();
 	for (auto entity : cardinalDirectionView)
 	{
@@ -873,6 +930,9 @@ void preupdate(entt::registry& registry, double currentFrameTime)
 
 void update(entt::registry& registry, double currentFrameTime)
 {
+	if (GameState::GetState() != gameState_t::PLAY)
+		return;
+
 	// Views get created when queried. It exposes internal data structures of the registry to itself.
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
@@ -950,7 +1010,8 @@ void update(entt::registry& registry, double currentFrameTime)
 }
 void postupdate(entt::registry& registry, double currentFrameTime)
 {
-
+	if (GameState::GetState() != gameState_t::PLAY)
+		return;
 }
 
 void ImGUIInit(GLFWwindow* window)
@@ -1085,7 +1146,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 	// Only render the focus lost entity when we don't have focus and are not paused.
 	const auto& focusLostEnt = FindEntityByTag(registry, "Focus Lost Overlay");
 	const auto& pauseEnt = FindEntityByTag(registry, "Pause Overlay");
-	
+
 	const auto& focusLostOverlay = registry.get<Components::UIOverlay>(focusLostEnt);
 	const auto& hasFocus = registry.get<Components::Flag>(focusLostEnt);
 	const auto& isPaused = registry.get<Components::Flag>(pauseEnt);
@@ -1095,7 +1156,6 @@ void prerender(entt::registry& registry, double normalizedTime)
 	{
 		focus.Enable(!GameWindowHasFocus);
 	}
-	
 }
 void render(entt::registry& registry, double normalizedTime)
 {
@@ -1136,6 +1196,9 @@ void render(entt::registry& registry, double normalizedTime)
 		}
 	}
 
+	if (GameState::GetState() != gameState_t::PLAY)
+		return;
+
 	auto renderView = registry.view<Components::Renderable, Components::Position, Components::Orientation, Components::Scale>();
 	for (int i = Components::renderLayer_t::RL_MIN+1; i < Components::renderLayer_t::RL_MAX; i++)
 	{
@@ -1166,44 +1229,47 @@ void render(entt::registry& registry, double normalizedTime)
 		}
 	}
 
-	ImGUIFrameInit();
-
-	auto UIOverlayView = registry.view<Components::UIRenderable, Components::UIPosition, Components::UIOverlay>();
-	for (auto entity : UIOverlayView)
+	if (GameState::GetState() != gameState_t::MENU)
 	{
-		auto& overlay = UIOverlayView.get<Components::UIOverlay>(entity);
-		auto& position = UIOverlayView.get<Components::UIPosition>(entity);
-		auto& renderable = UIOverlayView.get<Components::UIRenderable>(entity);
+		ImGUIFrameInit();
 
-		if (renderable.IsEnabled() && overlay.IsEnabled() && position.IsEnabled())
+		auto UIOverlayView = registry.view<Components::UIRenderable, Components::UIPosition, Components::UIOverlay>();
+		for (auto entity : UIOverlayView)
 		{
-			ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
+			auto& overlay = UIOverlayView.get<Components::UIOverlay>(entity);
+			auto& position = UIOverlayView.get<Components::UIPosition>(entity);
+			auto& renderable = UIOverlayView.get<Components::UIRenderable>(entity);
 
-			//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-			if (ImGui::Begin(overlay.GetWindowName().c_str(), NULL, overlay.GetWindowFlags()))
+			if (renderable.IsEnabled() && overlay.IsEnabled() && position.IsEnabled())
 			{
-				if (registry.all_of<Components::UITextScore>(entity))
+				ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
+
+				//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+				if (ImGui::Begin(overlay.GetWindowName().c_str(), NULL, overlay.GetWindowFlags()))
 				{
-					auto& score = registry.get<Components::UITextScore>(entity);
-					score.DisplayElement();
+					if (registry.all_of<Components::UITextScore>(entity))
+					{
+						auto& score = registry.get<Components::UITextScore>(entity);
+						score.DisplayElement();
+					}
+					if (registry.all_of<Components::UITextLevel>(entity))
+					{
+						auto& level = registry.get<Components::UITextLevel>(entity);
+						level.DisplayElement();
+					}
+					if (registry.all_of<Components::UIText>(entity))
+					{
+						auto& pause = registry.get<Components::UIText>(entity);
+						pause.DisplayElement();
+					}
 				}
-				if (registry.all_of<Components::UITextLevel>(entity))
-				{
-					auto& level = registry.get<Components::UITextLevel>(entity);
-					level.DisplayElement();
-				}
-				if (registry.all_of<Components::UIText>(entity))
-				{
-					auto& pause = registry.get<Components::UIText>(entity);
-					pause.DisplayElement();
-				}
+
+				ImGui::End();
 			}
-
-			ImGui::End();
 		}
-	}
 
-	ImGUIFrameEnd();
+		ImGUIFrameEnd();
+	}
 }
 void postrender(entt::registry& registry, double normalizedTime)
 {
@@ -1486,6 +1552,8 @@ void InitGame(entt::registry& registry)
 	nodeOrder.AddNode(PlaceBagMarker(registry, GetTagFromContainerType(containerType_t::BAG_AREA), Components::Coordinate(bagArea, glm::uvec2(1, 13))));
 
 	LinkNodes(registry, nodeOrder, bagArea, matrix);
+
+	GameHasBeenInitializedAtLeastOnce = true;
 }
 
 void TeardownGame(entt::registry& registry)
@@ -1603,25 +1671,47 @@ int main()
 		GameTime::lastFrameTime = currentFrameTime;
 		GameTime::accumulator += deltaTime;
 
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
+
 		if (GameState::GetState() == gameState_t::INIT)
 		{
 			InitUI(registry);
-			InitGame(registry);
+			//InitGame(registry);
 
-			GameState::SetState(gameState_t::MENU); // Placeholder.
 			while (!audioManager.AreAllAssetsLoaded())
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Do nothing, wait.
 			}
-
-			GameState::SetState(gameState_t::PLAY);
+			GameState::SetState(gameState_t::MENU);
 		}
+		else if (GameState::GetState() == gameState_t::MENU)
+		{
+			ImGUIFrameInit();
 
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT);
+			ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+			if (ImGui::Button("New Game"))
+			{
+				InitGame(registry);
 
-		if (GameState::GetState() == gameState_t::PLAY)
+				while (!audioManager.AreAllAssetsLoaded())
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(50));
+					// Do nothing, wait.
+				}
+				GameState::SetState(gameState_t::PLAY);
+			}
+
+			if (ImGui::Button("Quit Game"))
+			{
+				glfwSetWindowShouldClose(window, true);
+			}
+
+			ImGUIFrameEnd();
+		}
+		
+		if (GameState::GetState() == gameState_t::PLAY || GameState::GetState() == gameState_t::MENU)
 		{
 			processinput(window, registry, currentFrameTime);
 		}
