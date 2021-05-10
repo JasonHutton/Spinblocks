@@ -409,5 +409,14 @@
     <ClInclude Include="include\Systems\SoundSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\Components\UI\UIWidget.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIMenuButton.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Components\UI\UIMenuPanel.h">
+      <Filter>Header Files\Components\UI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

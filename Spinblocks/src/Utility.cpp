@@ -168,6 +168,36 @@ Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::en
 	return NULL;
 }
 
+bool IsEntityUIWidget(entt::registry& registry, entt::entity ent)
+{
+	if (ent == entt::null)
+		return false;
+
+	if (!registry.valid(ent)) // This should never happen, yet it is. FIXME TODO
+		return false;
+
+	return registry.any_of</*Components::UIWidget, */
+		Components::UIMenuPanel,
+		Components::UIMenuButton>(ent);
+}
+
+Components::UIWidget* GetUIWidgetFromEntity(entt::registry& registry, entt::entity entity)
+{
+	if (entity == entt::null)
+		return NULL;
+
+	if (!IsEntityUIWidget(registry, entity))
+		return NULL;
+
+	if (registry.all_of<Components::UIMenuButton>(entity))
+		return &registry.get<Components::UIMenuButton>(entity);
+
+	if (registry.all_of<Components::UIMenuPanel>(entity))
+		return &registry.get<Components::UIMenuPanel>(entity);
+
+	return NULL;
+}
+
 // Take a closer look at this and CanOccupyCell tomorrow....
 bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity, const entt::entity& cellEntity, const bool& disableObstruction)
 {

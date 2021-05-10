@@ -3,6 +3,7 @@
 #include "Components/Tetrominos/Tetromino.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with Tetromino without it...
 #include "Components/NodeOrder.h" // Not sure why this is required, since it's in Components/Includes.h, but there are issues with NodeOrder without it...
 #include "Components/Block.h"
+#include "Components/UI/UIWidget.h"
 
 #include <entt/entity/registry.hpp>
 #include "Components/Includes.h"
@@ -39,6 +40,8 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable = true);
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent);
 Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity);
+bool IsEntityUIWidget(entt::registry& registry, entt::entity ent);
+Components::UIWidget* GetUIWidgetFromEntity(entt::registry& registry, entt::entity entity);
 bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity entity, const entt::entity& cellEntity, const bool& disableObstruction);
 bool IsAnyBlockInTetrominoObstructed(entt::registry& registry, entt::entity entity);
 bool AreCoordinatesObstructed(entt::registry& registry, const Components::Coordinate& coordinate, const entt::entity probeEntity);

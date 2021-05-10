@@ -63,3 +63,7 @@
 #include "Components/UI/UITextScore.h"
 
 #include "Components/Censor.h"
+
+#include "Components/UI/UIWidget.h"
+#include "Components/UI/UIMenuPanel.h"
+#include "Components/UI/UIMenuButton.h"

@@ -50,6 +50,27 @@
     <ClCompile Include="..\Spinblocks\src\Systems\BoardRotateSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_demo.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_draw.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_impl_glfw.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_impl_opengl3.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_tables.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\imgui_widgets.cpp">
+      <Filter>Source Files\DearImGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -194,6 +215,27 @@
     <ClInclude Include="..\Spinblocks\include\Systems\BoardRotateSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imgui.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imgui_impl_glfw.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imgui_impl_opengl3.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imgui_internal.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imstb_rectpack.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imstb_textedit.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\imstb_truetype.h">
+      <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -246,6 +288,12 @@
     </Filter>
     <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{04e2bc52-6e8b-407d-8a02-5f514fef7a46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DearImGUI">
+      <UniqueIdentifier>{0b386f20-a683-4735-a955-9d1ffd6f19e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DearImGUI">
+      <UniqueIdentifier>{dedad58a-90df-4cde-a614-c6c8a4ffec5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

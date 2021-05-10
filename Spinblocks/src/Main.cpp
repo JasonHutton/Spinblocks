@@ -1168,38 +1168,90 @@ void render(entt::registry& registry, double normalizedTime)
 
 	ImGUIFrameInit();
 
-	auto UIOverlayView = registry.view<Components::UIRenderable, Components::UIPosition, Components::UIOverlay>();
-	for (auto entity : UIOverlayView)
+	if (GameState::GetState() == gameState_t::MENU)
 	{
-		auto& overlay = UIOverlayView.get<Components::UIOverlay>(entity);
-		auto& position = UIOverlayView.get<Components::UIPosition>(entity);
-		auto& renderable = UIOverlayView.get<Components::UIRenderable>(entity);
-
-		if (renderable.IsEnabled() && overlay.IsEnabled() && position.IsEnabled())
+		/*ImGui::ShowDemoWindow();
+		if (ImGui::Button("Blap."))
 		{
-			ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
+			std::cout << "Blap pressed." << endl;
+		}*/
 
-			//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-			if (ImGui::Begin(overlay.GetWindowName().c_str(), NULL, overlay.GetWindowFlags()))
+		auto UIMenuView = registry.view<Components::UIRenderable, Components::UIPosition>();
+		for (auto entity : UIMenuView)
+		{
+			if (!IsEntityUIWidget(registry, entity))
+				continue;
+
+			Components::UIWidget* widget = GetUIWidgetFromEntity(registry, entity);
+
+			auto& position = UIMenuView.get<Components::UIPosition>(entity);
+			auto& renderable = UIMenuView.get<Components::UIRenderable>(entity);
+
+			if (renderable.IsEnabled() && position.IsEnabled() && widget->IsEnabled())
 			{
-				if (registry.all_of<Components::UITextScore>(entity))
-				{
-					auto& score = registry.get<Components::UITextScore>(entity);
-					score.DisplayElement();
-				}
-				if (registry.all_of<Components::UITextLevel>(entity))
-				{
-					auto& level = registry.get<Components::UITextLevel>(entity);
-					level.DisplayElement();
-				}
-				if (registry.all_of<Components::UIText>(entity))
-				{
-					auto& pause = registry.get<Components::UIText>(entity);
-					pause.DisplayElement();
-				}
-			}
+				ImGui::SetNextWindowPos(position.Get(), widget->GetCondition(), position.GetPivot());
 
-			ImGui::End();
+				//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+				if (ImGui::Begin(widget->GetWindowName().c_str(), NULL, widget->GetWindowFlags()))
+				{
+					widget->DisplayElement();
+
+					// WE don't need to worry about these widgets appearing in the main list, as they're not rendering independently, and only exist within a container.
+					if (registry.all_of<Components::UIMenuPanel>(entity))
+					{
+						auto& menu = registry.get<Components::UIMenuPanel>(entity);
+						for (auto subWidgetEnt : menu.AccessWidgets())
+						{
+							if (!IsEntityUIWidget(registry, subWidgetEnt))
+								continue;
+
+							Components::UIWidget* subWidget = GetUIWidgetFromEntity(registry, subWidgetEnt);
+
+							subWidget->DisplayElement();
+						}
+					}
+				}
+
+				ImGui::End();
+			}
+		}
+	}
+
+	if (GameState::GetState() != gameState_t::INIT && GameState::GetState() != gameState_t::MENU)
+	{
+		auto UIOverlayView = registry.view<Components::UIRenderable, Components::UIPosition, Components::UIOverlay>();
+		for (auto entity : UIOverlayView)
+		{
+			auto& overlay = UIOverlayView.get<Components::UIOverlay>(entity);
+			auto& position = UIOverlayView.get<Components::UIPosition>(entity);
+			auto& renderable = UIOverlayView.get<Components::UIRenderable>(entity);
+
+			if (renderable.IsEnabled() && overlay.IsEnabled() && position.IsEnabled())
+			{
+				ImGui::SetNextWindowPos(position.Get(), overlay.GetCondition(), position.GetPivot());
+
+				//ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+				if (ImGui::Begin(overlay.GetWindowName().c_str(), NULL, overlay.GetWindowFlags()))
+				{
+					if (registry.all_of<Components::UITextScore>(entity))
+					{
+						auto& score = registry.get<Components::UITextScore>(entity);
+						score.DisplayElement();
+					}
+					if (registry.all_of<Components::UITextLevel>(entity))
+					{
+						auto& level = registry.get<Components::UITextLevel>(entity);
+						level.DisplayElement();
+					}
+					if (registry.all_of<Components::UIText>(entity))
+					{
+						auto& pause = registry.get<Components::UIText>(entity);
+						pause.DisplayElement();
+					}
+				}
+
+				ImGui::End();
+			}
 		}
 	}
 
@@ -1325,7 +1377,7 @@ void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lh
 	}
 }
 
-void InitUI(entt::registry& registry)
+void InitUI(entt::registry& registry, GLFWwindow* window)
 {
 	const auto scoreOverlay = registry.create();
 	registry.emplace<Components::UIPosition>(scoreOverlay, ImVec2(displayData.x / 20.0f, displayData.y - displayData.y / 4.0f));
@@ -1349,6 +1401,23 @@ void InitUI(entt::registry& registry)
 	registry.emplace<Components::UIText>(focusLostOverlay, "OUT OF FOCUS");
 	registry.emplace<Components::Tag>(focusLostOverlay, "Focus Lost Overlay");
 	registry.emplace<Components::Flag>(focusLostOverlay, false);
+
+	const auto mainMenu = registry.create();
+	registry.emplace<Components::UIPosition>(mainMenu, ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImVec2(0.5f, 0.5f));
+	registry.emplace<Components::UIMenuPanel>(mainMenu, "Main Menu");
+	registry.emplace<Components::UIRenderable>(mainMenu);
+	registry.emplace<Components::Tag>(mainMenu, "Main Menu Panel");
+
+	const auto mmNewGameBtn = registry.create();
+	registry.emplace<Components::UIMenuButton>(mmNewGameBtn, "New Game", NULL);
+
+	const auto mmQuitBtn = registry.create();
+	registry.emplace<Components::UIMenuButton>(mmQuitBtn, "Quit", glfwSetWindowShouldClose, window);
+
+	auto& mmPanel = registry.get<Components::UIMenuPanel>(mainMenu);
+	mmPanel.AddWidget(mmNewGameBtn);
+	mmPanel.AddWidget(mmQuitBtn);
+
 }
 
 void InitGame(entt::registry& registry)
@@ -1603,28 +1672,32 @@ int main()
 		GameTime::lastFrameTime = currentFrameTime;
 		GameTime::accumulator += deltaTime;
 
-		if (GameState::GetState() == gameState_t::INIT)
+		switch (GameState::GetState())
 		{
+		case gameState_t::INIT:
 			InitUI(registry);
 			InitGame(registry);
-
-			GameState::SetState(gameState_t::MENU); // Placeholder.
 			while (!audioManager.AreAllAssetsLoaded())
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 				// Do nothing, wait.
 			}
-
-			GameState::SetState(gameState_t::PLAY);
+			GameState::SetState(gameState_t::MENU); // Placeholder.
+			break;
+		case gameState_t::MENU:
+			//GameState::SetState(gameState_t::PLAY);
+			break;
+		case gameState_t::PLAY:
+			processinput(window, registry, currentFrameTime);
+			break;
+		case gameState_t::GAME_OVER:
+			break;
+		default:
+			break;
 		}
 
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		if (GameState::GetState() == gameState_t::PLAY)
-		{
-			processinput(window, registry, currentFrameTime);
-		}
 
 		while (GameTime::accumulator >= GameTime::fixedDeltaTime)
 		{

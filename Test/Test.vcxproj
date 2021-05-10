@@ -62,6 +62,13 @@
     <ClInclude Include="..\Spinblocks\include\GLFW\glfw3.h" />
     <ClInclude Include="..\Spinblocks\include\GLFW\glfw3native.h" />
     <ClInclude Include="..\Spinblocks\include\Globals.h" />
+    <ClInclude Include="..\Spinblocks\include\imgui.h" />
+    <ClInclude Include="..\Spinblocks\include\imgui_impl_glfw.h" />
+    <ClInclude Include="..\Spinblocks\include\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Spinblocks\include\imgui_internal.h" />
+    <ClInclude Include="..\Spinblocks\include\imstb_rectpack.h" />
+    <ClInclude Include="..\Spinblocks\include\imstb_textedit.h" />
+    <ClInclude Include="..\Spinblocks\include\imstb_truetype.h" />
     <ClInclude Include="..\Spinblocks\include\Input\ContextControl.h" />
     <ClInclude Include="..\Spinblocks\include\Input\GameInput.h" />
     <ClInclude Include="..\Spinblocks\include\Input\InputHandler.h" />
@@ -86,6 +93,13 @@
     <ClCompile Include="..\Spinblocks\src\CachedTagLookup.cpp" />
     <ClCompile Include="..\Spinblocks\src\Components\Coordinate.cpp" />
     <ClCompile Include="..\Spinblocks\src\glad.c" />
+    <ClCompile Include="..\Spinblocks\src\imgui.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_demo.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_draw.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_tables.cpp" />
+    <ClCompile Include="..\Spinblocks\src\imgui_widgets.cpp" />
     <ClCompile Include="..\Spinblocks\src\Input\ContextControl.cpp" />
     <ClCompile Include="..\Spinblocks\src\Input\GameInput.cpp" />
     <ClCompile Include="..\Spinblocks\src\Input\InputHandler.cpp" />
