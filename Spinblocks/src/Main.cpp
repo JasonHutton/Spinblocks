@@ -1691,16 +1691,44 @@ int main()
 			ImGUIFrameInit();
 
 			ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-			if (ImGui::Button("New Game"))
+			if (GameHasBeenInitializedAtLeastOnce == true)
 			{
-				InitGame(registry);
-
-				while (!audioManager.AreAllAssetsLoaded())
+				if (ImGui::Button("Continue"))
 				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(50));
-					// Do nothing, wait.
+					GameState::SetState(gameState_t::PLAY);
 				}
-				GameState::SetState(gameState_t::PLAY);
+			}
+			if (GameHasBeenInitializedAtLeastOnce == true)
+			{
+				if (ImGui::Button("Restart"))
+				{
+					TeardownGame(registry);
+					GameState::SetState(gameState_t::INIT);
+					InitUI(registry); // Re-init UI stuff too, as this has also been cleared by the teardown.
+
+					InitGame(registry);
+					while (!audioManager.AreAllAssetsLoaded())
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(50));
+						// Do nothing, wait.
+					}
+
+					GameState::SetState(gameState_t::PLAY);
+				}
+			}
+			else
+			{
+				if (ImGui::Button("New Game"))
+				{
+					InitGame(registry);
+					while (!audioManager.AreAllAssetsLoaded())
+					{
+						std::this_thread::sleep_for(std::chrono::milliseconds(50));
+						// Do nothing, wait.
+					}
+
+					GameState::SetState(gameState_t::PLAY);
+				}
 			}
 
 			if (ImGui::Button("Quit Game"))
