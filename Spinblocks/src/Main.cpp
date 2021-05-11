@@ -1664,6 +1664,9 @@ int main()
 
 	GameTime::Initialize(glfwGetTime());
 
+	bool showHowToPlay = false;
+	bool p_open;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		double currentFrameTime = glfwGetTime();
@@ -1691,49 +1694,107 @@ int main()
 			ImGUIFrameInit();
 
 			ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-			if (GameHasBeenInitializedAtLeastOnce == true)
+			if (ImGui::Begin("Spinblocks", &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 			{
-				if (ImGui::Button("Continue"))
+				if (GameHasBeenInitializedAtLeastOnce == true)
 				{
-					GameState::SetState(gameState_t::PLAY);
-				}
-			}
-			if (GameHasBeenInitializedAtLeastOnce == true)
-			{
-				if (ImGui::Button("Restart"))
-				{
-					TeardownGame(registry);
-					GameState::SetState(gameState_t::INIT);
-					InitUI(registry); // Re-init UI stuff too, as this has also been cleared by the teardown.
-
-					InitGame(registry);
-					while (!audioManager.AreAllAssetsLoaded())
+					if (ImGui::Button("Continue"))
 					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(50));
-						// Do nothing, wait.
+						GameState::SetState(gameState_t::PLAY);
 					}
-
-					GameState::SetState(gameState_t::PLAY);
 				}
+				if (GameHasBeenInitializedAtLeastOnce == true)
+				{
+					if (ImGui::Button("Restart"))
+					{
+						TeardownGame(registry);
+						GameState::SetState(gameState_t::INIT);
+						InitUI(registry); // Re-init UI stuff too, as this has also been cleared by the teardown.
+
+						InitGame(registry);
+						while (!audioManager.AreAllAssetsLoaded())
+						{
+							std::this_thread::sleep_for(std::chrono::milliseconds(50));
+							// Do nothing, wait.
+						}
+
+						GameState::SetState(gameState_t::PLAY);
+					}
+				}
+				else
+				{
+					if (ImGui::Button("New Game"))
+					{
+						InitGame(registry);
+						while (!audioManager.AreAllAssetsLoaded())
+						{
+							std::this_thread::sleep_for(std::chrono::milliseconds(50));
+							// Do nothing, wait.
+						}
+
+						GameState::SetState(gameState_t::PLAY);
+					}
+				}
+
+				if (ImGui::Button("How to Play"))
+				{
+					showHowToPlay = !showHowToPlay;
+				}
+
+				if (ImGui::Button("Options"))
+				{
+
+				}
+
+				if (ImGui::Button("Quit Game"))
+				{
+					glfwSetWindowShouldClose(window, true);
+				}
+
+				if (showHowToPlay)
+				{
+					if (ImGui::Begin("How to Play", &p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+					{
+						static int lines = 10;
+						ImGui::TextUnformatted(
+							"Controls:\n"
+							"-----------\n"
+							"Move Left: Left Arrow | Move Right: Right Arrow\n"
+							"Soft Drop: Down Arrow | Hard Drop: Up Arrow\n"
+							"Rotate Counter-clockwise: Z | Rotate Clockwise: X\n"
+							"Pause: Pause | Menu: Escape\n"
+							"-----------\n"
+							"Tetrominos will advance through the preview area on the right of the screen.\n"
+							"The top Tetromino will be the next one to be promoted into play.\n"
+							"Each new Tetromino will fall from the top of the play area, downwards.\n"
+							"Fill an entire horizontal row of the play area to clear that row.\n"
+							"Eliminating rows scores points.\n"
+							"Clearing more rows at once scores proportionately more points.\n"
+							"As your points rise, so does the game level, which causes Tetrominos to fall more rapidly.\n"
+							"-----------\n"
+							"Clear 2+ rows at once, and the entire play area will rotate to the left or right,\n"
+							"depending upon where the last Tetromino landed.\n"
+							"The blocks that compose locked down Tetrominos will collapse when the play area rotates.\n");
+						ImGui::End();
+
+						if (!p_open)
+						{
+							p_open = true;
+							showHowToPlay = false;
+						}
+					}
+					else
+					{
+						showHowToPlay = false;
+						ImGui::End();
+					}
+				}
+
+				ImGui::End();
 			}
 			else
 			{
-				if (ImGui::Button("New Game"))
-				{
-					InitGame(registry);
-					while (!audioManager.AreAllAssetsLoaded())
-					{
-						std::this_thread::sleep_for(std::chrono::milliseconds(50));
-						// Do nothing, wait.
-					}
-
-					GameState::SetState(gameState_t::PLAY);
-				}
-			}
-
-			if (ImGui::Button("Quit Game"))
-			{
-				glfwSetWindowShouldClose(window, true);
+				ImGui::End();
 			}
 
 			ImGUIFrameEnd();
