@@ -1637,8 +1637,8 @@ int main()
 	audioManager.GetSound(audioAsset_t::SOUND_GAME_OVER, audioChannel_t::SOUND, false, true);
 
 	// Other music, load them last
-	audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY1, audioChannel_t::MUSIC, true, true);
-	audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY2, audioChannel_t::MUSIC, true, true);
+	audioData_t audioDataMusic1 = audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY1, audioChannel_t::MUSIC, true, true);
+	audioData_t audioDataMusic2 = audioManager.GetSound(audioAsset_t::MUSIC_GAMEPLAY2, audioChannel_t::MUSIC, true, true);
 	
 	GameState::SetState(gameState_t::INIT);
 
@@ -1655,7 +1655,8 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		// Do nothing, wait.
 	}
-	audioManager.PlaySound(audioDataDefaultMusic);
+	audioData_t* currentMusic = &audioDataDefaultMusic;
+	audioManager.PlaySound(*currentMusic);
 
 	// Do one-time OpenGL things here.
 	Shader* shader = RetrieveShader("model", "./data/shaders/1.model_loading.vs", "./data/shaders/1.model_loading.fs");
@@ -1801,7 +1802,37 @@ int main()
 					ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 					if (ImGui::Begin("Options", &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 					{
-						// Music Track
+						// Music 1 and 2 are duplicates for now. Whatever.
+						const char* items[] = { "Music 1", "Music 2", "Music 3" };
+						static int item_current = 0;
+						if (ImGui::Combo("Music Track", &item_current, items, IM_ARRAYSIZE(items)))
+						{
+							// Play new music
+							while (!audioManager.AreAllAssetsLoaded())
+							{
+								std::this_thread::sleep_for(std::chrono::milliseconds(50));
+								// Do nothing, wait.
+							}
+							
+							switch (item_current)
+							{
+							case 0:
+								currentMusic = &audioDataDefaultMusic;
+								break;
+							case 1:
+								currentMusic = &audioDataMusic1;
+								break;
+							case 2:
+								currentMusic = &audioDataMusic2;
+								break;
+							default:
+								break;
+							}
+
+							audioManager.StopChannel(audioChannel_t::MUSIC);
+							audioManager.PlaySound(*currentMusic);
+						}
+
 						ImGui::SliderFloat("Master Volume", &masterVol, 0.0f, 1.0f, "%.02f");
 						ImGui::SliderFloat("Sound Volume", &soundVol, 0.0f, 1.0f, "%.02f");
 						ImGui::SliderFloat("Music Volume", &musicVol, 0.0f, 1.0f, "%.02f");
