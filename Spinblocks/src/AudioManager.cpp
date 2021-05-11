@@ -129,6 +129,25 @@ void AudioManager::SetChannelVolume(const audioChannel_t& audioChannel, const fl
 	channel->setVolume(volume);
 }
 
+void AudioManager::StopChannel(const audioChannel_t& audioChannel)
+{
+	FMOD::ChannelGroup* channel = NULL;
+	switch (audioChannel)
+	{
+	case audioChannel_t::SOUND:
+		channel = m_soundChannelGroup;
+		break;
+	case audioChannel_t::MUSIC:
+		channel = m_musicChannelGroup;
+		break;
+	default:
+		channel = m_masterChannelGroup;
+		break;
+	}
+
+	channel->stop();
+}
+
 float AudioManager::GetChannelVolume(const audioChannel_t& audioChannel) const
 {
 	FMOD::ChannelGroup* channel = NULL;

@@ -56,6 +56,7 @@ public:
 	}
 
 	void SetChannelVolume(const audioChannel_t& audioChannel, const float& volume);
+	void StopChannel(const audioChannel_t& audioChannel);
 	float GetChannelVolume(const audioChannel_t& audioChannel) const;
 	bool IsSoundLoaded(const audioAsset_t& asset) const;
 };
