@@ -1678,6 +1678,11 @@ int main()
 		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// Set temp values for global values
+		float masterVol = audioManager.GetChannelVolume(audioChannel_t::MASTER);
+		float musicVol = audioManager.GetChannelVolume(audioChannel_t::MUSIC);
+		float soundVol = audioManager.GetChannelVolume(audioChannel_t::SOUND);
+
 		if (GameState::GetState() == gameState_t::INIT)
 		{
 			InitUI(registry);
@@ -1754,6 +1759,7 @@ int main()
 
 				if (showHowToPlay)
 				{
+					ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
 					if (ImGui::Begin("How to Play", &p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 					{
 						ImGui::TextUnformatted(
@@ -1792,12 +1798,14 @@ int main()
 
 				if (showOptions)
 				{
-					if (ImGui::Begin("Options", &p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+					ImGui::SetNextWindowPos(ImVec2(displayData.x / 2.0f, displayData.y / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+					if (ImGui::Begin("Options", &p_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 					{
 						// Music Track
-						// Master Volume
-						// Sound Volume
-						// Music Volume
+						ImGui::SliderFloat("Master Volume", &masterVol, 0.0f, 1.0f, "%.02f");
+						ImGui::SliderFloat("Sound Volume", &soundVol, 0.0f, 1.0f, "%.02f");
+						ImGui::SliderFloat("Music Volume", &musicVol, 0.0f, 1.0f, "%.02f");
+
 						ImGui::End();
 
 						if (!p_open)
@@ -1822,6 +1830,11 @@ int main()
 
 			ImGUIFrameEnd();
 		}
+
+		// Set global values from temp values
+		audioManager.SetChannelVolume(audioChannel_t::MASTER, masterVol);
+		audioManager.SetChannelVolume(audioChannel_t::MUSIC, musicVol);
+		audioManager.SetChannelVolume(audioChannel_t::SOUND, soundVol);
 		
 		if (GameState::GetState() == gameState_t::PLAY || GameState::GetState() == gameState_t::MENU)
 		{
