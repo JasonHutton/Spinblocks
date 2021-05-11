@@ -1665,6 +1665,7 @@ int main()
 	GameTime::Initialize(glfwGetTime());
 
 	bool showHowToPlay = false;
+	bool showOptions = false;
 	bool p_open;
 
 	while (!glfwWindowShouldClose(window))
@@ -1743,7 +1744,7 @@ int main()
 
 				if (ImGui::Button("Options"))
 				{
-
+					showOptions = !showOptions;
 				}
 
 				if (ImGui::Button("Quit Game"))
@@ -1755,7 +1756,6 @@ int main()
 				{
 					if (ImGui::Begin("How to Play", &p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
 					{
-						static int lines = 10;
 						ImGui::TextUnformatted(
 							"Controls:\n"
 							"-----------\n"
@@ -1786,6 +1786,29 @@ int main()
 					else
 					{
 						showHowToPlay = false;
+						ImGui::End();
+					}
+				}
+
+				if (showOptions)
+				{
+					if (ImGui::Begin("Options", &p_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse))
+					{
+						// Music Track
+						// Master Volume
+						// Sound Volume
+						// Music Volume
+						ImGui::End();
+
+						if (!p_open)
+						{
+							p_open = true;
+							showOptions = false;
+						}
+					}
+					else
+					{
+						showOptions = false;
 						ImGui::End();
 					}
 				}
