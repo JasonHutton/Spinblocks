@@ -1,0 +1,2 @@
+# Explicitly ignore the data folder in test, as we're copying things here during a build event.
+data/
