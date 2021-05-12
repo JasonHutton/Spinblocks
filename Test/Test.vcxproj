@@ -175,6 +175,9 @@
       <Command>xcopy /y /d "$(ProjectDir)..\Spinblocks\dll\*.dll" "$(TargetDir)"
 xcopy /y /d /s "$(ProjectDir)..\Spinblocks\data\" "$(TargetDir)data\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d /e /i "$(ProjectDir)..\Spinblocks\data" "$(ProjectDir)data"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
