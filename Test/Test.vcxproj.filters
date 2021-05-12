@@ -71,6 +71,9 @@
     <ClCompile Include="..\Spinblocks\src\imgui_widgets.cpp">
       <Filter>Source Files\DearImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Spinblocks\src\AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="..\Spinblocks\include\imstb_truetype.h">
       <Filter>Header Files\DearImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\AudioManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

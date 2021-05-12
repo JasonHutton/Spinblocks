@@ -43,6 +43,8 @@
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
 
+#include "AudioManager.h"
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -1135,3 +1137,39 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 		EXPECT_TRUE(endCoord.Get() == glm::uvec2(1, 1));
 	}
 }
+
+/*
+TEST(TetrominoMovementTest, Step1EastClear) {
+	entt::registry registry;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
+	registry.emplace<Components::Scale>(playArea);
+	registry.emplace<Components::Container2>(playArea, glm::uvec2(8, 8), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+
+
+	BuildGrid(registry, playArea);
+
+	SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)),
+			GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX),
+				tetrominoType_t::I)), tetrominoType_t::I);
+
+	MovePiece()
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
+		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 1);
+		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
+		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(1, 0));
+	}
+}
+*/

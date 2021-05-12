@@ -1,5 +1,132 @@
 #include "Utility.h"
 
+#include "AudioManager.h"
+
+void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
+{
+	entt::entity tetrominoEntity = GetActiveControllable(registry);
+	if (tetrominoEntity == entt::null)
+		return;
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEntity);
+	auto tetrominoCoord = registry.get<Components::Coordinate>(tetrominoEntity);
+
+	moveDirection_t desiredOrientation;
+
+	try
+	{
+		switch (rotatePiece)
+		{
+		case rotatePiece_t::ROTATE_CLOCKWISE:
+			desiredOrientation = tetromino->GetNewOrientation(rotationDirection_t::CLOCKWISE, tetromino->GetCurrentOrientation());
+			break;
+		case rotatePiece_t::ROTATE_COUNTERCLOCKWISE:
+			desiredOrientation = tetromino->GetNewOrientation(rotationDirection_t::COUNTERCLOCKWISE, tetromino->GetCurrentOrientation());
+			break;
+		default:
+			desiredOrientation = tetromino->GetCurrentOrientation();
+			break;
+		}
+	}
+	catch (std::runtime_error ex)
+	{
+		cerr << ex.what() << endl;
+	}
+
+	bool atLeastOneBlockObstructed = false;
+	for (int i = 0; i < 4; i++)
+	{
+		auto& blockEnt = tetromino->GetBlock(i);
+		auto& blockCoord = registry.get<Components::Coordinate>(blockEnt);
+
+		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
+			(glm::vec2)blockCoord.Get() +
+			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+
+		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
+		if (!CanOccupyCell(registry, blockEnt, cellEnt))
+			atLeastOneBlockObstructed = true;
+	}
+
+	if (!atLeastOneBlockObstructed)
+	{ // Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
+		tetromino->SetDesiredOrientation(desiredOrientation);
+		tetromino->SetCurrentOrientation(tetromino->GetDesiredOrientation());
+
+		audioData_t audioRotate = audioManager.GetSound(audioAsset_t::SOUND_ROTATE, audioChannel_t::SOUND, false, true);
+		audioManager.PlaySound(audioRotate);
+	}
+}
+
+// Not actually using containerTag here for the moment. May make more sense to just have it detect which tag, as it does currently.
+// As we'll only really have one piece moving at a time, probably fine. Change later if not.
+void MovePiece(entt::registry& registry, const movePiece_t& movePiece)
+{
+	auto controllableView = registry.view<Components::Controllable, Components::Moveable>();
+	auto cellView = registry.view<Components::Cell, Components::Coordinate>();
+	for (auto entity1 : controllableView)
+	{
+		auto& controllable = controllableView.get<Components::Controllable>(entity1);
+		auto& moveable = controllableView.get<Components::Moveable>(entity1);
+
+		if (controllable.IsEnabled() && moveable.IsEnabled())
+		{
+			for (auto entity2 : cellView)
+			{
+				auto& cell = cellView.get<Components::Cell>(entity2);
+				auto& coordinate = cellView.get<Components::Coordinate>(entity2);
+				//std::string tagOfContainerEntity = FindTagOfContainerEntity(registry, cell.GetParent());
+
+				if (cell.IsEnabled() && coordinate.IsEnabled())
+				{
+					if (controllable.Get() == cell.GetParent())
+					{
+						if (moveable.GetCurrentCoordinate() == coordinate)
+						{
+
+							auto& playAreaRefEnt = registry.get<Components::ReferenceEntity>(moveable.GetCurrentCoordinate().GetParent());
+							auto& playAreaDirection = registry.get<Components::CardinalDirection>(playAreaRefEnt.Get());
+
+							try
+							{
+								switch (movePiece)
+								{
+								case movePiece_t::MOVE_LEFT:
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentLeftDirection(), 1)));
+									break;
+								case movePiece_t::MOVE_RIGHT:
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentRightDirection(), 1)));
+									break;
+								case movePiece_t::MOVE_UP:
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentUpDirection(), 1)));
+									moveable.SetMovementState(Components::movementStates_t::DEBUG_MOVE_UP);
+									break;
+								case movePiece_t::SOFT_DROP:
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), 1)));
+									moveable.SetMovementState(Components::movementStates_t::SOFT_DROP);
+									break;
+								case movePiece_t::HARD_DROP:
+								{
+									moveable.SetDesiredCoordinate(GetCoordinateOfEntity(registry, MoveBlockInDirection(registry, entity1, playAreaDirection.GetCurrentDownDirection(), PlayAreaHeight + (BufferAreaDepth * 2)))); // PlayAreaHeight is a const of 20. This is fine to be excessive with when the height is lower.
+									moveable.SetMovementState(Components::movementStates_t::HARD_DROP); // Hard drop state even if we're not able to move. We did trigger this.
+									break;
+								}
+								default:
+									break;
+								}
+							}
+							catch (std::runtime_error ex)
+							{
+								cerr << ex.what() << endl;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 // Ensure containerType_t and this function are in sync
 const std::string GetTagFromContainerType(const containerType_t& t)
 {

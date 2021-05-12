@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece);
+void MovePiece(entt::registry& registry, const movePiece_t& movePiece);
+
 // Ensure containerType_t and this function are in sync
 const std::string GetTagFromContainerType(const containerType_t& t);
 // Ensure audioChannel_t and this function are in sync
