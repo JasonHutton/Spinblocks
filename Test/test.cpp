@@ -34,16 +34,26 @@
 #include "Globals.h"
 #include "Utility.h"
 
+#include "Systems/GenerationSystem.h"
 #include "Systems/FallingSystem.h"
 #include "Systems/MovementSystem.h"
 #include "Systems/StateChangeSystem.h"
 #include "Systems/PatternSystem.h"
 #include "Systems/EliminateSystem.h"
+#include "Systems/BoardRotateSystem.h"
+#include "Systems/DetachSystem.h"
+#include "Systems/CompletionSystem.h"
+#include "Systems/SoundSystem.h"
 
 #include "Input/InputHandler.h"
 #include "Input/GameInput.h"
-
 #include "AudioManager.h"
+
+#include "GameState.h"
+
+#include "imgui.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_glfw.h"
 
 using std::string;
 using std::cout;
@@ -1138,38 +1148,73 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 	}
 }
 
-/*
 TEST(TetrominoMovementTest, Step1EastClear) {
 	entt::registry registry;
 
+	int testPlayAreaWidth = 6;
+	int testPlayAreaHeight = 6;
+
 	const auto playArea = registry.create();
-	registry.emplace<Components::Position>(playArea, glm::vec3(displayData.x / 2, displayData.y / 2, 0.0f));
-	registry.emplace<Components::Scale>(playArea);
-	registry.emplace<Components::Container2>(playArea, glm::uvec2(8, 8), glm::vec2(25, 25));
-	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
 
 
-	BuildGrid(registry, playArea);
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+
+
+	BuildGrid(registry, matrix);
 
 	SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
-			GetTagFromContainerType(containerType_t::MATRIX)),
-			GetTetrominoSpawnCoordinates(registry, GetTagFromContainerType(containerType_t::MATRIX),
-				tetrominoType_t::I)), tetrominoType_t::I);
+		GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
+		tetrominoType_t::I);
 
-	MovePiece()
-
+	// Where are blocks?
+	int numBlocksInExpectedCoordinates = 0;
 	auto blockView = registry.view<Components::Block, Components::Coordinate>();
 	for (auto entity : blockView)
 	{
 		auto& block = blockView.get<Components::Block>(entity);
 		auto& coordinate = blockView.get<Components::Coordinate>(entity);
-
 		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
-		EXPECT_TRUE(beginCoord.Get() == glm::uvec2(0, 0));
-		entt::entity endCellEnt = MoveBlockInDirection(registry, entity, moveDirection_t::EAST, 1);
-		Components::Coordinate endCoord = GetCoordinateOfEntity(registry, endCellEnt);
-		EXPECT_TRUE(beginCoord.GetParent() == endCoord.GetParent() && endCoord.Get() == glm::uvec2(1, 0));
+
+		if (beginCoord.Get() == glm::uvec2(3, 6))
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == glm::uvec2(4, 6))
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == glm::uvec2(5, 6))
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == glm::uvec2(6, 6))
+			numBlocksInExpectedCoordinates++;
+		else
+			EXPECT_TRUE(false); // Error here immediately.		
 	}
+	EXPECT_TRUE(numBlocksInExpectedCoordinates == 4);
+
+	MovePiece(registry, movePiece_t::MOVE_RIGHT);
+
+	double fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	// Where are blocks?
+
 }
-*/
