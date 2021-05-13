@@ -60,6 +60,9 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+// Disables some stuff that we're just not unit testing (audio mainly)
+#define DO_NOT_TEST
+
 /*TEST(TestCaseName, TestName) {
   EXPECT_EQ(1, 1);
   EXPECT_TRUE(true);
@@ -1527,4 +1530,310 @@ TEST(TetrominoMovementObstructionTest, Step1EastObstructedByWall) {
 	//Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6), glm::uvec2(11, 6)));
+}
+
+TEST(TetrominoRotationTest, Rotate1ClockwiseClear) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 6;
+	int testPlayAreaHeight = 6;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
+		tetrominoType_t::I);
+
+	// Needed for MovementSystem()
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+	if (registry.all_of<Components::Moveable>(tet))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tet);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto& blockMoveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			if (registry.all_of<Components::Follower>(tetromino->GetBlock(i)))
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+			else
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	double fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	//Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(5, 4), glm::uvec2(5, 5), glm::uvec2(5, 6), glm::uvec2(5, 7)));
+}
+
+TEST(TetrominoRotationTest, Rotate2ClockwiseClear) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 6;
+	int testPlayAreaHeight = 6;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
+		tetrominoType_t::I);
+
+	// Needed for MovementSystem()
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+	if (registry.all_of<Components::Moveable>(tet))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tet);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto& blockMoveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			if (registry.all_of<Components::Follower>(tetromino->GetBlock(i)))
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+			else
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	double fakeCurrentFrameTime;
+	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 5), glm::uvec2(4, 5), glm::uvec2(5, 5), glm::uvec2(6, 5)));
+}
+
+TEST(TetrominoRotationTest, Rotate3ClockwiseClear) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 6;
+	int testPlayAreaHeight = 6;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
+		tetrominoType_t::I);
+
+	// Needed for MovementSystem()
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+	if (registry.all_of<Components::Moveable>(tet))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tet);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto& blockMoveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			if (registry.all_of<Components::Follower>(tetromino->GetBlock(i)))
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+			else
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	double fakeCurrentFrameTime;
+	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(4, 4), glm::uvec2(4, 5), glm::uvec2(4, 6), glm::uvec2(4, 7)));
+}
+
+TEST(TetrominoRotationTest, Rotate4ClockwiseClear) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 6;
+	int testPlayAreaHeight = 6;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container2>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
+		tetrominoType_t::I);
+
+	// Needed for MovementSystem()
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+	if (registry.all_of<Components::Moveable>(tet))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tet);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto& blockMoveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			if (registry.all_of<Components::Follower>(tetromino->GetBlock(i)))
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+			else
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
+	}
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	double fakeCurrentFrameTime;
+	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
+
+	fakeCurrentFrameTime = 40000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
 }
