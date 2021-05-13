@@ -1148,6 +1148,36 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 	}
 }
 
+bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4)
+{
+	int numBlocksInExpectedCoordinates = 0;
+
+	auto blockView = registry.view<Components::Block, Components::Coordinate>();
+	for (auto entity : blockView)
+	{
+		auto& block = blockView.get<Components::Block>(entity);
+		auto& coordinate = blockView.get<Components::Coordinate>(entity);
+		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+
+		if (beginCoord.Get() == block1)
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == block2)
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == block3)
+			numBlocksInExpectedCoordinates++;
+		else if (beginCoord.Get() == block4)
+			numBlocksInExpectedCoordinates++;
+		else
+			EXPECT_TRUE(false); // Error here immediately.		
+	}
+
+	EXPECT_TRUE(numBlocksInExpectedCoordinates == 4);
+	if (numBlocksInExpectedCoordinates == 4)
+		return true;
+
+	return false;
+}
+
 TEST(TetrominoMovementTest, Step1EastClear) {
 	entt::registry registry;
 
@@ -1166,7 +1196,6 @@ TEST(TetrominoMovementTest, Step1EastClear) {
 	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
 	registry.emplace<Components::CardinalDirection>(playArea);
 
-
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
@@ -1179,42 +1208,41 @@ TEST(TetrominoMovementTest, Step1EastClear) {
 	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
 	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
 
-
-
 	BuildGrid(registry, matrix);
 
-	SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
 		GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(4, 6)),
 		tetrominoType_t::I);
 
-	// Where are blocks?
-	int numBlocksInExpectedCoordinates = 0;
-	auto blockView = registry.view<Components::Block, Components::Coordinate>();
-	for (auto entity : blockView)
+	// Needed for MovementSystem()
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+	if (registry.all_of<Components::Moveable>(tet))
 	{
-		auto& block = blockView.get<Components::Block>(entity);
-		auto& coordinate = blockView.get<Components::Coordinate>(entity);
-		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+		auto& moveable = registry.get<Components::Moveable>(tet);
+		moveable.SetMovementState(Components::movementStates_t::FALL);
 
-		if (beginCoord.Get() == glm::uvec2(3, 6))
-			numBlocksInExpectedCoordinates++;
-		else if (beginCoord.Get() == glm::uvec2(4, 6))
-			numBlocksInExpectedCoordinates++;
-		else if (beginCoord.Get() == glm::uvec2(5, 6))
-			numBlocksInExpectedCoordinates++;
-		else if (beginCoord.Get() == glm::uvec2(6, 6))
-			numBlocksInExpectedCoordinates++;
-		else
-			EXPECT_TRUE(false); // Error here immediately.		
+		for (int i = 0; i < 4; i++)
+		{
+			auto& blockMoveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			if (registry.all_of<Components::Follower>(tetromino->GetBlock(i)))
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FOLLOWING);
+			}
+			else
+			{
+				blockMoveable.SetMovementState(Components::movementStates_t::FALL);
+			}
+		}
 	}
-	EXPECT_TRUE(numBlocksInExpectedCoordinates == 4);
 
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
+	
 	MovePiece(registry, movePiece_t::MOVE_RIGHT);
 
 	double fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	//Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
-	// Where are blocks?
-
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6), glm::uvec2(7, 6)));
 }
