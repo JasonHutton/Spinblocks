@@ -223,41 +223,6 @@ void PlaceSpawnMarker(entt::registry& registry, const std::string& containerTag,
 	}
 }
 
-void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions)
-{
-	auto containerView = registry.view<Components::Container2>();
-	for (auto containerEnt : containerView)
-	{
-		auto& container2 = containerView.get<Components::Container2>(containerEnt);
-
-		if (container2.IsEnabled())
-		{
-			if (containerEnt != coordinate.GetParent())
-				continue;
-
-			entt::entity cellEnt = GetCellAtCoordinates2(registry, coordinate);
-
-			if (cellEnt == entt::null)
-				continue;
-
-			const auto wall = registry.create();
-			registry.emplace<Components::Wall>(wall);
-			registry.emplace<Components::Coordinate>(wall, coordinate.GetParent(), coordinate.Get());
-			registry.emplace<Components::Position>(wall);
-			registry.emplace<Components::DerivePositionFromCoordinates>(wall);
-			registry.emplace<Components::Scale>(wall, container2.GetCellDimensions3());
-			registry.emplace<Components::Renderable>(wall, Components::renderLayer_t::RL_MARKER_OVER, Model("./data/block/grey.obj"));
-			registry.emplace<Components::Obstructs>(wall);
-			registry.emplace<Components::Orientation>(wall);
-			registry.emplace<Components::ReferenceEntity>(wall, coordinate.GetParent());
-			if (directional)
-			{
-				registry.emplace<Components::DirectionallyActive>(wall, directions);
-			}
-		}
-	}
-}
-
 void MoveTetromino(entt::registry& registry, const movePiece_t& movePiece)
 {
 	/*

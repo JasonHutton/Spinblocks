@@ -61,3 +61,4 @@ glm::uvec2 FindLowestCell(entt::registry& registry, entt::entity tetrominoEnt);
 double CalculateFallSpeed(int level);
 void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions);
 void FillPauseCensors(entt::registry& registry, entt::entity matrix, entt::entity bagArea);
+void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions);
