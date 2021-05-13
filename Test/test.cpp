@@ -60,9 +60,6 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-// Disables some stuff that we're just not unit testing (audio mainly)
-#define DO_NOT_TEST
-
 /*TEST(TestCaseName, TestName) {
   EXPECT_EQ(1, 1);
   EXPECT_TRUE(true);

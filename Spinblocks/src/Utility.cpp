@@ -52,7 +52,7 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 	{ // Quick and dirty, rather than handling through a system. Refactor later. FIXME TODO
 		tetromino->SetDesiredOrientation(desiredOrientation);
 		tetromino->SetCurrentOrientation(tetromino->GetDesiredOrientation());
-#ifdef DO_NOT_TEST
+#ifndef DO_NOT_TEST
 		audioData_t audioRotate = audioManager.GetSound(audioAsset_t::SOUND_ROTATE, audioChannel_t::SOUND, false, true);
 		audioManager.PlaySound(audioRotate);
 #endif
