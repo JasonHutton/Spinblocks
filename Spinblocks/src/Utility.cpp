@@ -194,10 +194,10 @@ entt::entity FindContainerEntityByTag(entt::registry& registry, const std::strin
 {
 	entt::entity foundEntity = entt::null;
 
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& tag = containerView.get<Components::Tag>(entity);
 		if (container2.IsEnabled() && tag.IsEnabled() && tag.Get() == tagName)
 		{
@@ -215,13 +215,13 @@ entt::entity FindEntityByTag(entt::registry& registry, const std::string& tagNam
 
 const std::string FindTagOfContainerEntity(entt::registry& registry, const entt::entity& containerEntity)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
 		if (containerEntity != entity)
 			continue;
 
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& tag = containerView.get<Components::Tag>(entity);
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
@@ -493,7 +493,7 @@ Components::Cell& GetCellAtCoordinates(entt::registry& registry, const std::stri
 
 		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
 		{
-			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
+			auto& container2 = registry.get<Components::Container>(cell.GetParent());
 			auto& tag = registry.get<Components::Tag>(cell.GetParent()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
 			if (!tag.IsEnabled() || containerTag != tag.Get())
 				continue;
@@ -519,12 +519,12 @@ entt::entity GetCellAtCoordinates2(entt::registry& registry, const Components::C
 
 		if (cell.IsEnabled() && cellCoordinate.IsEnabled())
 		{
-			if (!registry.all_of<Components::Container2>(cell.GetParent()))
+			if (!registry.all_of<Components::Container>(cell.GetParent()))
 				continue;
 			if (!registry.all_of<Components::Tag>(cell.GetParent()))
 				continue;
 
-			auto& container2 = registry.get<Components::Container2>(cell.GetParent());
+			auto& container2 = registry.get<Components::Container>(cell.GetParent());
 
 			// The cell we've found shares the same coordinates as what we've specified.
 			if (cellCoordinate == coordinate)
@@ -576,7 +576,7 @@ const Components::Block& GetBlockAtCoordinates(entt::registry& registry, const s
 
 		if (block.IsEnabled())
 		{
-			auto& container2 = registry.get<Components::Container2>(block.Get());
+			auto& container2 = registry.get<Components::Container>(block.Get());
 			auto& tag = registry.get<Components::Tag>(block.Get()); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
 			if (!tag.IsEnabled() || containerTag != tag.Get())
 				continue;
@@ -689,10 +689,10 @@ entt::entity GetActiveControllable(entt::registry& registry)
 
 void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordinate, const bool& startVisible, const bool& directional, const std::vector<moveDirection_t> directions)
 {
-	auto containerView = registry.view<Components::Container2>();
+	auto containerView = registry.view<Components::Container>();
 	for (auto containerEnt : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(containerEnt);
+		auto& container2 = containerView.get<Components::Container>(containerEnt);
 
 		if (container2.IsEnabled())
 		{
@@ -723,7 +723,7 @@ void PlaceCensor(entt::registry& registry, const Components::Coordinate& coordin
 
 void FillPauseCensors(entt::registry&  registry, entt::entity matrix, entt::entity bagArea)
 {
-	Components::Container2 container1 = registry.get<Components::Container2>(matrix);
+	Components::Container container1 = registry.get<Components::Container>(matrix);
 	for (unsigned int i = BufferAreaDepth; i < container1.GetGridDimensions().x - BufferAreaDepth; i++)
 	{
 		for (unsigned int k = BufferAreaDepth; k < container1.GetGridDimensions().y - BufferAreaDepth; k++)
@@ -735,7 +735,7 @@ void FillPauseCensors(entt::registry&  registry, entt::entity matrix, entt::enti
 	// Directional censors for the top buffer area of the matrix here. FIXME TODO
 	// This is basically just directional walls' positioning loops(different, but same idea) using censors instead.
 
-	Components::Container2 container2 = registry.get<Components::Container2>(bagArea);
+	Components::Container container2 = registry.get<Components::Container>(bagArea);
 	for (unsigned int i = 0; i < container2.GetGridDimensions().x; i++)
 	{
 		for (unsigned int k = 0; k < container2.GetGridDimensions().y; k++)
@@ -747,7 +747,7 @@ void FillPauseCensors(entt::registry&  registry, entt::entity matrix, entt::enti
 
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 {
-	Components::Container2 container2 = registry.get<Components::Container2>(parentEntity);
+	Components::Container container2 = registry.get<Components::Container>(parentEntity);
 	// We want a copy of this to be stored in this scope, because the component reference may change without warning.
 	// We could also just store the vector coordinate. Either way.
 	Components::Position parentPosition = registry.get<Components::Position>(parentEntity);
@@ -825,17 +825,17 @@ void BuildGrid(entt::registry& registry, const entt::entity& parentEntity)
 // We'll want to spawn whole tetrominoes later, not just blocks.
 entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
 		if (!tag.IsEnabled() || containerTag != tag.Get())
 			continue;
 
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
-			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Container container2 = registry.get<Components::Container>(entity);
 			Components::Position parentPosition = registry.get<Components::Position>(entity);
 
 			const auto piece1 = registry.create();
@@ -866,17 +866,17 @@ entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTa
 
 entt::entity SpawnFollowerBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, const std::string& blockModelPath)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& tag = containerView.get<Components::Tag>(entity); // We'll be wanting to check which container we're working with later. (eg: Play Area, Hold, Preview, (which play area?))
 		if (!tag.IsEnabled() || containerTag != tag.Get())
 			continue;
 
 		if (container2.IsEnabled() && tag.IsEnabled())
 		{
-			Components::Container2 container2 = registry.get<Components::Container2>(entity);
+			Components::Container container2 = registry.get<Components::Container>(entity);
 			Components::Position parentPosition = registry.get<Components::Position>(entity);
 
 			const auto piece1 = registry.create();
@@ -939,9 +939,9 @@ void LinkCoordinates(entt::registry& registry, const Components::Coordinate& ori
 			registry.emplace<Components::Position>(marker1);
 			registry.emplace<Components::DerivePositionFromCoordinates>(marker1);// , originCoord.GetParent());
 
-			if (registry.all_of<Components::Container2>(originCell.GetParent()))
+			if (registry.all_of<Components::Container>(originCell.GetParent()))
 			{
-				auto& container = registry.get<Components::Container2>(originCoord.GetParent());
+				auto& container = registry.get<Components::Container>(originCoord.GetParent());
 				registry.emplace<Components::Scale>(marker1, container.GetCellDimensions3());
 			}
 			registry.emplace<Components::Renderable>(marker1, Components::renderLayer_t::RL_MARKER_UNDER, Model("./data/block/green.obj"));
@@ -1037,7 +1037,7 @@ moveDirection_t GetDesiredDirectionOfTetromino(entt::registry& registry, const e
 
 entt::entity SpawnProjectedFollowerBlock(entt::registry& registry, const Components::Coordinate& spawnCoordinate, entt::entity followedEntity, entt::entity parentTetromino, const std::string& blockModelPath)
 {
-	const auto& container = registry.get<Components::Container2>(spawnCoordinate.GetParent());
+	const auto& container = registry.get<Components::Container>(spawnCoordinate.GetParent());
 
 	if (container.IsEnabled())
 	{
@@ -1121,7 +1121,7 @@ entt::entity SpawnProjectedTetromino(entt::registry& registry, const entt::entit
 	}
 
 	registry.emplace<Components::Scale>(projectionEnt, glm::uvec2(cellWidth * patternWidth, cellHeight * pattternHeight));
-	registry.emplace<Components::Container2>(projectionEnt, glm::uvec2(patternWidth, pattternHeight), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(projectionEnt, glm::uvec2(patternWidth, pattternHeight), glm::uvec2(cellWidth, cellHeight));
 
 	auto* projection = GetTetrominoFromEntity(registry, projectionEnt);
 	auto projCoord = registry.get<Components::Coordinate>(projectionEnt);
@@ -1204,7 +1204,7 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	}
 
 	registry.emplace<Components::Scale>(tetrominoEnt, glm::uvec2(cellWidth * tetromino->GetPatternWidth(), cellHeight * tetromino->GetPatternHeight()));
-	registry.emplace<Components::Container2>(tetrominoEnt, glm::uvec2(tetromino->GetPatternWidth(), tetromino->GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(tetrominoEnt, glm::uvec2(tetromino->GetPatternWidth(), tetromino->GetPatternHeight()), glm::uvec2(cellWidth, cellHeight));
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -1320,7 +1320,7 @@ glm::uvec2 GetTetrominoSpawnCoordinates(entt::registry& registry, const std::str
 
 	entt::entity containerEntity = FindContainerEntityByTag(registry, containerTag);
 
-	auto& container = registry.get<Components::Container2>(containerEntity);
+	auto& container = registry.get<Components::Container>(containerEntity);
 
 	moveDirection_t currentDirection = moveDirection_t::NORTH;
 	if (registry.all_of<Components::CardinalDirection>(containerEntity))
@@ -1723,10 +1723,10 @@ double CalculateFallSpeed(int level)
 
 void PlaceWall(entt::registry& registry, const Components::Coordinate& coordinate, const bool& directional, const std::vector<moveDirection_t> directions)
 {
-	auto containerView = registry.view<Components::Container2>();
+	auto containerView = registry.view<Components::Container>();
 	for (auto containerEnt : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(containerEnt);
+		auto& container2 = containerView.get<Components::Container>(containerEnt);
 
 		if (container2.IsEnabled())
 		{

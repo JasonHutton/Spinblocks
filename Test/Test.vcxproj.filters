@@ -155,12 +155,6 @@
     <ClInclude Include="..\Spinblocks\include\Components\Component.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Spinblocks\include\Components\Container.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Spinblocks\include\Components\Container2.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Spinblocks\include\Components\Controllable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -241,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="..\Spinblocks\include\AudioManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Spinblocks\include\Components\Container.h">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

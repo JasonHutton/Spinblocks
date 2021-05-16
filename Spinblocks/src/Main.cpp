@@ -93,10 +93,10 @@ InputHandler input;
 
 void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, entt::entity adjacentEntity, const moveDirection_t& dir)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& containerTag2 = containerView.get<Components::Tag>(entity);
 
 		if (container2.IsEnabled() && containerTag2.IsEnabled())
@@ -122,10 +122,10 @@ void PlaceEdgeMarker(entt::registry& registry, const std::string& containerTag, 
 
 entt::entity PlaceBagMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& containerTag2 = containerView.get<Components::Tag>(entity);
 
 		if (container2.IsEnabled() && containerTag2.IsEnabled())
@@ -157,10 +157,10 @@ entt::entity PlaceBagMarker(entt::registry& registry, const std::string& contain
 
 void PlaceMarker(entt::registry& registry, const std::string& containerTag, const std::string& markerTag, const Components::Coordinate& markerCoordinate, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER, const entt::entity followedEnt = entt::null)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& containerTag2 = containerView.get<Components::Tag>(entity);
 
 		if (container2.IsEnabled() && containerTag2.IsEnabled())
@@ -193,10 +193,10 @@ void PlaceMarker(entt::registry& registry, const std::string& containerTag, cons
 
 void PlaceSpawnMarker(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& markerCoordinate, const spawnType_t& spawnType, const moveDirection_t& activeDirection, const Components::renderLayer_t& layer = Components::renderLayer_t::RL_MARKER_UNDER)
 {
-	auto containerView = registry.view<Components::Container2, Components::Tag>();
+	auto containerView = registry.view<Components::Container, Components::Tag>();
 	for (auto entity : containerView)
 	{
-		auto& container2 = containerView.get<Components::Container2>(entity);
+		auto& container2 = containerView.get<Components::Container>(entity);
 		auto& containerTag2 = containerView.get<Components::Tag>(entity);
 
 		if (container2.IsEnabled() && containerTag2.IsEnabled())
@@ -975,7 +975,7 @@ void prerender(entt::registry& registry, double normalizedTime)
 			}
 			// The line below likes to trigger crashes. Probably something above shouldn't be a reference.
 			Components::Position parentPosition = registry.get<Components::Position>(deriveCoordinatesFrom); // this is a 0 vector in Matrix:Grid:0-0, 700,300 in BagArea:Grid:0-0 // Also 0 vector with blocks.
-			Components::Container2 container2 = registry.get<Components::Container2>(deriveCoordinatesFrom);
+			Components::Container container2 = registry.get<Components::Container>(deriveCoordinatesFrom);
 
 			// Review GetCellPosition3() later. What should it be in reference to? Parent entity? Matrix? Parent coordinates? FIXME TODO
 			//position.Set(container2.GetCellPosition3(parentPosition.Get(), coordinates.Get()) + derivePositionFromCoordinates.GetOffset());
@@ -1182,8 +1182,8 @@ void ConnectGrids(entt::registry& registry, entt::entity lhs, moveDirection_t lh
 {
 	// LinkCoordinates(registry, Components::Coordinate(matrix, glm::uvec2(0, 19)), Components::Coordinate(northBuffer, glm::uvec2(0, 0)), moveDirection_t::NORTH, moveDirection_t::SOUTH);
 	// LinkCoordinates(registry, Components::Coordinate(northBuffer, glm::uvec2(0, 0)), Components::Coordinate(matrix, glm::uvec2(0, 19)), moveDirection_t::SOUTH, moveDirection_t::NORTH);
-	auto& lhsContainer = registry.get<Components::Container2>(lhs);
-	auto& rhsContainer = registry.get<Components::Container2>(rhs);
+	auto& lhsContainer = registry.get<Components::Container>(lhs);
+	auto& rhsContainer = registry.get<Components::Container>(rhs);
 
 	auto lhsDimensions = lhsContainer.GetGridDimensions();
 	auto rhsDimensions = rhsContainer.GetGridDimensions();
@@ -1291,7 +1291,7 @@ void InitGame(entt::registry& registry)
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
 	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (PlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (PlayAreaHeight + (BufferAreaDepth * 2))));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container2>(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth * 2), PlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth * 2), PlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -1302,7 +1302,7 @@ void InitGame(entt::registry& registry)
 	registry.emplace<Components::Renderable>(bagArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	registry.emplace<Components::Scale>(bagArea, glm::vec2(25 * 4, 25 * 16));
 	registry.emplace<Components::Position>(bagArea, glm::vec2(displayData.x - displayData.x / 11, displayData.y / 2));
-	registry.emplace<Components::Container2>(bagArea, glm::uvec2(4, 16), glm::vec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(bagArea, glm::uvec2(4, 16), glm::vec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(bagArea, GetTagFromContainerType(containerType_t::BAG_AREA));
 	registry.emplace<Components::Orientation>(bagArea);
 	//registry.emplace<Components::ReferenceEntity>(bagArea, playArea);

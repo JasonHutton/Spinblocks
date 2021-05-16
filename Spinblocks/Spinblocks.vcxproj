@@ -222,7 +222,6 @@ xcopy /y /d /s "$(ProjectDir)data\" "$(TargetDir)data\"</Command>
     <ClInclude Include="include\Components\Obstructs.h" />
     <ClInclude Include="include\Components\Component.h" />
     <ClInclude Include="include\Components\Container.h" />
-    <ClInclude Include="include\Components\Container2.h" />
     <ClInclude Include="include\Components\Controllable.h" />
     <ClInclude Include="include\Components\Coordinate.h" />
     <ClInclude Include="include\Components\DerivePositionFromCoordinates.h" />

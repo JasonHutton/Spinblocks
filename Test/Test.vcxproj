@@ -40,7 +40,6 @@
     <ClInclude Include="..\Spinblocks\include\Components\Cell.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Component.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Container.h" />
-    <ClInclude Include="..\Spinblocks\include\Components\Container2.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Controllable.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Coordinate.h" />
     <ClInclude Include="..\Spinblocks\include\Components\DerivePositionFromCoordinates.h" />
