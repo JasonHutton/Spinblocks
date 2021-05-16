@@ -45,7 +45,6 @@
     <ClInclude Include="..\Spinblocks\include\Components\DerivePositionFromCoordinates.h" />
     <ClInclude Include="..\Spinblocks\include\Components\DerivePositionFromParent.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Flag.h" />
-    <ClInclude Include="..\Spinblocks\include\Components\GridCell.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Hittable.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Includes.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Marker.h" />

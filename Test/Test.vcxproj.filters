@@ -170,9 +170,6 @@
     <ClInclude Include="..\Spinblocks\include\Components\Flag.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Spinblocks\include\Components\GridCell.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="..\Spinblocks\include\Components\Hittable.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
