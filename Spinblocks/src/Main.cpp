@@ -777,19 +777,6 @@ void update(entt::registry& registry, double currentFrameTime)
 	// Views are cheap to make/destroy.
 	// Views are meant to be temporary; don't store them after
 
-	auto gameObjectView = registry.view<Components::GameObject, Components::Position>();
-	for (auto entity : gameObjectView)
-	{
-		auto& gameObject = gameObjectView.get<Components::GameObject>(entity);
-		if (gameObject.IsEnabled())
-		{
-			auto& position = gameObjectView.get<Components::Position>(entity);
-			glm::vec3 pos = position.Get();
-			glm::vec3 posAdj = glm::vec3(0.0, 0.01, 0.0);
-			position.Set(pos + posAdj);
-		}
-	}
-
 	auto blockLockData = std::vector<BlockLockData>();
 	bool aPieceMoved = false;
 	statesChanged_t statesChanged;
