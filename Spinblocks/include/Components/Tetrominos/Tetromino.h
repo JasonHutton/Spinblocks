@@ -19,6 +19,18 @@ enum class tetrominoType_t;
 
 namespace Components
 {
+	/*
+	Map's Key is in a Tuple:
+	Key0: rotationPointIndex (int)
+	Key1: currentOrientation (moveDirection_t)
+	Key2: rotationDirection (rotationDirection_t) Often NONE
+	Map's Value is a Pair:
+	Pair.first: blockPattern (vector<glm::vec2>)
+	Pair.second: Key Tuple. (Identical types and orders to those composing the Key.)
+	When retrieving this, if Pair.first is empty, query it again, using Pair.second as a key.
+	*/
+	typedef std::map<std::tuple<int, moveDirection_t, rotationDirection_t>, std::pair<std::vector<glm::vec2>, std::tuple<int, moveDirection_t, rotationDirection_t>>> blockPattern_t;
+
 	class Tetromino : public Component
 	{
 	private:
@@ -28,18 +40,8 @@ namespace Components
 
 		std::vector<entt::entity> m_blocks;
 		std::vector<glm::vec2> m_rotationPoints;
-	protected:
-		/*
-		Map's Key is in a Tuple:
-		Key0: rotationPointIndex (int)
-		Key1: currentOrientation (moveDirection_t)
-		Key2: rotationDirection (rotationDirection_t) Often NONE
-		Map's Value is a Pair:
-		Pair.first: blockPattern (vector<glm::vec2>)
-		Pair.second: Key Tuple. (Identical types and orders to those composing the Key.)
-		When retrieving this, if Pair.first is empty, query it again, using Pair.second as a key.
-		*/
-		std::map<std::tuple<int, moveDirection_t, rotationDirection_t>, std::pair<std::vector<glm::vec2>, std::tuple<int, moveDirection_t, rotationDirection_t>>> m_blockPatterns;
+
+		blockPattern_t m_blockPatterns;
 	protected:
 		void AddBlockPattern(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::vector<glm::vec2> blockPattern)
 		{
