@@ -21,14 +21,14 @@ namespace Components
 {
 	class Tetromino : public Component
 	{
-	protected:
+	private:
 		moveDirection_t m_currentOrientation{ moveDirection_t::NORTH };
 		moveDirection_t m_desiredOrientation{ moveDirection_t::NORTH };
 		tetrominoType_t m_tetrominoType;
 
 		std::vector<entt::entity> m_blocks;
 		std::vector<glm::vec2> m_rotationPoints;
-
+	protected:
 		/*
 		Map's Key is in a Tuple:
 		Key0: rotationPointIndex (int)
@@ -40,7 +40,7 @@ namespace Components
 		When retrieving this, if Pair.first is empty, query it again, using Pair.second as a key.
 		*/
 		std::map<std::tuple<int, moveDirection_t, rotationDirection_t>, std::pair<std::vector<glm::vec2>, std::tuple<int, moveDirection_t, rotationDirection_t>>> m_blockPatterns;
-	public:
+	protected:
 		void AddBlockPattern(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::vector<glm::vec2> blockPattern)
 		{
 			m_blockPatterns.emplace(std::make_tuple(rotationPointIndex, orientation, rotationDirection), std::make_pair(blockPattern, std::tuple<int, moveDirection_t, rotationDirection_t>()));
@@ -234,11 +234,22 @@ namespace Components
 		{
 			m_blocks.push_back(block);
 		}
-
+	
 		const entt::entity& GetBlock(int blockIndex) const
 		{
 			return m_blocks[blockIndex];
 		}
+
+		void AddRotationPoint(const glm::vec2& rotationPoint)
+		{
+			m_rotationPoints.push_back(rotationPoint);
+		}
+
+		const glm::vec2& GetRotationPoint(int rotationPointIndex) const
+		{
+			return m_rotationPoints[rotationPointIndex];
+		}
+	public:
 
 		// void AddBlock2(int rotationPointIndex, moveDirection_t orientation, rotationDirection_t rotationDirection, std::vector<glm::vec2> blockPattern)
 		glm::vec2 GetBlockOffsetCoordinates(moveDirection_t orientation, int blockIndex, int rotationPointIndex = 0, rotationDirection_t rotationDirection = rotationDirection_t::NONE)

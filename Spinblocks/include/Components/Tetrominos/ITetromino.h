@@ -45,11 +45,11 @@ namespace Components
 
 		void DefineRotationPoints() override
 		{
-			m_rotationPoints.push_back(glm::vec2(1, 2));
-			m_rotationPoints.push_back(glm::vec2(0, 2));
-			m_rotationPoints.push_back(glm::vec2(3, 2));
-			m_rotationPoints.push_back(glm::vec2(0, 2));
-			m_rotationPoints.push_back(glm::vec2(3, 2));
+			AddRotationPoint(glm::vec2(1, 2));
+			AddRotationPoint(glm::vec2(0, 2));
+			AddRotationPoint(glm::vec2(3, 2));
+			AddRotationPoint(glm::vec2(0, 2));
+			AddRotationPoint(glm::vec2(3, 2));
 		}
 	public:
 		ITetromino(const moveDirection_t& orientation) :Tetromino(tetrominoType_t::I, orientation)

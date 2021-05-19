@@ -39,6 +39,7 @@ entt::entity GetActiveControllable(entt::registry& registry);
 void BuildGrid(entt::registry& registry, const entt::entity& parentEntity);
 entt::entity SpawnBlock(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const bool& isControllable = true);
 void LinkCoordinates(entt::registry& registry, const Components::Coordinate& origin, const Components::Coordinate& destination, const moveDirection_t& moveDir, const moveDirection_t& moveDirReverse);
+entt::entity SpawnProjectedTetromino(entt::registry& registry, const entt::entity& tetrominoEnt);
 entt::entity SpawnTetromino(entt::registry& registry, const std::string& containerTag, const Components::Coordinate& spawnCoordinate, const tetrominoType_t& tetrominoType, const bool& isControllable = true);
 bool IsEntityTetromino(entt::registry& registry, entt::entity ent);
 Components::Tetromino* GetTetrominoFromEntity(entt::registry& registry, entt::entity entity);
