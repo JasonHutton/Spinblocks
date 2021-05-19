@@ -7,7 +7,7 @@ namespace Components
 {
 	class Cell : public Component
 	{
-	protected:
+	private:
 		entt::entity m_parent { entt::null };
 		entt::entity m_north { entt::null };
 		entt::entity m_south { entt::null };
@@ -35,7 +35,7 @@ namespace Components
 		{
 			m_east = ent;
 		}
-
+	public:
 		entt::entity GetNorth() const
 		{
 			return m_north;
@@ -52,7 +52,7 @@ namespace Components
 		{
 			return m_east;
 		}
-
+	public:
 		entt::entity GetParent() const
 		{
 			return m_parent;

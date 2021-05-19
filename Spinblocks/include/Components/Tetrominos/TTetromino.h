@@ -23,7 +23,7 @@ namespace Components
 			return "./data/block/purple.obj";
 		}
 
-	protected:
+	private:
 		void DefineBlockPattern() override
 		{
 			AddBlockPattern(0, moveDirection_t::NORTH, rotationDirection_t::NONE, { glm::vec2(0,1), glm::vec2(1,1), glm::vec2(2,1), glm::vec2(1,2) });

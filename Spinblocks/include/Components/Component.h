@@ -4,7 +4,7 @@ namespace Components
 {
 	class Component
 	{
-	protected:
+	private:
 		bool m_enabled; // Is the component enabled to systems?
 
 	public:
