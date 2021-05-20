@@ -9,7 +9,7 @@ namespace Components
 {
 	class Bag : public Component
 	{
-	protected:
+	private:
 		std::deque<tetrominoType_t> m_tetrominos;
 		std::mt19937 m_pseudorandom;
 
@@ -28,7 +28,7 @@ namespace Components
 			return poppedTet;
 		}
 
-	protected:
+	private:
 		void FillBag()
 		{
 			if (m_tetrominos.empty())
