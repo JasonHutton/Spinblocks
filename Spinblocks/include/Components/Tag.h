@@ -6,7 +6,7 @@ namespace Components
 {
 	class Tag : public Component
 	{
-	protected:
+	private:
 		std::string m_tag;
 
 	public:

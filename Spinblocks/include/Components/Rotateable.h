@@ -6,7 +6,7 @@ namespace Components
 {
 	class Rotateable : public Component
 	{
-	protected:
+	private:
 		float m_desiredAngleInRadians;
 		float m_currentAngleInRadians;
 

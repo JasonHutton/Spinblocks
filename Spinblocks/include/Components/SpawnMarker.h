@@ -11,7 +11,7 @@ namespace Components
 {
 	class SpawnMarker : public Marker
 	{
-	protected:
+	private:
 		spawnType_t m_spawnType;
 
 	public:

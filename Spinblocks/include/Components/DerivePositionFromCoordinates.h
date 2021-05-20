@@ -8,7 +8,7 @@ namespace Components
 {
 	class DerivePositionFromCoordinates : public ReferenceEntity
 	{
-	protected:
+	private:
 		glm::vec3 m_offset;
 
 	public:

@@ -10,7 +10,7 @@ namespace Components
 {
 	class QueueNode : public CellLink
 	{
-	protected:
+	private:
 		entt::entity m_contentEntity{ entt::null };
 		entt::entity m_self{ entt::null };
 

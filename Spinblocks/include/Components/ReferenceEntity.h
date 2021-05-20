@@ -7,7 +7,7 @@ namespace Components
 {
 	class ReferenceEntity : public Component
 	{
-	protected:
+	private:
 		entt::entity m_entity{ entt::null };
 
 	public:

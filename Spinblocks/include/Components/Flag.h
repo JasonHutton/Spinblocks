@@ -6,7 +6,7 @@ namespace Components
 {
 	class Flag : public Component
 	{
-	protected:
+	private:
 		bool m_flag;
 
 	public:

@@ -8,7 +8,7 @@ namespace Components
 {
 	class Scale : public Component
 	{
-	protected:
+	private:
 		glm::vec3 m_scale;
 
 	public:

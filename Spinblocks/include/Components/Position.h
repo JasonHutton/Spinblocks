@@ -8,7 +8,7 @@ namespace Components
 {
 	class Position : public Component
 	{
-	protected:
+	private:
 		glm::vec3 m_position;
 
 	public:

@@ -18,7 +18,7 @@ namespace Components
 
 	class Moveable : public Component
 	{
-	protected:
+	private:
 		Coordinate m_desiredCoordinate;
 		Coordinate m_currentCoordinate;
 

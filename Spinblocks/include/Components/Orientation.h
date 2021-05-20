@@ -7,7 +7,7 @@ namespace Components
 {
 	class Orientation : public Component
 	{
-	protected:
+	private:
 		float m_orientation;
 		glm::vec3 m_axis;
 

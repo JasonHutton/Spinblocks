@@ -8,7 +8,7 @@ namespace Components
 {
 	class Obstructable : public ReferenceEntity
 	{
-	protected:
+	private:
 		bool m_isObstructed = false;
 		double m_lastObstructedTime = 0.0;
 		double m_lockdownDelay = 0.0;
