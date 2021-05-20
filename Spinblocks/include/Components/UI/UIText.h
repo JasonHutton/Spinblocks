@@ -7,7 +7,7 @@ namespace Components
 {
 	class UIText : public UIComponent
 	{
-	protected:
+	private:
 		std::string m_text;
 
 	public:

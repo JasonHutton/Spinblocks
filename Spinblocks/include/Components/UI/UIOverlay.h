@@ -8,7 +8,7 @@ namespace Components
 {
 	class UIOverlay : public UIComponent
 	{
-	protected:
+	private:
 		ImGuiWindowFlags m_windowFlags = ImGuiWindowFlags_NoDecoration |
 										ImGuiWindowFlags_AlwaysAutoResize |
 										ImGuiWindowFlags_NoSavedSettings |

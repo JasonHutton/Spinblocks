@@ -7,7 +7,7 @@ namespace Components
 {
 	class UIPosition : public UIComponent
 	{
-	protected:
+	private:
 		ImVec2 m_position;
 		ImVec2 m_pivot;
 

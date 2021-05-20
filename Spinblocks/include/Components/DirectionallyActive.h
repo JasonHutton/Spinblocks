@@ -10,7 +10,7 @@ namespace Components
 {
 	class DirectionallyActive : public Component
 	{
-	protected:
+	private:
 		std::vector<moveDirection_t> m_directions;
 
 	public:

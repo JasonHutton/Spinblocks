@@ -6,7 +6,7 @@ namespace Components
 {
 	class Container : public Component
 	{
-	protected:
+	private:
 		glm::uvec2 m_gridDimensions; // In grid coordinates, not screen position.
 		glm::vec2 m_cellDimensions; // In screen coordinates
 	

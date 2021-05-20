@@ -10,7 +10,7 @@ namespace Components
 {
 	class Coordinate : public Component
 	{
-	protected:
+	private:
 		glm::uvec2 m_coordinate;
 		entt::entity m_parent{ entt::null };
 
