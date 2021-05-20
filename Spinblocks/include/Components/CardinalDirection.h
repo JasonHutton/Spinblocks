@@ -10,7 +10,7 @@ namespace Components
 {
 	class CardinalDirection : public Component
 	{
-	protected:
+	private:
 		moveDirection_t m_currentOrientation{ moveDirection_t::NORTH };
 		moveDirection_t m_desiredOrientation{ moveDirection_t::NORTH };
 
