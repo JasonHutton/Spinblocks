@@ -8,7 +8,7 @@ namespace Components
 {
 	class NodeOrder : public Component
 	{
-	protected:
+	private:
 		std::vector<entt::entity> m_nodes;
 		std::vector<entt::entity>::iterator m_nodeIterator;
 
@@ -34,7 +34,7 @@ namespace Components
 
 			return *m_nodeIterator++;
 		}
-	protected:
+	private:
 		void ResetNodeIterator()
 		{
 			m_nodeIterator = m_nodes.begin();

@@ -8,7 +8,7 @@ namespace Components
 {
 	class DeriveOrientationFromParent : public ReferenceEntity
 	{
-	protected:
+	private:
 		float m_orientationOffset;
 		glm::vec3 m_axisOffset;
 
