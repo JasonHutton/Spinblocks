@@ -24,7 +24,15 @@ Controls are as follows:
 - Menu: Escape
 
 ## Gameplay
+Tetrominos will advance through the preview area on the right of the screen.
+The top Tetromino will be the next one to be promoted into play.
+Each new Tetromino will fall from the top of the play area, downwards.
+Fill an entire horizontal row of the play area to clear that row. Eliminating rows scores points.
+Clearing more rows at once scores proportionately more points.
+As your points rise, so does the game level, which causes Tetrominos to fall more rapidly.
 
+Clear 2+ rows at once, and the entire play area will rotate to the left or right, depending upon where the last Tetromino landed.
+The blocks that compose locked down Tetrominos will collapse when the play area rotates.
 
 ## Known Issues
 ### Major
