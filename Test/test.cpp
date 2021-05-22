@@ -2446,11 +2446,11 @@ TEST(CollapseTest, Collapse1GapTest) {
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 2)), false);
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 2)), false);
 
-	// These are just in between the eliminated lines
+	// These are just in between the eliminated lines, and will fall
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 1)), false);
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(3, 1)), false);
 
-	// These are going to fall
+	// These are also going to fall, but will be obstructed by the above in between blocks.
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 3)), false);
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 3)), false);
 	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 4)), false);
