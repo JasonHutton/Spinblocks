@@ -2561,9 +2561,15 @@ TEST(PlayAreaRotationTest, BlockPositionsTest) {
 		glm::uvec2(1 + BufferAreaDepth, 1 + BufferAreaDepth), 
 		glm::uvec2(2 + BufferAreaDepth, 1 + BufferAreaDepth)));
 
+	auto& playAreaDirection = registry.get<Components::CardinalDirection>(playArea);
+	EXPECT_TRUE(playAreaDirection.GetCurrentOrientation() == moveDirection_t::NORTH);
+
 	double fakeCurrentFrameTime;
 	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
 	Systems::BoardRotateSystem(registry, fakeCurrentFrameTime, rotationDirection_t::CLOCKWISE);
+
+	EXPECT_TRUE(playAreaDirection.GetCurrentOrientation() == moveDirection_t::EAST);
+
 	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
