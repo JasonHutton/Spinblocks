@@ -2489,3 +2489,64 @@ TEST(CollapseTest, Collapse1GapTest) {
 	// Are the remaining blocks still there, and have they fallen?
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 1), glm::uvec2(1, 1), glm::uvec2(0, 2), glm::uvec2(1, 2)));
 }
+
+TEST(PlayAreaRotationTest, BlockPositionsTest) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 3;
+	int testPlayAreaHeight = 3;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 1)), false);
+	
+	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	for (auto entity : blockView)
+	{
+		auto& moveable = blockView.get<Components::Moveable>(entity);
+		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+	}
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 0), glm::uvec2(1, 0), glm::uvec2(1, 1), glm::uvec2(2, 1)));
+
+	RotatePlayArea(registry, rotationDirection_t::CLOCKWISE);
+
+	double fakeCurrentFrameTime;
+	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	auto blockLockData = std::vector<BlockLockData>();
+	Systems::StateChangeSystem(registry, fakeCurrentFrameTime, blockLockData);
+	// Now detach, after the falling realignment.
+	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::DetachSystem(registry, fakeCurrentFrameTime);
+
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 0), glm::uvec2(1, 0), glm::uvec2(1, 1), glm::uvec2(2, 1)));
+}

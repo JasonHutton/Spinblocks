@@ -55,6 +55,7 @@
     <ClInclude Include="..\Spinblocks\include\Components\Scale.h" />
     <ClInclude Include="..\Spinblocks\include\Components\ScaleToCellDimensions.h" />
     <ClInclude Include="..\Spinblocks\include\Components\Tag.h" />
+    <ClInclude Include="..\Spinblocks\include\GameState.h" />
     <ClInclude Include="..\Spinblocks\include\GameTime.h" />
     <ClInclude Include="..\Spinblocks\include\glad\glad.h" />
     <ClInclude Include="..\Spinblocks\include\GLFW\glfw3.h" />
@@ -78,8 +79,11 @@
     <ClInclude Include="..\Spinblocks\include\learnopengl\shader.h" />
     <ClInclude Include="..\Spinblocks\include\stb_image.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\BoardRotateSystem.h" />
+    <ClInclude Include="..\Spinblocks\include\Systems\CompletionSystem.h" />
+    <ClInclude Include="..\Spinblocks\include\Systems\DetachSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\EliminateSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\FallingSystem.h" />
+    <ClInclude Include="..\Spinblocks\include\Systems\GenerationSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\MovementSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\PatternSystem.h" />
     <ClInclude Include="..\Spinblocks\include\Systems\StateChangeSystem.h" />
@@ -91,6 +95,7 @@
     <ClCompile Include="..\Spinblocks\src\AudioManager.cpp" />
     <ClCompile Include="..\Spinblocks\src\CachedTagLookup.cpp" />
     <ClCompile Include="..\Spinblocks\src\Components\Coordinate.cpp" />
+    <ClCompile Include="..\Spinblocks\src\GameState.cpp" />
     <ClCompile Include="..\Spinblocks\src\glad.c" />
     <ClCompile Include="..\Spinblocks\src\imgui.cpp" />
     <ClCompile Include="..\Spinblocks\src\imgui_demo.cpp" />
@@ -105,8 +110,11 @@
     <ClCompile Include="..\Spinblocks\src\Input\KeyInput.cpp" />
     <ClCompile Include="..\Spinblocks\src\learnopengl\model.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\BoardRotateSystem.cpp" />
+    <ClCompile Include="..\Spinblocks\src\Systems\CompletionSystem.cpp" />
+    <ClCompile Include="..\Spinblocks\src\Systems\DetachSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\EliminateSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\FallingSystem.cpp" />
+    <ClCompile Include="..\Spinblocks\src\Systems\GenerationSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\MovementSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\PatternSystem.cpp" />
     <ClCompile Include="..\Spinblocks\src\Systems\StateChangeSystem.cpp" />
