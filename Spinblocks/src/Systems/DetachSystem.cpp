@@ -61,6 +61,7 @@ namespace Systems
 	}
 
 	// This is going to have problems with buffer area's that are up(and so wall isn't active there)
+	// This will also have problems with play areas or buffer areas that aren't normal (eg: for testing with a simpler play area) FIXME TODO
 	bool IsCoordinateOutsidePlayArea(entt::registry& registry, const Components::Coordinate& coordinate)
 	{
 		if (coordinate.Get().x < BufferAreaDepth)

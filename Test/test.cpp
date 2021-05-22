@@ -2493,12 +2493,11 @@ TEST(CollapseTest, Collapse1GapTest) {
 TEST(PlayAreaRotationTest, BlockPositionsTest) {
 	entt::registry registry;
 
-	int testPlayAreaWidth = 3;
-	int testPlayAreaHeight = 3;
+	// Some of the things we're testing aren't written to be simplfied, so we need to use a full-size board with buffers and walls, or it won't work properly.
 
 	const auto playArea = registry.create();
 	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
-	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * PlayAreaWidth, cellHeight * PlayAreaHeight));
 	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
 	//registry.emplace<Components::Scale>(playArea);
 	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
@@ -2511,9 +2510,9 @@ TEST(PlayAreaRotationTest, BlockPositionsTest) {
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (PlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (PlayAreaHeight + (BufferAreaDepth * 2))));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth * 2), PlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -2522,31 +2521,71 @@ TEST(PlayAreaRotationTest, BlockPositionsTest) {
 
 	BuildGrid(registry, matrix);
 
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 0)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1, 1)), false);
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2, 1)), false);
+	for (int i = BufferAreaDepth - 1; i < PlayAreaWidth + BufferAreaDepth + 1; i++)
+	{
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, PlayAreaHeight + (BufferAreaDepth - 1) + 1)), true, { moveDirection_t::SOUTH, moveDirection_t::EAST, moveDirection_t::WEST });
+	}
+	for (int i = BufferAreaDepth - 1; i < PlayAreaWidth + BufferAreaDepth + 1; i++)
+	{
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(i, 0 + (BufferAreaDepth - 1))), true, { moveDirection_t::NORTH, moveDirection_t::EAST, moveDirection_t::WEST });
+	}
+	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
+	{
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)), true, { moveDirection_t::NORTH, moveDirection_t::SOUTH, moveDirection_t::EAST });
+	}
+	for (int i = BufferAreaDepth - 1; i < PlayAreaHeight + BufferAreaDepth + 1; i++)
+	{
+		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(0 + (BufferAreaDepth - 1), i)), true, { moveDirection_t::NORTH, moveDirection_t::SOUTH, moveDirection_t::WEST });
+	}
+
+	UpdateDirectionalWalls(registry);
+
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(0 + BufferAreaDepth, 0 + BufferAreaDepth)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1 + BufferAreaDepth, 0 + BufferAreaDepth)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(1 + BufferAreaDepth, 1 + BufferAreaDepth)), false);
+	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(2 + BufferAreaDepth, 1 + BufferAreaDepth)), false);
 	
-	auto blockView = registry.view<Components::Block, Components::Moveable>();
+	auto blockView = registry.view<Components::Block, Components::Moveable, Components::Obstructable>();
 	for (auto entity : blockView)
 	{
 		auto& moveable = blockView.get<Components::Moveable>(entity);
+		auto& obstructable = blockView.get<Components::Obstructable>(entity);
 		moveable.SetMovementState(Components::movementStates_t::LOCKED);
+		obstructable.SetIsObstructed(true); // We need this in testing because this gets set during falling, which we're skipping hwne placing on the fly.
 	}
 
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 0), glm::uvec2(1, 0), glm::uvec2(1, 1), glm::uvec2(2, 1)));
-
-	RotatePlayArea(registry, rotationDirection_t::CLOCKWISE);
+	// Z Tetromino arrangement of blocks.
+	EXPECT_TRUE(ValidateBlockPositions(registry, 
+		glm::uvec2(0 + BufferAreaDepth, 0 + BufferAreaDepth), 
+		glm::uvec2(1 + BufferAreaDepth, 0 + BufferAreaDepth), 
+		glm::uvec2(1 + BufferAreaDepth, 1 + BufferAreaDepth), 
+		glm::uvec2(2 + BufferAreaDepth, 1 + BufferAreaDepth)));
 
 	double fakeCurrentFrameTime;
 	fakeCurrentFrameTime = 10000; // Arbitrarily large number, so any timers are exceeded.
-	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	Systems::BoardRotateSystem(registry, fakeCurrentFrameTime, rotationDirection_t::CLOCKWISE);
 	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
 	auto blockLockData = std::vector<BlockLockData>();
 	Systems::StateChangeSystem(registry, fakeCurrentFrameTime, blockLockData);
 	// Now detach, after the falling realignment.
-	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
+	fakeCurrentFrameTime = 40000; // Arbitrarily large number, so any timers are exceeded.
 	Systems::DetachSystem(registry, fakeCurrentFrameTime);
 
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 0), glm::uvec2(1, 0), glm::uvec2(1, 1), glm::uvec2(2, 1)));
+	// Process next iteraton of loop
+	fakeCurrentFrameTime = 50000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::FallingSystem(registry, fakeCurrentFrameTime);
+	fakeCurrentFrameTime = 60000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+	blockLockData.clear();
+	fakeCurrentFrameTime = 70000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::StateChangeSystem(registry, fakeCurrentFrameTime, blockLockData);
+
+	// Z Tetromino has collapsed into a simple square, against the lower-right side of the coordinate matrix
+	EXPECT_TRUE(ValidateBlockPositions(registry, 
+		glm::uvec2(8 + BufferAreaDepth, 0 + BufferAreaDepth),
+		glm::uvec2(9 + BufferAreaDepth, 0 + BufferAreaDepth),
+		glm::uvec2(8 + BufferAreaDepth, 1 + BufferAreaDepth),
+		glm::uvec2(9 + BufferAreaDepth, 1 + BufferAreaDepth)));
 }
