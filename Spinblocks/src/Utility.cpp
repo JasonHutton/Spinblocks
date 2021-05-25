@@ -1223,8 +1223,10 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 		registry.emplace<Components::Controllable>(tetrominoEnt, spawnCoordinate.GetParent());
 	}
 	//registry.emplace<Components::Renderable>(tetrominoEnt, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
+	registry.emplace<Components::Orientation>(tetrominoEnt);
 	registry.emplace<Components::Moveable>(tetrominoEnt, registry.get<Components::Coordinate>(tetrominoEnt), registry.get<Components::Coordinate>(tetrominoEnt));
 	registry.emplace<Components::Obstructable>(tetrominoEnt, spawnCoordinate.GetParent());
+	registry.emplace<Components::ReferenceEntity>(tetrominoEnt, spawnCoordinate.GetParent());
 
 	return tetrominoEnt;
 }
