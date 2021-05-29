@@ -2085,7 +2085,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByWall) {
 	// We should have rotated, and so no longer be in the same position
 	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6), glm::uvec2(11, 6)));
 	// And we should end up here.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(15, 4), glm::uvec2(15, 5), glm::uvec2(15, 6), glm::uvec2(15, 7)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(10, 4), glm::uvec2(10, 5), glm::uvec2(10, 6), glm::uvec2(10, 7)));
 }
 
 TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByWall) {
