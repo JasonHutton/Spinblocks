@@ -1836,7 +1836,7 @@ TEST(TetrominoRotationTest, Rotate4ClockwiseClear) {
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
 }
 
-TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
+TEST(TetrominoRotationObstructionTestClear, Rotate1ClockwiseObstructedByNull) {
 	entt::registry registry;
 
 	int testPlayAreaWidth = 6;
@@ -1918,7 +1918,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(4, 4), glm::uvec2(4, 3), glm::uvec2(4, 2), glm::uvec2(4, 1)));
 }
 
-TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) {
+TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByNull) {
 	entt::registry registry;
 
 	int testPlayAreaWidth = 6;
@@ -2000,7 +2000,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 4), glm::uvec2(3, 3), glm::uvec2(3, 2), glm::uvec2(3, 1)));
 }
 
-TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByWall) {
+TEST(TetrominoRotationObstructionTestClear, Rotate1ClockwiseObstructedByWall) {
 	entt::registry registry;
 
 	int testPlayAreaWidth = 6;
@@ -2088,7 +2088,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByWall) {
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(10, 4), glm::uvec2(10, 5), glm::uvec2(10, 6), glm::uvec2(10, 7)));
 }
 
-TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByWall) {
+TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByWall) {
 	entt::registry registry;
 
 	int testPlayAreaWidth = 6;
