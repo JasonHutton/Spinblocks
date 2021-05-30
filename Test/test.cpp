@@ -1857,9 +1857,9 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth, testPlayAreaHeight), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -1868,10 +1868,10 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 
 	BuildGrid(registry, matrix);
 
-	// 5 + 6 + 5 = 16 - 3 = 13
+	// 6 = 6 - 3 = 2
 	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
-			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(14, 6)),
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(3, 3)),
 		tetrominoType_t::I);
 
 	// Needed for MovementSystem()
@@ -1895,7 +1895,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 		}
 	}
 
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 
 	double fakeCurrentFrameTime;
 
@@ -1904,7 +1904,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// Move failed, still in the same spot. Was obstructed, so is right against the obstruction.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 	// Now try rotating.
 
 	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
@@ -1913,9 +1913,9 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// We should have rotated, and so no longer be in the same position
-	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 	// And we should end up here.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(15, 4), glm::uvec2(15, 5), glm::uvec2(15, 6), glm::uvec2(15, 7)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(4, 4), glm::uvec2(4, 3), glm::uvec2(4, 2), glm::uvec2(4, 1)));
 }
 
 TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) {
@@ -1939,9 +1939,9 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 	const auto matrix = registry.create();
 	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
 	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
-	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * (testPlayAreaWidth + (BufferAreaDepth * 2)), cellHeight * (testPlayAreaHeight + (BufferAreaDepth * 2))));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
 	registry.emplace<Components::Position>(matrix);
-	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth * 2), testPlayAreaHeight + (BufferAreaDepth * 2)), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth, testPlayAreaHeight), glm::uvec2(cellWidth, cellHeight));
 	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
 	registry.emplace<Components::Orientation>(matrix);
 	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
@@ -1953,7 +1953,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 	// 5 + 6 + 5 = 16 - 3 = 13
 	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
-			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(14, 6)),
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(3, 3)),
 		tetrominoType_t::I);
 
 	// Needed for MovementSystem()
@@ -1977,7 +1977,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 		}
 	}
 
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 
 	double fakeCurrentFrameTime;
 
@@ -1986,7 +1986,7 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// Move failed, still in the same spot. Was obstructed, so is right against the obstruction.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 	// Now try rotating.
 
 	RotatePiece(registry, rotatePiece_t::ROTATE_COUNTERCLOCKWISE);
@@ -1995,9 +1995,9 @@ TEST(TetrominoRotationObstructionTest, Rotate1CounterClockwiseObstructedByNull) 
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// We should have rotated, and so no longer be in the same position
-	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(13, 6), glm::uvec2(14, 6), glm::uvec2(15, 6), glm::uvec2(16, 6)));
+	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(2, 3), glm::uvec2(3, 3), glm::uvec2(4, 3), glm::uvec2(5, 3)));
 	// And we should end up here.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(15, 4), glm::uvec2(15, 5), glm::uvec2(15, 6), glm::uvec2(15, 7)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 4), glm::uvec2(3, 3), glm::uvec2(3, 2), glm::uvec2(3, 1)));
 }
 
 TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByWall) {
