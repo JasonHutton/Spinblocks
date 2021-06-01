@@ -2675,7 +2675,7 @@ TEST(TetrominoRotationObstructionTestObstructed, Rotate1ClockwiseObstructedByBlo
 	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(5, 4), glm::uvec2(5, 5), glm::uvec2(5, 6), glm::uvec2(5, 7)));
 
 	// Place a block in so it's going to be in the way of a rotation.
-	SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5, 5)), false);
+	entt::entity blockEnt = SpawnBlock(registry, GetTagFromContainerType(containerType_t::MATRIX), Components::Coordinate(matrix, glm::uvec2(5, 5)), false);
 
 	// Rotate again, to get obstructed by the block this time.
 
@@ -2778,4 +2778,54 @@ TEST(TetrominoRotationObstructionTestObstructed, Rotate1CounterClockwiseObstruct
 	// This should have been obstructed by the block, and so not have moved.
 	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
 	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(4, 4), glm::uvec2(4, 5), glm::uvec2(4, 6), glm::uvec2(4, 7)));
+}
+
+TEST(CanOccupyTests, Blep) {
+	entt::registry registry;
+
+	int testPlayAreaWidth = 4;
+	int testPlayAreaHeight = 4;
+
+	const auto playArea = registry.create();
+	registry.emplace<Components::Renderable>(playArea, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));//"./data/quads/block.obj"));
+	registry.emplace<Components::Scale>(playArea, glm::vec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(playArea, glm::vec2(displayData.x / 2, displayData.y / 2));
+	//registry.emplace<Components::Scale>(playArea);
+	//registry.emplace<Components::Container2>(playArea, glm::uvec2(10, 20), glm::vec2(25, 25));
+	registry.emplace<Components::Tag>(playArea, GetTagFromContainerType(containerType_t::PLAY_AREA));
+	registry.emplace<Components::Rotateable>(playArea, 0.0f, 0.0f);
+	registry.emplace<Components::Orientation>(playArea, 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+	registry.emplace<Components::InheritScalingFromParent>(playArea, false);
+	registry.emplace<Components::CardinalDirection>(playArea);
+
+	const auto matrix = registry.create();
+	//registry.emplace<Components::Renderable>(matrix, Components::renderLayer_t::RL_CONTAINER, Model("./data/block/block.obj"));
+	//registry.emplace<Components::Scale>(matrix, glm::uvec2(1, 1));
+	registry.emplace<Components::Scale>(matrix, glm::uvec2(cellWidth * testPlayAreaWidth, cellHeight * testPlayAreaHeight));
+	registry.emplace<Components::Position>(matrix);
+	registry.emplace<Components::Container>(matrix, glm::uvec2(testPlayAreaWidth, testPlayAreaHeight), glm::uvec2(cellWidth, cellHeight));
+	registry.emplace<Components::Tag>(matrix, GetTagFromContainerType(containerType_t::MATRIX));
+	registry.emplace<Components::Orientation>(matrix);
+	registry.emplace<Components::ReferenceEntity>(matrix, playArea);
+	//registry.emplace<Components::DeriveOrientationFromParent>(matrix, playArea);
+	registry.emplace<Components::InheritScalingFromParent>(matrix, false);
+
+	BuildGrid(registry, matrix);
+
+	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
+		Components::Coordinate(FindContainerEntityByTag(registry,
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(1, 0)),
+		tetrominoType_t::T);
+
+	auto* tetromino = GetTetrominoFromEntity(registry, tet);
+
+	// Where the blocks of the Tetromino are.
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(0, 0), glm::uvec2(1, 0), glm::uvec2(2, 0), glm::uvec2(1, 1)));
+	// Where they are not
+	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(0, 1), glm::uvec2(2, 1), glm::uvec2(3, 0), glm::uvec2(0, 3)));
+
+	// Tetromino cannot go here, because its offset blocks would be unable to do so.
+	EXPECT_FALSE(CanOccupyCell(registry, tet, GetCellAtCoordinates2(registry, Components::Coordinate(matrix, glm::uvec2(0, 1)))));
+	// Tetromino can go here, because it's offset blocks would be able to do so.
+	EXPECT_TRUE(CanOccupyCell(registry, tet, GetCellAtCoordinates2(registry, Components::Coordinate(matrix, glm::uvec2(1, 1)))));
 }
