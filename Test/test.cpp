@@ -1148,15 +1148,15 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 	}
 }
 
-//#define PRINT_BLOCK_VALIDATION
-bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4)
+bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4, const bool& printBlockValidation = false)
 {
-#ifdef PRINT_BLOCK_VALIDATION
-	std::cout << "ExpectedBlock1: " << block1.x << "," << block1.y << std::endl
-		<< "ExpectedBlock2: " << block2.x << "," << block2.y << std::endl
-		<< "ExpectedBlock3: " << block3.x << "," << block3.y << std::endl
-		<< "ExpectedBlock4: " << block4.x << "," << block4.y << std::endl;
-#endif
+	if (printBlockValidation)
+	{
+		std::cout << "ExpectedBlock1: " << block1.x << "," << block1.y << std::endl
+			<< "ExpectedBlock2: " << block2.x << "," << block2.y << std::endl
+			<< "ExpectedBlock3: " << block3.x << "," << block3.y << std::endl
+			<< "ExpectedBlock4: " << block4.x << "," << block4.y << std::endl;
+	}
 
 	int numBlocksInExpectedCoordinates = 0;
 
@@ -1167,9 +1167,10 @@ bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, 
 		auto& coordinate = blockView.get<Components::Coordinate>(entity);
 		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
 
-#ifdef PRINT_BLOCK_VALIDATION
-		std::cout << "Block: " << beginCoord.Get().x << "," << beginCoord.Get().y << std::endl;
-#endif
+		if (printBlockValidation)
+		{
+			std::cout << "Block: " << beginCoord.Get().x << "," << beginCoord.Get().y << std::endl;
+		}
 
 		if (numBlocksInExpectedCoordinates >= 4)
 			continue;
