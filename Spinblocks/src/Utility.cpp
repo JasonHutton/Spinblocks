@@ -33,15 +33,30 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		cerr << ex.what() << endl;
 	}
 
+	/*auto coords1 = std::vector<glm::uvec2>(); // 13,6 14,6 15,6 16,6
+	auto coords2 = std::vector<glm::uvec2>(); // 14,4 15,5 16,6 17,7
+	auto coords3 = std::vector<glm::vec2>();
+	auto coords4 = std::vector<glm::uvec2>(); */
 	bool atLeastOneBlockObstructed = false;
 	for (int i = 0; i < 4; i++)
 	{
 		auto& blockEnt = tetromino->GetBlock(i);
 		auto& blockCoord = registry.get<Components::Coordinate>(blockEnt);
 
+		//coords1.push_back(blockCoord.Get());
+
+		/*coords3.push_back(tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 1, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+		auto offsetCoordinateX = Components::Coordinate(blockCoord.GetParent(),
+			(glm::vec2)blockCoord.Get() +
+			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 1, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+		coords4.push_back(offsetCoordinateX.Get());*/
+
+
 		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
 			(glm::vec2)blockCoord.Get() +
 			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+
+		//coords2.push_back(offsetCoordinate.Get());
 
 		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
 		if (!CanOccupyCell(registry, blockEnt, cellEnt))
@@ -315,10 +330,9 @@ bool IsAnyBlockInTetrominoObstructingSelf(entt::registry& registry, entt::entity
 	//bool bFoundAtLeastOneObstruction = false;
 	for (int i = 0; i < 4; i++)
 	{
-		auto offsetCoordinate = Components::Coordinate(cellCoord.GetParent(),
-			(glm::vec2)cellCoord.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
+		glm::vec2 offsetCoord = (glm::vec2)cellCoord.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i);
 
-
+		auto offsetCoordinate = Components::Coordinate(cellCoord.GetParent(), offsetCoord);
 
 		//auto& block = registry.get<Components::Block>(tetromino->GetBlock(i));
 		auto& moveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
@@ -446,8 +460,33 @@ bool CanOccupyCell(entt::registry& registry, const entt::entity& blockEnt, const
 
 	if (IsEntityTetromino(registry, blockEnt))
 	{
+		
 		// Might want this conditional on disableObsruction
-		return IsAnyBlockInTetrominoObstructingSelf(registry, blockEnt, cellEntity, disableObstruction);
+		//return IsAnyBlockInTetrominoObstructingSelf(registry, blockEnt, cellEntity, disableObstruction);
+		//return IsAnyBlockInTetrominoObstructed(registry, blockEnt);
+
+		Components::Tetromino* tetromino = GetTetrominoFromEntity(registry, blockEnt);
+
+		for (int i = 0; i < 4; i++)
+		{
+			auto spawnOffset = tetromino->GetRotationPoint(0);
+			auto blockOffset = tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i); // 0,2
+
+			auto spawnPoint = Components::Coordinate(cellCoordinate.GetParent(),
+				(glm::vec2)cellCoordinate.Get() + -spawnOffset + blockOffset);
+
+			//auto& block = registry.get<Components::Block>(tetromino->GetBlock(i));
+			auto& moveable = registry.get<Components::Moveable>(tetromino->GetBlock(i));
+			auto& coordinate = registry.get<Components::Coordinate>(tetromino->GetBlock(i));
+			//auto& follower = registry.get<Components::Follower>(tetromino->GetBlock(i));
+
+			entt::entity cellEnt = GetCellAtCoordinates2(registry, spawnPoint);// coordinate);
+
+			if (!CanOccupyCell(registry, tetromino->GetBlock(i), cellEnt))
+				return false;
+		}
+
+
 	}
 
 	// Don't check for obstructions. Sooooo, we're able to move into here regardless without further checks.
@@ -1196,9 +1235,8 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 
 	auto* tetromino = GetTetrominoFromEntity(registry, tetrominoEnt);
 
-	auto spawnOffset = tetromino->GetRotationPoint(0);
-	auto newSpawnCoordinate = Components::Coordinate(spawnCoordinate.GetParent(), (glm::vec2)spawnCoordinate.Get() + spawnOffset);
-	registry.emplace<Components::Coordinate>(tetrominoEnt, newSpawnCoordinate.GetParent(), newSpawnCoordinate.Get());
+	auto tetSpawnOffset = tetromino->GetRotationPoint(0);
+	registry.emplace<Components::Coordinate>(tetrominoEnt,spawnCoordinate.GetParent(), spawnCoordinate.Get());
 	
 	switch (tetromino->GetType())
 	{
@@ -1215,8 +1253,13 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 
 	for (int i = 0; i < 4; i++)
 	{
-		auto spawnPoint = Components::Coordinate(newSpawnCoordinate.GetParent(),
-			(glm::vec2)newSpawnCoordinate.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
+		auto spawnOffset = tetromino->GetRotationPoint(0);
+		//auto newSpawnCoordinate = Components::Coordinate(spawnCoordinate.GetParent(), (glm::vec2)spawnCoordinate.Get() + spawnOffset);
+
+		auto blockOffset = tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i); // 0,2
+
+		auto spawnPoint = Components::Coordinate(spawnCoordinate.GetParent(),
+			(glm::vec2)spawnCoordinate.Get() + -spawnOffset + blockOffset); // 4,8
 
 		entt::entity blockEnt = SpawnFollowerBlock(registry, containerTag, spawnPoint, tetrominoEnt, tetromino->GetBlockModelPath());
 		tetromino->AddBlock(blockEnt);
@@ -1227,15 +1270,15 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 
 	if (isControllable)
 	{
-		registry.emplace<Components::Controllable>(tetrominoEnt, newSpawnCoordinate.GetParent());
+		registry.emplace<Components::Controllable>(tetrominoEnt, spawnCoordinate.GetParent());
 	}
 	//registry.emplace<Components::Renderable>(tetrominoEnt, Components::renderLayer_t::RL_TETROMINO, Model("./data/block/purple.obj"));
 	//registry.emplace<Components::DerivePositionFromParent>(tetrominoEnt, spawnCoordinate.GetParent());
 	//registry.emplace<Components::InheritScalingFromParent>(tetrominoEnt, true);
 	registry.emplace<Components::Orientation>(tetrominoEnt);
 	registry.emplace<Components::Moveable>(tetrominoEnt, registry.get<Components::Coordinate>(tetrominoEnt), registry.get<Components::Coordinate>(tetrominoEnt));
-	registry.emplace<Components::Obstructable>(tetrominoEnt, newSpawnCoordinate.GetParent());
-	registry.emplace<Components::ReferenceEntity>(tetrominoEnt, newSpawnCoordinate.GetParent());
+	//registry.emplace<Components::Obstructable>(tetrominoEnt, newSpawnCoordinate.GetParent());
+	registry.emplace<Components::ReferenceEntity>(tetrominoEnt, spawnCoordinate.GetParent());
 
 	return tetrominoEnt;
 }

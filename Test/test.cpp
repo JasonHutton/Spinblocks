@@ -1148,8 +1148,16 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 	}
 }
 
+//#define PRINT_BLOCK_VALIDATION
 bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4)
 {
+#ifdef PRINT_BLOCK_VALIDATION
+	std::cout << "ExpectedBlock1: " << block1.x << "," << block1.y << std::endl
+		<< "ExpectedBlock2: " << block2.x << "," << block2.y << std::endl
+		<< "ExpectedBlock3: " << block3.x << "," << block3.y << std::endl
+		<< "ExpectedBlock4: " << block4.x << "," << block4.y << std::endl;
+#endif
+
 	int numBlocksInExpectedCoordinates = 0;
 
 	auto blockView = registry.view<Components::Block, Components::Coordinate>();
@@ -1158,6 +1166,10 @@ bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, 
 		auto& block = blockView.get<Components::Block>(entity);
 		auto& coordinate = blockView.get<Components::Coordinate>(entity);
 		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
+
+#ifdef PRINT_BLOCK_VALIDATION
+		std::cout << "Block: " << beginCoord.Get().x << "," << beginCoord.Get().y << std::endl;
+#endif
 
 		if (numBlocksInExpectedCoordinates >= 4)
 			continue;
@@ -2780,7 +2792,7 @@ TEST(TetrominoRotationObstructionTestObstructed, Rotate1CounterClockwiseObstruct
 	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(4, 4), glm::uvec2(4, 5), glm::uvec2(4, 6), glm::uvec2(4, 7)));
 }
 
-TEST(CanOccupyTests, Blep) {
+TEST(CanOccupyTests, TestTetrominoPositionValidity) {
 	entt::registry registry;
 
 	int testPlayAreaWidth = 4;

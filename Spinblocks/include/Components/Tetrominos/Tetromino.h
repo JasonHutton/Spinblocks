@@ -262,7 +262,7 @@ namespace Components
 				patternPair = m_blockPatterns[std::make_tuple(std::get<0>(patternPair.second), std::get<1>(patternPair.second), std::get<2>(patternPair.second))];
 			}
 
-			return patternPair.first[blockIndex] - m_rotationPoints[rotationPointIndex];
+			return m_rotationPoints[rotationPointIndex] + patternPair.first[blockIndex];
 		}
 
 		const moveDirection_t GetNewOrientation(const rotationDirection_t& rotationDirection, const moveDirection_t& currentOrientation) const

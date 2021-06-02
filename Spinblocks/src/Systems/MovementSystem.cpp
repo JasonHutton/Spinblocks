@@ -114,8 +114,11 @@ namespace Systems
 					}
 				}
 
+				auto spawnOffset = leader->GetRotationPoint(0);
+				auto blockOffset = leader->GetBlockOffsetCoordinates(leader->GetCurrentOrientation(), i);
+
 				auto offsetCoordinate = Components::Coordinate(leaderMoveable.GetDesiredCoordinate().GetParent(),
-					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + leader->GetBlockOffsetCoordinates(leader->GetCurrentOrientation(), i));
+					(glm::vec2)leaderMoveable.GetDesiredCoordinate().Get() + -spawnOffset + blockOffset);
 
 				moveable.SetDesiredCoordinate(offsetCoordinate);
 				if (moveable.GetCurrentCoordinate() != moveable.GetDesiredCoordinate())
