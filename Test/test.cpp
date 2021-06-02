@@ -1148,7 +1148,7 @@ TEST(CellLinkTest, Step2SouthFromInObstructed2) {
 	}
 }
 
-bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4, const bool& printBlockValidation = false)
+bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, const glm::uvec2& block2, const glm::uvec2& block3, const glm::uvec2& block4, entt::entity excludeBlock = entt::null, const bool& printBlockValidation = false)
 {
 	if (printBlockValidation)
 	{
@@ -1163,6 +1163,9 @@ bool ValidateBlockPositions(entt::registry& registry, const glm::uvec2& block1, 
 	auto blockView = registry.view<Components::Block, Components::Coordinate>();
 	for (auto entity : blockView)
 	{
+		if (excludeBlock == entity)
+			continue;
+
 		auto& block = blockView.get<Components::Block>(entity);
 		auto& coordinate = blockView.get<Components::Coordinate>(entity);
 		Components::Coordinate beginCoord = GetCoordinateOfEntity(registry, entity);
@@ -2697,8 +2700,8 @@ TEST(TetrominoRotationObstructionTestObstructed, Rotate1ClockwiseObstructedByBlo
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// This should have been obstructed by the block, and so not have moved.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6)));
-	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(5, 4), glm::uvec2(5, 5), glm::uvec2(5, 6), glm::uvec2(5, 7)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(3, 6), glm::uvec2(4, 6), glm::uvec2(5, 6), glm::uvec2(6, 6), blockEnt, true));
+	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(5, 4), glm::uvec2(5, 5), glm::uvec2(5, 6), glm::uvec2(5, 7), blockEnt, true));
 }
 
 TEST(TetrominoRotationObstructionTestObstructed, Rotate1CounterClockwiseObstructedByBlock) {
