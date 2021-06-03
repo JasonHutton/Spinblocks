@@ -1053,9 +1053,6 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 	auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
 	moveable.SetCurrentCoordinate(newSpawnCoordinate);
 	moveable.SetDesiredCoordinate(moveable.GetCurrentCoordinate());
-
-	auto& obstructable = registry.get<Components::Obstructable>(tetrominoEnt);
-	obstructable.Set(newSpawnCoordinate.GetParent());
 }
 
 moveDirection_t GetDesiredDirectionOfTetromino(entt::registry& registry, const entt::entity& containerEnt)
