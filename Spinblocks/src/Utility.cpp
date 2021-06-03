@@ -51,14 +51,13 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 1, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
 		coords4.push_back(offsetCoordinateX.Get());*/
 
+		auto spawnOffset = tetromino->GetRotationPoint(0);
+		auto blockOffset = tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE);
 
-		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
-			(glm::vec2)blockCoord.Get() +
-			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+		auto spawnPoint = Components::Coordinate(tetrominoCoord.GetParent(),
+			(glm::vec2)blockCoord.Get() + -spawnOffset + blockOffset);
 
-		//coords2.push_back(offsetCoordinate.Get());
-
-		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
+		auto cellEnt = GetCellAtCoordinates2(registry, spawnPoint);
 		if (!CanOccupyCell(registry, blockEnt, cellEnt))
 			atLeastOneBlockObstructed = true;
 	}

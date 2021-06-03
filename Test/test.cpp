@@ -2141,11 +2141,12 @@ TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByW
 		//PlaceMarker(registry, GetTagFromContainerType(containerType_t::MATRIX), "Border 3", Components::Coordinate(matrix, glm::uvec2(PlayAreaWidth + (BufferAreaDepth - 1) + 1, i)));
 		PlaceWall(registry, Components::Coordinate(matrix, glm::uvec2(testPlayAreaWidth + (BufferAreaDepth - 1) + 1, i)), true, { moveDirection_t::NORTH, moveDirection_t::SOUTH, moveDirection_t::EAST });
 	}
+	// Wall at 11
 
 	// 5 + 6 = 11 - 3 = 8
 	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
-			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(9, 6)),
+			GetTagFromContainerType(containerType_t::MATRIX)), glm::uvec2(8, 6)),
 		tetrominoType_t::I);
 
 	// Needed for MovementSystem()
@@ -2169,7 +2170,7 @@ TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByW
 		}
 	}
 
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6), glm::uvec2(11, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(7, 6), glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6)));
 
 	double fakeCurrentFrameTime;
 
@@ -2178,7 +2179,7 @@ TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByW
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// Move failed, still in the same spot. Was obstructed, so is right against the obstruction.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6), glm::uvec2(11, 6)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(7, 6), glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6)));
 	// Now try rotating.
 
 	RotatePiece(registry, rotatePiece_t::ROTATE_COUNTERCLOCKWISE);
@@ -2187,9 +2188,9 @@ TEST(TetrominoRotationObstructionTestClear, Rotate1CounterClockwiseObstructedByW
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// We should have rotated, and so no longer be in the same position
-	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6), glm::uvec2(11, 6)));
+	EXPECT_FALSE(ValidateBlockPositions(registry, glm::uvec2(7, 6), glm::uvec2(8, 6), glm::uvec2(9, 6), glm::uvec2(10, 6)));
 	// And we should end up here.
-	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(9, 4), glm::uvec2(9, 5), glm::uvec2(9, 6), glm::uvec2(9, 7)));
+	EXPECT_TRUE(ValidateBlockPositions(registry, glm::uvec2(8, 4), glm::uvec2(8, 5), glm::uvec2(8, 6), glm::uvec2(8, 7)));
 }
 
 TEST(TetrominoMovementObstructionTest, Step1SouthObstructedByBlock) {
