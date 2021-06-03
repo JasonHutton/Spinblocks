@@ -1045,8 +1045,12 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 
 	for (int i = 0; i < 4; i++)
 	{
-		auto spawnPoint = Components::Coordinate(newSpawnCoordinate.GetParent(),
-			(glm::vec2)newSpawnCoordinate.Get() + tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i));
+		auto spawnOffset = tetromino->GetRotationPoint(0);
+		auto blockOffset = tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i);
+
+		auto spawnPoint = Components::Coordinate(newCoordinate.GetParent(),
+			(glm::vec2)newCoordinate.Get() + -spawnOffset + blockOffset);
+
 		RelocateBlock(registry, spawnPoint, tetromino->GetBlock(i));
 	}
 
