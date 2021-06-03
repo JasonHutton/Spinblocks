@@ -1036,10 +1036,13 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 
 	auto spawnOffset = tetromino->GetRotationPoint(0);
 	auto newSpawnCoordinate = Components::Coordinate(newCoordinate.GetParent(), (glm::vec2)newCoordinate.Get() + spawnOffset);
-	
-	auto& coordinate = registry.get<Components::Coordinate>(tetrominoEnt);
-	coordinate.Set(newSpawnCoordinate.Get());
-	coordinate.SetParent(newSpawnCoordinate.GetParent());
+
+	if (registry.all_of<Components::Coordinate>(tetrominoEnt))
+	{
+		auto& coordinate = registry.get<Components::Coordinate>(tetrominoEnt);
+		coordinate.Set(newSpawnCoordinate.Get());
+		coordinate.SetParent(newSpawnCoordinate.GetParent());
+	}
 
 	// Not going to adjust cell dimensions for now. They're not changing in this, though hypothetically they COULD. FIXME TODO
 
@@ -1054,9 +1057,18 @@ void RelocateTetromino(entt::registry& registry, const Components::Coordinate& n
 		RelocateBlock(registry, spawnPoint, tetromino->GetBlock(i));
 	}
 
-	auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
-	moveable.SetCurrentCoordinate(newSpawnCoordinate);
-	moveable.SetDesiredCoordinate(moveable.GetCurrentCoordinate());
+	if (registry.all_of<Components::Moveable>(tetrominoEnt))
+	{
+		auto& moveable = registry.get<Components::Moveable>(tetrominoEnt);
+		moveable.SetCurrentCoordinate(newSpawnCoordinate);
+		moveable.SetDesiredCoordinate(moveable.GetCurrentCoordinate());
+	}
+
+	if (registry.all_of<Components::Obstructable>(tetrominoEnt))
+	{
+		auto& obstructable = registry.get<Components::Obstructable>(tetrominoEnt);
+		obstructable.Set(newSpawnCoordinate.GetParent());
+	}
 }
 
 moveDirection_t GetDesiredDirectionOfTetromino(entt::registry& registry, const entt::entity& containerEnt)
@@ -1279,7 +1291,7 @@ entt::entity SpawnTetromino(entt::registry& registry, const std::string& contain
 	//registry.emplace<Components::InheritScalingFromParent>(tetrominoEnt, true);
 	registry.emplace<Components::Orientation>(tetrominoEnt);
 	registry.emplace<Components::Moveable>(tetrominoEnt, registry.get<Components::Coordinate>(tetrominoEnt), registry.get<Components::Coordinate>(tetrominoEnt));
-	//registry.emplace<Components::Obstructable>(tetrominoEnt, newSpawnCoordinate.GetParent());
+	//registry.emplace<Components::Obstructable>(tetrominoEnt, spawnCoordinate.GetParent());
 	registry.emplace<Components::ReferenceEntity>(tetrominoEnt, spawnCoordinate.GetParent());
 
 	return tetrominoEnt;
