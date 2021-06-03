@@ -33,17 +33,17 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		cerr << ex.what() << endl;
 	}
 
-	auto coords1 = std::vector<glm::uvec2>(); // 2,3 3,3 4,3, 5,3
+	/*auto coords1 = std::vector<glm::uvec2>(); // 2,3 3,3 4,3, 5,3
 	auto coords2 = std::vector<glm::uvec2>(); // 3,4 4,3 5,2 6,1
 	auto coords3 = std::vector<glm::vec2>();
-	auto coords4 = std::vector<glm::uvec2>();
+	auto coords4 = std::vector<glm::uvec2>();*/
 	bool atLeastOneBlockObstructed = false;
 	for (int i = 0; i < 4; i++)
 	{
 		auto& blockEnt = tetromino->GetBlock(i);
 		auto& blockCoord = registry.get<Components::Coordinate>(blockEnt);
 
-		coords1.push_back(blockCoord.Get());
+		//coords1.push_back(blockCoord.Get());
 
 		/*coords3.push_back(tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 1, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
 		auto offsetCoordinateX = Components::Coordinate(blockCoord.GetParent(),
@@ -57,7 +57,7 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		auto spawnPoint = Components::Coordinate(tetrominoCoord.GetParent(),
 			(glm::vec2)tetrominoCoord.Get() + -spawnOffset + blockOffset);
 
-		coords2.push_back(spawnPoint.Get());
+		//coords2.push_back(spawnPoint.Get());
 
 		auto cellEnt = GetCellAtCoordinates2(registry, spawnPoint);
 		if (!CanOccupyCell(registry, blockEnt, cellEnt))
