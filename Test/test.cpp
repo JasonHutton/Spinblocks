@@ -1868,6 +1868,9 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 
 	BuildGrid(registry, matrix);
 
+	auto matContainer = registry.get<Components::Container>(matrix);
+	std::cout << "Dimensions: " << matContainer.GetGridDimensions().x << "," << matContainer.GetGridDimensions().y << endl;
+
 	// 5 + 6 + 5 = 16 - 3 = 13
 	auto tet = SpawnTetromino(registry, GetTagFromContainerType(containerType_t::MATRIX),
 		Components::Coordinate(FindContainerEntityByTag(registry,
@@ -1910,6 +1913,11 @@ TEST(TetrominoRotationObstructionTest, Rotate1ClockwiseObstructedByNull) {
 	RotatePiece(registry, rotatePiece_t::ROTATE_CLOCKWISE);
 
 	fakeCurrentFrameTime = 20000; // Arbitrarily large number, so any timers are exceeded.
+	Systems::MovementSystem(registry, fakeCurrentFrameTime);
+
+	RotatePiece(registry, rotatePiece_t::ROTATE_COUNTERCLOCKWISE);
+
+	fakeCurrentFrameTime = 30000; // Arbitrarily large number, so any timers are exceeded.
 	Systems::MovementSystem(registry, fakeCurrentFrameTime);
 
 	// We should have rotated, and so no longer be in the same position

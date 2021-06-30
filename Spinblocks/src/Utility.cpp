@@ -39,12 +39,19 @@ void RotatePiece(entt::registry& registry, const rotatePiece_t& rotatePiece)
 		auto& blockEnt = tetromino->GetBlock(i);
 		auto& blockCoord = registry.get<Components::Coordinate>(blockEnt);
 
-		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
-			(glm::vec2)blockCoord.Get() +
-			tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE));
+		auto blockOffsetCoordinate = tetromino->GetBlockOffsetCoordinates(tetromino->GetCurrentOrientation(), i, 0, rotatePiece == rotatePiece_t::ROTATE_CLOCKWISE ? rotationDirection_t::CLOCKWISE : rotationDirection_t::COUNTERCLOCKWISE);
 
-		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate);
-		if (!CanOccupyCell(registry, blockEnt, cellEnt))
+		auto offsetCoordinate = Components::Coordinate(blockCoord.GetParent(),
+			(glm::vec2)blockCoord.Get() + blockOffsetCoordinate);
+
+		std::cout << "RotatePiece: blockCoord(" << blockCoord.Get().x << "," << blockCoord.Get().y << ") " <<
+			"blockOffsetCoordinate(" << blockOffsetCoordinate.x << "," << blockOffsetCoordinate.y << ") " <<
+			"offsetCoordinate(" << offsetCoordinate.Get().x << "," << offsetCoordinate.Get().y << ")" << std::endl;
+
+
+
+		auto cellEnt = GetCellAtCoordinates2(registry, offsetCoordinate); // So this looks for matching coordinates. So it won't find outside-bounds coordinates.
+		if (!CanOccupyCell(registry, blockEnt, cellEnt)) // And this checks for entt::null for cellEnt
 			atLeastOneBlockObstructed = true;
 	}
 
